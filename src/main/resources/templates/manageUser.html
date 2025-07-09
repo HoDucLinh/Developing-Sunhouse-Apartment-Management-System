@@ -1,0 +1,36 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex gap-2">
+                <a class="nav-link" th:href="@{/create-user}">New</a>
+            </div>
+            <h2>List Users</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>FullName</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Room</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="1"></td>
+                        <td th:text="'Nguyen Van A'"></td>
+                        <td th:text="'nva@gmail.com'"></td>
+                        <td th:text="'0123456789'"></td>
+                        <td th:text="101"></td>
+                        <td th:text="'RESIDENT'"></td>
+                        <td th:text="'Block'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

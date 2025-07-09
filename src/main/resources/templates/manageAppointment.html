@@ -1,0 +1,38 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex gap-2">
+                <a class="nav-link" th:href="@{/create-new-appointment}">Thêm mới</a>
+            </div>
+            <h2>List Apartment</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Handler</th>
+                        <th>Fullname Customer</th>
+                        <th>Email Customer</th>
+                        <th>Phone Customer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Note</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="1"></td>
+                        <td th:text=" 'Nguyen Van A' "></td>
+                        <td th:text="'Tran Thi B'"></td>
+                        <td th:text=" 'tranthib@gmail.com' "></td>
+                        <td th:text=" '0123456789' "></td>
+                        <td th:text="'12/07/2025'"></td>
+                        <td th:text="'Pending'"></td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

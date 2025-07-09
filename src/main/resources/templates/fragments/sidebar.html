@@ -1,15 +1,14 @@
-<!-- fragments/sidebar.html -->
-<div th:fragment="sidebar" class="bg-light vh-100 p-3">
-    <div class="list-group">
-        <a th:href="@{/quan-tri/chung}" class="list-group-item list-group-item-action">Quản trị chung</a>
-        <a th:href="@{/quan-ly/can-ho}" class="list-group-item list-group-item-action">Quản lý căn hộ</a>
-        <a th:href="@{/quan-ly/apointment}" class="list-group-item list-group-item-action">Quản lý cuộc hẹn</a>
-        <a th:href="@{/quan-ly/user}" class="list-group-item list-group-item-action">Qua lý người dùng</a>
-        <a th:href="@{/quan-ly/invoices}" class="list-group-item list-group-item-action">Quản lý hóa đơn</a>
-        <a th:href="@{/quan-ly/cards}" class="list-group-item list-group-item-action">Quản lý thẻ xe</a>
-        <a th:href="@{/quan-ly/lockers}" class="list-group-item list-group-item-action">Quản lý tủ đồ</a>
-        <a th:href="@{/quan-ly/survey}" class="list-group-item list-group-item-action">Quản lý khảo sát</a>
-        <a th:href="@{/quan-ly/feedback}" class="list-group-item list-group-item-action">Quản lý phản ánh</a>
+<div th:fragment="sidebar">
+    <div class="list-group list-group-flush">
+        <a th:href="@{/statistics}" class="list-group-item list-group-item-action">Quản trị chung</a>
+        <a th:href="@{/manage-room}" class="list-group-item list-group-item-action">Quản lý căn hộ</a>
+        <a th:href="@{/manage-appointment}" class="list-group-item list-group-item-action">Quản lý cuộc hẹn</a>
+        <a th:href="@{/manage-user}" class="list-group-item list-group-item-action">Quản lý người dùng</a>
+        <a th:href="@{/manage-invoice}" class="list-group-item list-group-item-action">Quản lý hóa đơn</a>
+        <a th:href="@{/manage-card}" class="list-group-item list-group-item-action">Quản lý thẻ xe</a>
+        <a th:href="@{/manage-locker}" class="list-group-item list-group-item-action">Quản lý tủ đồ</a>
+        <a th:href="@{/manage-survey}" class="list-group-item list-group-item-action">Quản lý khảo sát</a>
+        <a th:href="@{/manage-feedback}" class="list-group-item list-group-item-action">Quản lý phản ánh</a>
         <a th:href="@{/settings}" class="list-group-item list-group-item-action">Cài đặt</a>
     </div>
 </div>

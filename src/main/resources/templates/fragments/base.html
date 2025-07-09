@@ -1,4 +1,3 @@
-<!-- fragments/base.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,9 +5,23 @@
     <title>Sunhouse Apartment</title>
 
     <style>
-        .vh-100 {
-            height: 100vh;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Không scroll toàn trang */
+        }
+        .layout {
+            height: calc(100vh - 56px); /* Chiều cao trừ header */
+        }
+        .sidebar {
+            width: 220px;
             overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        .main-content {
+            overflow-y: auto;
+            padding: 1rem;
         }
     </style>
 </head>
@@ -19,17 +32,13 @@
     <div th:replace="~{fragments/header :: header}"></div>
 
     <!-- Sidebar + Content -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar (trái) -->
-            <div class="col-md-2 bg-light p-0">
-                <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-            </div>
+    <div class="d-flex layout">
+        <!-- Sidebar -->
+        <div class="sidebar" th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-            <!-- Content (phải) -->
-            <div class="col-md-10 p-3">
-                <div th:insert="~{::content}"></div>
-            </div>
+        <!-- Content -->
+        <div class="flex-grow-1 main-content">
+            <div th:insert="~{::content}"></div>
         </div>
     </div>
 
