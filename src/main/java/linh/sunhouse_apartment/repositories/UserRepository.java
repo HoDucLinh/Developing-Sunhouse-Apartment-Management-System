@@ -2,8 +2,12 @@ package linh.sunhouse_apartment.repositories;
 
 import linh.sunhouse_apartment.entity.User;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserRepository {
     Optional<User> getUserByUserName(String username);
+    User saveUser(User user);
+    List<User> getAllUsers(Map<String, String> params);
 }
