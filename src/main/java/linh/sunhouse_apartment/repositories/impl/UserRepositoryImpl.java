@@ -39,6 +39,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User getUserById(Integer id) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createNamedQuery("User.findById", User.class);
+        query.setParameter("id", id);
+        return (User) query.getSingleResult();
+    }
+
+    @Override
     public User saveUser(User user) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(user);
@@ -75,5 +83,26 @@ public class UserRepositoryImpl implements UserRepository {
 
         Query query = session.createQuery(q);
         return query.getResultList();
+    }
+
+    @Override
+    public User editProfile(User user) {
+        Session session = sessionFactory.getCurrentSession();
+        if (user != null) {
+            session.merge(user);
+        }
+        return user;
+    }
+
+    @Override
+    public int blockUser(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        User user = session.get(User.class, id);
+        if (user != null) {
+            user.setIsActive(false);
+            session.merge(user);
+            return 1;
+        }
+        return 0;
     }
 }

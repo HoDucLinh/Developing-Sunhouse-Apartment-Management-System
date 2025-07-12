@@ -1,11 +1,16 @@
 package linh.sunhouse_apartment.services;
 
 import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
+import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
 import linh.sunhouse_apartment.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     // AuthenticationResponse authenticate (AuthenticationRequest request);
     boolean createUser(User user);
+    User getUserById(Integer id);
+    User editProfile(Integer id, EditProfileRequest dto, MultipartFile file);
+
 
 }

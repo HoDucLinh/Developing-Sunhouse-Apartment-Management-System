@@ -1,12 +1,21 @@
 package linh.sunhouse_apartment.controllers;
 
+import linh.sunhouse_apartment.auth.CustomUserDetail;
+import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +83,43 @@ public class UserController {
             else {
                 return "redirect:/";
             }
+    }
+    @GetMapping("/edit-profile")
+    public String showEditForm(Authentication authentication, Model model) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        Integer id = userDetails.getId();
+
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "editProfile"; // Thymeleaf file
+    }
+
+    @PostMapping("/edit-profile")
+    public String editUserProfile(
+            @ModelAttribute EditProfileRequest request,
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            Integer id = userDetails.getId();
+
+            User updatedUser = userService.editProfile(id, request, file);
+
+            CustomUserDetail updatedDetails = new CustomUserDetail(updatedUser);
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                    updatedDetails, authentication.getCredentials(), updatedDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+            redirectAttributes.addFlashAttribute("message", "Cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi cập nhật: " + e.getMessage());
         }
+        return "redirect:/edit-profile";
+    }
+
+
 
 }

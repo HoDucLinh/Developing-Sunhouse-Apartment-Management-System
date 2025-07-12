@@ -4,11 +4,16 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Sunhouse Apartment</a>
 
-            <div class="d-flex align-items-center ms-auto">
-                <!-- Tên người dùng -->
-                <div class="me-3">
-                    Tên: <span sec:authentication="name"></span>
-                </div>
+            <div class="d-flex align-items-center ms-auto gap-4">
+                <!-- Nhóm avatar + tên -->
+                <a th:href="@{/edit-profile}" class="d-flex align-items-center text-decoration-none text-dark">
+                    <img th:src="${#authentication.principal.avatarUrl}"
+                         alt="avatar"
+                         class="rounded-circle me-2"
+                         width="40" height="40"
+                         style="object-fit: cover; border: 1px solid #ccc;" />
+                    <span sec:authentication="name" class="fw-semibold"></span>
+                </a>
 
                 <!-- Nút đăng xuất -->
                 <form th:action="@{/logout}" method="post" class="m-0">

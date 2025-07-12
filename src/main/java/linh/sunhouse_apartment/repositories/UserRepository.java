@@ -8,6 +8,9 @@ import java.util.Optional;
 
 public interface UserRepository {
     Optional<User> getUserByUserName(String username);
+    User getUserById(Integer id);
     User saveUser(User user);
     List<User> getAllUsers(Map<String, String> params);
+    User editProfile(User user);
+    int blockUser(int id);
 }
