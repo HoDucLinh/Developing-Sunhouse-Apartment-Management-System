@@ -19,15 +19,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService, UserDetailsService{
     @Autowired
     private UserRepository userRepository;
@@ -57,11 +57,9 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(user.getPassword()));
 
-        user.setRole("ADMIN");
         user.setCreatedAt(new Date());
-        user.setIsActive(Boolean.TRUE);
         user.setAvatarUrl("https://res.cloudinary.com/dzwsdpjgi/image/upload/v1748436782/avatar_trang_1_cd729c335b_aiu2nl.jpg");
-        user.setRoomId(null);
+        user.setIsActive(Boolean.TRUE);
         userRepository.saveUser(user);
         return true;
     }
@@ -105,7 +103,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         User user = userRepository.getUserByUserName(username)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
-        if (!"ADMIN".equals(user.getRole())) {
+        if (!"ADMIN".equals(user.getRole().name())) {
             throw new UsernameNotFoundException("Access denied: not an ADMIN");
         }
 

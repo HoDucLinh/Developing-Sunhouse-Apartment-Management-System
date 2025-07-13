@@ -1,63 +1,80 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
         <main class="p-3">
-            <form id="registerForm" th:action="@{/register}" method="post">
-<!--                <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>-->
+            <form th:action="@{/register}" method="post" th:object="${user}" >
                 <div class="mb-3 mt-3">
                     <label for="username" class="form-label">User name</label>
-                    <input type="text" class="form-control" id="username" name="username" th:value="${username}" placeholder="Enter user name" required="true"/>
+                    <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Enter user name" required/>
                 </div>
                 <div class="mb-3">
                     <label for="pwd" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="pwd" name="password" placeholder="Enter password" required="true"/>
+                    <input type="password" class="form-control" id="pwd" th:field="*{password}" placeholder="Enter password" required/>
                 </div>
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Full name</label>
-                    <input type="text" class="form-control" id="fullname" name="fullName" th:value="${fullName}" placeholder="Enter full name" required="true"/>
+                    <input type="text" class="form-control" id="fullname" th:field="*{fullName}" placeholder="Enter full name" required/>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone</label>
-                    <input type="text" class="form-control" id="phone" name="phone" th:value="${phone}" placeholder="Enter phone" required="true"/>
+                    <input type="text" class="form-control" id="phone" th:field="*{phone}" placeholder="Enter phone" required/>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="email" name="email" th:value="${email}" placeholder="Enter Email" required="true"/>
+                    <input type="text" class="form-control" id="email" th:field="*{email}" placeholder="Enter Email" required/>
                 </div>
-<!--                <div class="mb-3">-->
-<!--                    <label class="form-label">Role</label><br/>-->
-<!--                    <div class="form-check form-check-inline">-->
-<!--                        <input class="form-check-input" type="radio" id="admin" name="role" value="admin" th:checked="${role == 'admin'}"/>-->
-<!--                        <label class="form-check-label" for="admin">Admin</label>-->
-<!--                    </div>-->
-<!--                    <div class="form-check form-check-inline">-->
-<!--                        <input class="form-check-input" type="radio" id="resident" name="role" value="resident" th:checked="${role == 'resident'}"/>-->
-<!--                        <label class="form-check-label" for="resident">Resident</label>-->
-<!--                    </div>-->
-<!--                </div>-->
 
-<!--                <div id="residentFields">-->
-<!--                    <div class="mb-3">-->
-<!--                        <label for="floor" class="form-label">Floor</label>-->
-<!--                        <select id="floor" name="floorId" class="form-select">-->
-<!--                            <option value="">&#45;&#45; Choose floor &#45;&#45;</option>-->
-<!--                            <option th:each="f : ${floors}"-->
-<!--                                    th:value="${f.id}"-->
-<!--                                    th:selected="${selectedFloorId} == ${f.id}"-->
-<!--                                    th:text="${f.floorNumber}"></option>-->
-<!--                        </select>-->
-<!--                    </div>-->
+                <div class="mb-3">
+                    <label class="form-label">Role:</label>
+                    <div th:each="role : ${roles}" class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               type="radio"
+                               th:field="*{role}"
+                               th:value="${role}"
+                               th:id="'role-' + ${role}" />
+                        <label class="form-check-label" th:for="'role-' + ${role}" th:text="${role}"></label>
+                    </div>
+                </div>
 
-<!--                    <div class="mb-3">-->
-<!--                        <label for="room" class="form-label">Room</label>-->
-<!--                        <select id="room" name="roomId" class="form-select">-->
-<!--                            <option value="">&#45;&#45; Chose room &#45;&#45;</option>-->
-<!--                            <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.roomNumber}"></option>-->
-<!--                        </select>-->
-<!--                    </div>-->
-<!--                </div>-->
+
+                <div id="floorRoomFields" style="display: none;">
+                    <div>
+                        <label>Floor:</label>
+                        <select name="floorId" id="floorSelect">
+                            <option th:each="floor : ${floors}" th:value="${floor.id}" th:text="'Tầng ' + ${floor.floorNumber}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Room:</label>
+                        <!-- KHÔNG dùng th:field="*{roomId}" -->
+                        <select name="roomIdParam" id="roomSelect">
+                            <option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.roomNumber}"></option>
+                        </select>
+
+                    </div>
+                </div>
 
                 <button type="submit" class="btn btn-primary">Add user</button>
             </form>
+
+            <script>
+                function toggleFields() {
+                    const selectedRole = document.querySelector('input[name="role"]:checked');
+                    const floorRoomFields = document.getElementById('floorRoomFields');
+                    if (selectedRole && selectedRole.value === 'RESIDENT') {
+                        floorRoomFields.style.display = 'block';
+                    } else {
+                        floorRoomFields.style.display = 'none';
+                    }
+                }
+
+                document.querySelectorAll('input[name="role"]').forEach(radio => {
+                    radio.addEventListener('change', toggleFields);
+                });
+
+                document.addEventListener('DOMContentLoaded', toggleFields);
+            </script>
+
         </main>
     </div>
 </div>

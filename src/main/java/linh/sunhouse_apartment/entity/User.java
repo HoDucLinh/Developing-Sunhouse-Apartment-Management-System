@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
@@ -17,6 +20,9 @@ import java.util.Set;
  *
  * @author ADMIN
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "user")
 @NamedQueries({
@@ -31,6 +37,7 @@ import java.util.Set;
     @NamedQuery(name = "User.findByIsActive", query = "SELECT u FROM User u WHERE u.isActive = :isActive"),
     @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt")})
 public class User implements Serializable {
+
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,17 +70,20 @@ public class User implements Serializable {
     @Size(max = 65535)
     @Column(name = "avatar_url")
     private String avatarUrl;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 8)
-    @Column(name = "role")
-    private String role;
+    public enum Role {
+        ADMIN,
+        BOD,
+        RESIDENT
+    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
     @Column(name = "is_active")
     private Boolean isActive;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bODid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bod")
     private Set<Appointment> appointmentSet;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Locker locker;
@@ -98,203 +108,4 @@ public class User implements Serializable {
     @Transient
     private MultipartFile file;
 
-    public User() {
-    }
-
-    public User(Integer id) {
-        this.id = id;
-    }
-
-    public User(Integer id, String username, String password, String role) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Set<Appointment> getAppointmentSet() {
-        return appointmentSet;
-    }
-
-    public void setAppointmentSet(Set<Appointment> appointmentSet) {
-        this.appointmentSet = appointmentSet;
-    }
-
-    public Locker getLocker() {
-        return locker;
-    }
-
-    public void setLocker(Locker locker) {
-        this.locker = locker;
-    }
-
-    public Set<Feedback> getFeedbackSet() {
-        return feedbackSet;
-    }
-
-    public void setFeedbackSet(Set<Feedback> feedbackSet) {
-        this.feedbackSet = feedbackSet;
-    }
-
-    public Set<Response> getResponseSet() {
-        return responseSet;
-    }
-
-    public void setResponseSet(Set<Response> responseSet) {
-        this.responseSet = responseSet;
-    }
-
-    public Set<Survey> getSurveySet() {
-        return surveySet;
-    }
-
-    public void setSurveySet(Set<Survey> surveySet) {
-        this.surveySet = surveySet;
-    }
-
-    public Set<Invoice> getInvoiceSet() {
-        return invoiceSet;
-    }
-
-    public void setInvoiceSet(Set<Invoice> invoiceSet) {
-        this.invoiceSet = invoiceSet;
-    }
-
-    public Room getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Room roomId) {
-        this.roomId = roomId;
-    }
-
-    public Set<Card> getCardSet() {
-        return cardSet;
-    }
-
-    public void setCardSet(Set<Card> cardSet) {
-        this.cardSet = cardSet;
-    }
-
-    public Set<Relative> getRelativeSet() {
-        return relativeSet;
-    }
-
-    public void setRelativeSet(Set<Relative> relativeSet) {
-        this.relativeSet = relativeSet;
-    }
-
-    public RoomHead getRoomHead() {
-        return roomHead;
-    }
-
-    public void setRoomHead(RoomHead roomHead) {
-        this.roomHead = roomHead;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
-        User other = (User) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.apartment_management.pojo.User[ id=" + id + " ]";
-    }
-    
 }

@@ -2,7 +2,10 @@ package linh.sunhouse_apartment.controllers;
 
 import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
+import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.entity.User;
+import linh.sunhouse_apartment.services.FloorService;
+import linh.sunhouse_apartment.services.RoomService;
 import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,14 +20,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 
 @Controller
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RoomService roomService;
+
+    @Autowired
+    FloorService floorService;
 
     @GetMapping("/manage-user")
     public String manageUser(){
@@ -36,54 +44,34 @@ public class UserController {
         return "login";
     }
     @GetMapping("/register")
-    public String register(){
+    public String register(Model model){
+        model.addAttribute("user", new User());
+        model.addAttribute("roles", User.Role.values());
+        model.addAttribute("rooms", roomService.findAll());
+        model.addAttribute("floors", floorService.findAll());
         return "register";
     }
     @PostMapping("/register")
     public String registerSubmit(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("fullName") String fullName,
-            @RequestParam("phone") String phone,
-            @RequestParam("email") String email
-//            @RequestParam("role") String role,
-//            @RequestParam(value = "roomId", required = false) Integer roomId,
-//            @RequestParam(value = "floorId", required = false) Integer floorId, // thêm nếu cần
-//            HttpSession session,
-//            Model model // Thêm model để truyền lỗi
-    ) {
-        System.out.println("Processing /register POST with username: " + username);
+            @ModelAttribute("user") User user,
+            @RequestParam(value = "roomIdParam", required = false) Integer roomId,
+            @RequestParam(value = "floorId", required = false) Integer floorId) {
 
-        // Lưu lại thông tin form để hiển thị lại nếu có lỗi
-//        Map<String, String> formData = new HashMap<>();
-//        formData.put("username", username);
-//        formData.put("fullName", fullName);
-//        formData.put("phone", phone);
-//        formData.put("email", email);
-        //session.setAttribute("registerFormData", formData);
+        if (user.getRole() == User.Role.RESIDENT && roomId != null) {
+            Room room = roomService.findById(roomId);
+            user.setRoomId(room);
+        } else {
+            user.setRoomId(null);
+        }
 
-//        // Kiểm tra username đã tồn tại chưa
-//        if (this.userService(username) != null) {
-//            model.addAttribute("errorMsg", "Tên người dùng đã tồn tại!");
-//            return register(floorId, session, model); // Gọi lại form với dữ liệu và thông báo lỗi
-//        } else {
+        user.setIsActive(true);
+        user.setCreatedAt(new Date());
 
-            // Nếu chưa tồn tại, tiếp tục đăng ký
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(password);
-            user.setFullName(fullName);
-            user.setPhone(phone);
-            user.setEmail(email);
-
-            boolean result = userService.createUser(user);
-            if(result) {
-                return "redirect:/manage-user";
-            }
-            else {
-                return "redirect:/";
-            }
+        userService.createUser(user);
+        return "redirect:/manage-user";
     }
+
+
     @GetMapping("/edit-profile")
     public String showEditForm(Authentication authentication, Model model) {
         CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
