@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="roomOptions">
+    <option value="">-- Chọn phòng --</option>
+    <option th:each="room : ${rooms}"
+            th:value="${room.id}"
+            th:text="${room.roomNumber}"></option>
+</th:block>
+</body>
+</html>

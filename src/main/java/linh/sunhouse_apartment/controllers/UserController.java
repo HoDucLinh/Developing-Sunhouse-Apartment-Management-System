@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -43,20 +44,22 @@ public class UserController {
     public String login(){
         return "login";
     }
+
     @GetMapping("/register")
-    public String register(Model model){
+    public String registerForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("roles", User.Role.values());
-        model.addAttribute("rooms", roomService.findAll());
         model.addAttribute("floors", floorService.findAll());
+        model.addAttribute("rooms", List.of());
         return "register";
     }
+
     @PostMapping("/register")
     public String registerSubmit(
             @ModelAttribute("user") User user,
             @RequestParam(value = "roomIdParam", required = false) Integer roomId,
-            @RequestParam(value = "floorId", required = false) Integer floorId) {
-
+            @RequestParam(value = "floorId", required = false) Integer floorId
+    ) {
         if (user.getRole() == User.Role.RESIDENT && roomId != null) {
             Room room = roomService.findById(roomId);
             user.setRoomId(room);
@@ -66,9 +69,16 @@ public class UserController {
 
         user.setIsActive(true);
         user.setCreatedAt(new Date());
-
         userService.createUser(user);
+
         return "redirect:/manage-user";
+    }
+
+    @GetMapping("/register/rooms")
+    public String getRoomsByFloor(@RequestParam("floorId") Integer floorId, Model model) {
+        List<Room> rooms = roomService.findByFloorId(floorId);
+        model.addAttribute("rooms", rooms);
+        return "fragments/room-options :: roomOptions";
     }
 
 
@@ -107,7 +117,4 @@ public class UserController {
         }
         return "redirect:/edit-profile";
     }
-
-
-
 }

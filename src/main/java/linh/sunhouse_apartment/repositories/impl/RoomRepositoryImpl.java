@@ -28,4 +28,13 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Room findById(Integer id) {
         return sessionFactory.getCurrentSession().get(Room.class, id);
     }
+
+    @Override
+    public List<Room> findByFloorId(Integer floorId) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("SELECT r FROM Room r WHERE r.floor.id = :floorId", Room.class)
+                .setParameter("floorId", floorId)
+                .getResultList();
+    }
+
 }
