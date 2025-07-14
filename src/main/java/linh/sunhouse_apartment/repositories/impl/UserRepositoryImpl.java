@@ -75,10 +75,6 @@ public class UserRepositoryImpl implements UserRepository {
             }
             q.where(predicates.toArray(Predicate[]::new));
 
-            String orderBy = params.get("orderBy");
-            if (orderBy != null && !orderBy.isEmpty()) {
-                q.orderBy(b.asc(root.get(orderBy)));
-            }
         }
 
         Query query = session.createQuery(q);

@@ -1,16 +1,35 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
         <main class="p-3">
-            <div class="d-flex gap-2">
-                <a class="nav-link" th:href="@{/register}">New</a>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="m-0">List Users</h2>
+                <a class="btn btn-success" th:href="@{/register}">
+                    <i class="bi bi-person-plus"></i> New
+                </a>
             </div>
-            <h2>List Users</h2>
+
+            <!-- Search form -->
+            <form class="row g-3 mb-4" method="get" th:action="@{/manage-user}">
+                <div class="col-md-4">
+                    <input type="text" name="kw" th:value="${params['kw']}" class="form-control" placeholder="Search by username...">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="room_number" th:value="${params['room_number']}" class="form-control" placeholder="Search by room number...">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+
+            <!-- User table -->
             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered align-middle">
                     <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>FullName</th>
+                        <th>Full Name</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Room</th>
@@ -19,14 +38,21 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td th:text="1"></td>
-                        <td th:text="'Nguyen Van A'"></td>
-                        <td th:text="'nva@gmail.com'"></td>
-                        <td th:text="'0123456789'"></td>
-                        <td th:text="101"></td>
-                        <td th:text="'RESIDENT'"></td>
-                        <td th:text="'Block'"></td>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.roomId != null ? user.roomId.roomNumber : 'N/A'}"></td>
+                        <td th:text="${user.role}"></td>
+                        <td>
+                            <a th:href="@{'/block-user/' + ${user.id}}" class="btn btn-sm btn-danger" title="Block user">
+                                <i class="bi bi-person-x"></i> Block
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="7" class="text-center">No users found</td>
                     </tr>
                     </tbody>
                 </table>

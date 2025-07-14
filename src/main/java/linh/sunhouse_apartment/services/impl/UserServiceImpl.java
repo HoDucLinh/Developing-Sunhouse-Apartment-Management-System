@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -96,6 +97,16 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         }
 
         return userRepository.editProfile(user);
+    }
+
+    @Override
+    public List<User> getUsers(Map<String, String> params) {
+        return userRepository.getAllUsers(params);
+    }
+
+    @Override
+    public int blockUser(Integer id) {
+        return userRepository.blockUser(id);
     }
 
     @Override
