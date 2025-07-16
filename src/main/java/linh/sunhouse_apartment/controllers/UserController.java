@@ -67,9 +67,6 @@ public class UserController {
         } else {
             user.setRoomId(null);
         }
-
-        user.setIsActive(true);
-        user.setCreatedAt(new Date());
         userService.createUser(user);
 
         return "redirect:/manage-user";
