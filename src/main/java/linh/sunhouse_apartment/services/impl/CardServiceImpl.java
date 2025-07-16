@@ -29,7 +29,7 @@ public class CardServiceImpl implements CardService {
             cal.setTime(card.getIssueDate());
             cal.add(Calendar.MONTH, 3);
             card.setExpirationDate(cal.getTime());
-            return cardRepo.addCarrd(card);
+            return cardRepo.addCard(card);
         }
         return null;
     }
@@ -46,8 +46,8 @@ public class CardServiceImpl implements CardService {
         return cardRepo.deleteCard(cardId);
     }
     @Override
-    public List<Card> getAllCards() {
-        return cardRepo.getAllCards();
+    public List<Card> getAllCards(String keyword) {
+        return cardRepo.getAllCards(keyword);
     }
 
 }

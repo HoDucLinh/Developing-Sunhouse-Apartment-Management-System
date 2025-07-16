@@ -1,6 +1,8 @@
 package linh.sunhouse_apartment.repositories.impl;
 
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.Card;
+import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.CardRepository;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -19,7 +21,7 @@ public class CardRepositoryImpl implements CardRepository {
     private LocalSessionFactoryBean factory;
 
     @Override
-    public Card addCarrd(Card c) {
+    public Card addCard(Card c) {
         Session s = this.factory.getObject().getCurrentSession();
         s.persist(c);
         return c;
@@ -45,9 +47,20 @@ public class CardRepositoryImpl implements CardRepository {
         return false;
     }
     @Override
-    public List<Card> getAllCards() {
-        Session session = factory.getObject().getCurrentSession();
-        Query<Card> query = session.createQuery("FROM Card c", Card.class);
-        return query.getResultList();
+    public List<Card> getAllCards(String keyword) {
+        Session session = factory.getObject().getCurrentSession();  // ✅ dùng session hiện tại
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Card> query = builder.createQuery(Card.class);
+        Root<Card> root = query.from(Card.class);
+        Join<Card, User> userJoin = root.join("userId");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            Predicate predicate = builder.like(builder.lower(userJoin.get("fullName")), "%" + keyword.toLowerCase() + "%");
+            query.select(root).where(predicate);
+        } else {
+            query.select(root);
+        }
+
+        return session.createQuery(query).getResultList();
     }
 }

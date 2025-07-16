@@ -26,8 +26,17 @@ public class CardController {
     private RelativeService relativeService;
 
     @GetMapping("/manage-card")
-    public String manageCard(){
+    public String listCards(Model model, @RequestParam(name = "kw", required = false) String keyword) {
+        List<Card> cards = cardService.getAllCards(keyword);
+        model.addAttribute("cards", cards);
+        model.addAttribute("kw", keyword);
         return "manageCard";
+    }
+
+    @GetMapping("/delete-card/{id}")
+    public String deleteCard(@PathVariable("id") int id) {
+        cardService.deleteCard(id);
+        return "redirect:/manage-card";
     }
 
     @GetMapping("/create-new-card")
