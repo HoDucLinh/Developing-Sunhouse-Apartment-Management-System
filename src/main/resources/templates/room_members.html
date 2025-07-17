@@ -1,0 +1,43 @@
+<!-- templates/room_members.html -->
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <a class="btn btn-secondary mb-3" th:href="@{/manage-room}">← Quay lại</a>
+            <h2 th:text="'Thành viên trong phòng: ' + ${room.roomNumber}"></h2>
+
+            <form th:action="@{|/${room.id}/change-head|}" method="post" class="mb-3">
+                <label for="newHeadId">Đổi trưởng phòng:</label>
+                <select id="newHeadId" name="newHeadId" class="form-select d-inline w-auto mx-2">
+                <option th:each="u : ${room.users}" th:value="${u.id}"
+                            th:text="${u.fullName}"
+                            th:selected="${u.id == room.roomHeadId}">
+                    </option>
+                </select>
+                <button type="submit" class="btn btn-success btn-sm">Lưu</button>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${room.users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

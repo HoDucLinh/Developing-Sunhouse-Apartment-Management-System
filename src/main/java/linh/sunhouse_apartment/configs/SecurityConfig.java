@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form
                         .loginPage("/login")  // đường dẫn trang đăng nhập
-                        .defaultSuccessUrl("/", true) // nếu đăng nhập thành công
+                        .defaultSuccessUrl("/manage-room", true) // nếu đăng nhập thành công
                         .permitAll()
                 )
                 .logout(logout -> logout
