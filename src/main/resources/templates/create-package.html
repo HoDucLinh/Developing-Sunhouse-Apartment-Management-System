@@ -1,0 +1,20 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4">
+            <h2 class="mb-3">Tạo Package mới</h2>
+            <form method="post" th:action="@{/create-package}" enctype="multipart/form-data">
+                <input type="hidden" name="lockerId" th:value="${lockerId}" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Tên Package</label>
+                    <input type="text" class="form-control" id="name" name="name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="file" class="form-label">Hình ảnh</label>
+                    <input type="file" class="form-control" id="file" name="file" />
+                </div>
+                <button type="submit" class="btn btn-success">Tạo mới</button>
+                <a class="btn btn-secondary" th:href="@{'/locker/' + ${lockerId}}">Quay lại</a>
+            </form>
+        </main>
+    </div>
+</div>

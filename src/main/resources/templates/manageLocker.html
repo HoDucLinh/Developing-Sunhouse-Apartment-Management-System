@@ -1,24 +1,33 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
         <main class="p-3">
-            <div class="d-flex gap-2">
-                <a class="nav-link" th:href="@{/create-locker}">New</a>
+            <div class="d-flex gap-2 mb-3">
+                <a class="btn btn-primary" th:href="@{/create-locker}">Tạo mới Locker</a>
             </div>
-            <h2>List Feedback</h2>
+            <h2 class="mb-3">Danh sách Locker</h2>
+
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead class="table-light">
                     <tr>
-                        <th>ID</th>
-                        <th>User</th>
+                        <th>#</th>
+                        <th>ID Locker</th>
+                        <th>Họ tên</th>
+                        <th>Tài khoản</th>
+                        <th>Email</th>
                         <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td th:text="1"></td>
-                        <td th:text="'Nguyen Van A'"></td>
-                        <td th:text="'View'"></td>
+                    <tr th:each="locker, stat : ${lockers}">
+                        <td th:text="${stat.count}">1</td>
+                        <td th:text="${locker.id}">101</td>
+                        <td th:text="${locker.user.fullName}">Nguyen Van A</td>
+                        <td th:text="${locker.user.username}">nguyenvana</td>
+                        <td th:text="${locker.user.email}">email@example.com</td>
+                        <td>
+                            <a class="btn btn-sm btn-info" th:href="@{'/packages/' + ${locker.id}}">Xem tủ đồ</a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

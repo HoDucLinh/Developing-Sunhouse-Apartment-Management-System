@@ -1,0 +1,43 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex gap-2 mb-3">
+                <a class="btn btn-primary" th:href="@{/create-package(lockerId=${lockerId})}">Tạo mới package</a>
+            </div>
+            <h2 class="mb-3">Danh sách Package</h2>
+            <div th:if="${#lists.isEmpty(packages)}">
+                <p>Chưa có sản phẩm nào</p>
+            </div>
+            <div th:unless="${#lists.isEmpty(packages)}" class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>ID Package</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Image</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="package, stat : ${packages}">
+                        <td th:text="${stat.count}"></td>
+                        <td th:text="${package.id}"></td>
+                        <td th:text="${package.name}"></td>
+                        <td th:text="${package.status}"></td>
+                        <td>
+                            <img th:src="${package.image}" alt="image" width="80" />
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-danger"
+                               th:href="@{'/delete-package/' + ${package.id} + '?lockerId=' + ${lockerId}}"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

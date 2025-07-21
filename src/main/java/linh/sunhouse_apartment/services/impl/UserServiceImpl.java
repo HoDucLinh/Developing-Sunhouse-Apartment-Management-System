@@ -5,6 +5,7 @@ import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
 import linh.sunhouse_apartment.entity.User;
+import linh.sunhouse_apartment.repositories.LockerRepository;
 import linh.sunhouse_apartment.repositories.UserRepository;
 import linh.sunhouse_apartment.services.JWTService;
 import linh.sunhouse_apartment.services.UserService;
@@ -32,6 +33,9 @@ import java.util.Map;
 public class UserServiceImpl implements UserService, UserDetailsService{
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LockerRepository lockerRepository;
 
     @Autowired
     private Cloudinary cloudinary;
@@ -62,6 +66,9 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         user.setAvatarUrl("https://res.cloudinary.com/dzwsdpjgi/image/upload/v1748436782/avatar_trang_1_cd729c335b_aiu2nl.jpg");
         user.setIsActive(Boolean.TRUE);
         userRepository.saveUser(user);
+        if(user.getRole() == User.Role.RESIDENT){
+            lockerRepository.addLocker(user);
+        }
         return true;
     }
 

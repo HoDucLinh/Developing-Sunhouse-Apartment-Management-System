@@ -45,6 +45,11 @@ public class Package implements Serializable {
     @Size(max = 100)
     @Column(name = "name")
     private String name;
+    public enum Status {
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
     @Size(max = 8)
     @Column(name = "status")
     private String status;
