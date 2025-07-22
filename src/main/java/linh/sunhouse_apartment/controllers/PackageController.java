@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.controllers;
 
+import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
 import linh.sunhouse_apartment.services.PackageService;
 import linh.sunhouse_apartment.services.LockerService;
@@ -22,11 +23,15 @@ public class PackageController {
 
     // Hiển thị danh sách packages của 1 locker
     @GetMapping("/packages/{lockerId}")
-    public String getPackages(@PathVariable("lockerId") int lockerId, Model model) {
-        List<Package> packages = packageService.getPackages(lockerId);
-        model.addAttribute("packages", packages);
-        model.addAttribute("lockerId", lockerId);
-        return "list_packages";
+    public String getPackages(@PathVariable("lockerId") int lockerId,@RequestParam(value = "kw", required = false) String kw, Model model) {
+        Locker locker = lockerService.getLockerById(lockerId);
+        if(locker != null){
+            List<Package> packages = packageService.getPackages(locker.getId(),kw);
+            model.addAttribute("packages", packages);
+            model.addAttribute("lockerId", lockerId);
+            return "list_packages";
+        }
+        return "redirect:/error";
     }
 
     // Hiển thị form tạo mới package

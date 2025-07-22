@@ -9,5 +9,5 @@ public interface PackageRepository {
     Package addPackage(Package p);
     int changeStatusPackage(int packageID, Package.Status newStatus);
     int deletePackage(int packageID);
-    List<Package> findAllPackagesById(Locker l);
+    List<Package> findAllPackagesById(Locker l, String kw);
 }

@@ -63,8 +63,8 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<Package> getPackages(int lockerId) {
+    public List<Package> getPackages(int lockerId, String kw) {
         Locker locker = lockerRepository.getLockerByID(lockerId);
-        return packageRepository.findAllPackagesById(locker);
+        return packageRepository.findAllPackagesById(locker,kw);
     }
 }

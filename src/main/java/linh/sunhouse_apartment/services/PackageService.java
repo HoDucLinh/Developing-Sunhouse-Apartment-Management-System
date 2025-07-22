@@ -10,5 +10,5 @@ public interface PackageService {
     Package addPackage(String name, MultipartFile file, int lockerId);
     int changeStatusPackage(int packageID, Package.Status newStatus);
     int deletePackage(int packageID);
-    List<Package> getPackages(int lockerId);
+    List<Package> getPackages(int lockerId, String kw);
 }

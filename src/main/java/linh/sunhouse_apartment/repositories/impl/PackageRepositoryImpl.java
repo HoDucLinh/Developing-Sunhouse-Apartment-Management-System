@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.repositories.impl;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
@@ -12,6 +13,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -55,14 +57,25 @@ public class PackageRepositoryImpl implements PackageRepository {
     }
 
     @Override
-    public List<Package> findAllPackagesById(Locker l) {
+    public List<Package> findAllPackagesById(Locker l, String kw) {
         CriteriaBuilder cb = getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Package> cq = cb.createQuery(Package.class);
         Root<Package> root = cq.from(Package.class);
 
-        // WHERE p.lockerId = :locker
-        cq.select(root).where(cb.equal(root.get("lockerId"), l));
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Điều kiện: locker = l
+        predicates.add(cb.equal(root.get("lockerId"), l));
+
+        // Điều kiện: name LIKE %kw%
+        if (kw != null && !kw.trim().isEmpty()) {
+            String pattern = "%" + kw.trim().toLowerCase() + "%";
+            predicates.add(cb.like(cb.lower(root.get("name")), pattern));
+        }
+
+        cq.select(root).where(cb.and(predicates.toArray(new Predicate[0])));
 
         return getCurrentSession().createQuery(cq).getResultList();
     }
+
 }

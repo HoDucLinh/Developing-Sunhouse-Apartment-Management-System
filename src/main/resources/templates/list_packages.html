@@ -7,6 +7,18 @@
                     <i class="bi bi-plus-lg"></i> Tạo mới package
                 </a>
             </div>
+            <form class="mb-3 row g-2 align-items-center"
+                  method="get"
+                  th:action="@{/packages/{id}(id=${lockerId})}">
+                <input type="hidden" name="lockerId" th:value="${lockerId}" />
+                <div class="col-auto">
+                    <input type="text" name="kw" class="form-control" placeholder="Tìm theo tên"
+                           th:value="${param.kw}" />
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </form>
 
             <div th:if="${#lists.isEmpty(packages)}">
                 <div class="alert alert-info">Chưa có sản phẩm nào</div>
