@@ -27,7 +27,7 @@ public class LockerServiceImpl implements LockerService {
     }
 
     @Override
-    public List<Locker> getAllLockers() {
-        return lockerRepository.getAllLockers();
+    public List<Locker> getAllLockers(String keyword) {
+        return lockerRepository.getAllLockers(keyword);
     }
 }

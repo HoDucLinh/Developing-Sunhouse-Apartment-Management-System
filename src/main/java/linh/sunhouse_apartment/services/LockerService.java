@@ -8,5 +8,5 @@ import java.util.List;
 public interface LockerService {
     Locker createLocker(User user);
     Locker getLockerById(int userId);
-    List<Locker> getAllLockers();
+    List<Locker> getAllLockers(String keyword);
 }

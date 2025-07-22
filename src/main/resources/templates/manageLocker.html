@@ -1,33 +1,55 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
-        <main class="p-3">
-            <div class="d-flex gap-2 mb-3">
-                <a class="btn btn-primary" th:href="@{/create-locker}">Tạo mới Locker</a>
+        <main class="container py-4">
+            <!-- Header và nút tạo mới -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Danh sách Locker</h2>
+                <a class="btn btn-success" th:href="@{/create-locker}">
+                    <i class="bi bi-plus-circle"></i> Tạo mới Locker
+                </a>
             </div>
-            <h2 class="mb-3">Danh sách Locker</h2>
 
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="table-light">
+            <!-- Form tìm kiếm -->
+            <form class="row g-2 mb-4" method="get" th:action="@{/manage-locker}">
+                <div class="col-md-10">
+                    <input type="text" name="kw" class="form-control" placeholder="Tìm theo họ tên"
+                           th:value="${kw}">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+
+            <!-- Bảng dữ liệu -->
+            <div class="table-responsive rounded shadow-sm">
+                <table class="table table-hover table-bordered align-middle text-center">
+                    <thead class="table-primary">
                     <tr>
-                        <th>#</th>
-                        <th>ID Locker</th>
-                        <th>Họ tên</th>
-                        <th>Tài khoản</th>
-                        <th>Email</th>
-                        <th>Action</th>
+                        <th scope="col">#</th>
+                        <th scope="col">ID Locker</th>
+                        <th scope="col">Họ tên</th>
+                        <th scope="col">Tài khoản</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Hành động</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="locker, stat : ${lockers}">
                         <td th:text="${stat.count}">1</td>
                         <td th:text="${locker.id}">101</td>
-                        <td th:text="${locker.user.fullName}">Nguyen Van A</td>
-                        <td th:text="${locker.user.username}">nguyenvana</td>
+                        <td th:text="${locker.user.fullName}">Nguyễn Văn A</td>
+                        <td th:text="${locker.user.username}">username</td>
                         <td th:text="${locker.user.email}">email@example.com</td>
                         <td>
-                            <a class="btn btn-sm btn-info" th:href="@{'/packages/' + ${locker.id}}">Xem tủ đồ</a>
+                            <a class="btn btn-sm btn-outline-info" th:href="@{'/packages/' + ${locker.id}}">
+                                <i class="bi bi-box-seam"></i> Xem tủ đồ
+                            </a>
                         </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(lockers)}">
+                        <td colspan="6" class="text-muted">Không có dữ liệu hiển thị</td>
                     </tr>
                     </tbody>
                 </table>

@@ -9,5 +9,5 @@ import java.util.List;
 public interface LockerRepository {
     Locker addLocker(User u);
     Locker getLockerByID(int userId); // userId cũng là lockerId
-    List<Locker> getAllLockers();
+    List<Locker> getAllLockers(String keyword);
 }

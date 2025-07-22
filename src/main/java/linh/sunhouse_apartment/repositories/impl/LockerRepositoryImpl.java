@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.repositories.impl;
 
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.LockerRepository;
@@ -10,6 +11,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -41,8 +43,28 @@ public class LockerRepositoryImpl implements LockerRepository {
 
 
     @Override
-    public List<Locker> getAllLockers() {
-        Query query = getCurrentSession().createQuery("FROM Locker", Locker.class);
-        return query.getResultList();
+    public List<Locker> getAllLockers(String keyword) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Locker> cq = cb.createQuery(Locker.class);
+        Root<Locker> root = cq.from(Locker.class);
+
+        // Join với bảng User (locker.user)
+        Join<Object, Object> userJoin = root.join("user");
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String pattern = "%" + keyword.trim().toLowerCase() + "%";
+            predicates.add(cb.like(cb.lower(userJoin.get("fullName")), pattern));
+        }
+
+        cq.select(root);
+
+        if (!predicates.isEmpty()) {
+            cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        return session.createQuery(cq).getResultList();
     }
 }
