@@ -1,0 +1,67 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Danh sách Package</h2>
+                <a class="btn btn-success" th:href="@{/create-package(lockerId=${lockerId})}">
+                    <i class="bi bi-plus-lg"></i> Tạo mới package
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(packages)}">
+                <div class="alert alert-info">Chưa có sản phẩm nào</div>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(packages)}" class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>ID Package</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="package, stat : ${packages}" class="text-center">
+                        <td th:text="${stat.count}"></td>
+                        <td th:text="${package.id}"></td>
+                        <td th:text="${package.name}"></td>
+                        <td>
+                                <span th:text="${package.status}"
+                                      th:classappend="'badge rounded-pill ' +
+                                          (${package.status} == 'PENDING' ? 'bg-warning text-dark' :
+                                           (${package.status} == 'APPROVED' ? 'bg-success' : 'bg-danger'))">
+                                </span>
+                        </td>
+                        <td>
+                            <img th:src="${package.image}" alt="image" width="80" class="img-thumbnail" />
+                        </td>
+                        <td>
+                            <form th:action="@{/change-package-status}" method="post" class="d-inline">
+                                <input type="hidden" name="packageId" th:value="${package.id}" />
+                                <input type="hidden" name="lockerId" th:value="${lockerId}" />
+                                <div class="d-flex align-items-center gap-2">
+                                    <select name="newStatus" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                                        <option th:selected="${package.status == 'PENDING'}" value="PENDING">PENDING</option>
+                                        <option th:selected="${package.status == 'APPROVED'}" value="APPROVED">APPROVED</option>
+                                        <option th:selected="${package.status == 'REJECTED'}" value="REJECTED">REJECTED</option>
+                                    </select>
+
+                                    <a class="btn btn-sm btn-outline-danger"
+                                       th:href="@{'/delete-package/' + ${package.id} + '?lockerId=' + ${lockerId}}"
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                        <i class="bi bi-trash3"></i> Xóa
+                                    </a>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

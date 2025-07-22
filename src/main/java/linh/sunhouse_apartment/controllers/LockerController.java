@@ -29,6 +29,6 @@ public class LockerController {
             return "redirect:/manage-locker";
         }
         model.addAttribute("locker", locker);
-        return "package";
+        return "list_packages";
     }
 }

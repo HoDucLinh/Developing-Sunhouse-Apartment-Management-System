@@ -36,7 +36,7 @@ public class PackageServiceImpl implements PackageService {
 
         Package newPackage = new Package();
         newPackage.setName(name);
-        newPackage.setStatus(Package.Status.PENDING.name());
+        newPackage.setStatus(Package.Status.PENDING);
         newPackage.setCreatedAt(new Date());
         newPackage.setLockerId(locker);
 

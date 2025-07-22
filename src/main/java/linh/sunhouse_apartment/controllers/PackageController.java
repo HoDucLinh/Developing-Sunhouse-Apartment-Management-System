@@ -26,7 +26,7 @@ public class PackageController {
         List<Package> packages = packageService.getPackages(lockerId);
         model.addAttribute("packages", packages);
         model.addAttribute("lockerId", lockerId);
-        return "package";
+        return "list_packages";
     }
 
     // Hiển thị form tạo mới package
@@ -53,5 +53,15 @@ public class PackageController {
     public String deletePackage(@PathVariable("id") int packageId, @RequestParam("lockerId") int lockerId) {
         packageService.deletePackage(packageId);
         return "redirect:/locker/" + lockerId;
+    }
+
+    @PostMapping("/change-package-status")
+    public String changePackageStatus(
+            @RequestParam("packageId") int packageId,
+            @RequestParam("newStatus") Package.Status newStatus,
+            @RequestParam("lockerId") int lockerId
+    ) {
+        packageService.changeStatusPackage(packageId, newStatus);
+        return "redirect:/packages/" + lockerId;
     }
 }

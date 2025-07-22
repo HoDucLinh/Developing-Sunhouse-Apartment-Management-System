@@ -37,7 +37,7 @@ public class PackageRepositoryImpl implements PackageRepository {
     public int changeStatusPackage(int packageID, Package.Status newStatus) {
         Package pkg = getCurrentSession().get(Package.class, packageID);
         if(pkg != null){
-            pkg.setStatus(newStatus.name());
+            pkg.setStatus(newStatus);
             getCurrentSession().merge(pkg);
             return 1;
         }
