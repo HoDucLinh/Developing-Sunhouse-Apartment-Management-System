@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         User user = userRepository.getUserByUserName(username)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
-        if (!"ADMIN".equals(user.getRole().name())) {
+        if ("RESIDENT".equals(user.getRole().name())) {
             throw new UsernameNotFoundException("Access denied: not an ADMIN");
         }
 

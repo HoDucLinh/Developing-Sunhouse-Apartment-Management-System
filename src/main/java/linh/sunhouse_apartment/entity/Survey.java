@@ -3,21 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package linh.sunhouse_apartment.entity;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -37,6 +23,10 @@ import java.util.Set;
     @NamedQuery(name = "Survey.findByCreatedAt", query = "SELECT s FROM Survey s WHERE s.createdAt = :createdAt"),
     @NamedQuery(name = "Survey.findByType", query = "SELECT s FROM Survey s WHERE s.type = :type")})
 public class Survey implements Serializable {
+    public enum SurveyType {
+        MULTIPLE_CHOICE,
+        SHORT_ANSWER
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,9 +46,9 @@ public class Survey implements Serializable {
     private Date createdAt;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 15)
-    @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private SurveyType type;
     @OneToMany(mappedBy = "surveyId")
     private Set<Question> questionSet;
     @JoinColumn(name = "admin_id", referencedColumnName = "id")
@@ -72,7 +62,7 @@ public class Survey implements Serializable {
         this.id = id;
     }
 
-    public Survey(Integer id, String type) {
+    public Survey(Integer id, SurveyType type) {
         this.id = id;
         this.type = type;
     }
@@ -109,11 +99,11 @@ public class Survey implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public String getType() {
+    public SurveyType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SurveyType type) {
         this.type = type;
     }
 
