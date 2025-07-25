@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.controllers;
 
 import jakarta.servlet.http.HttpSession;
 import linh.sunhouse_apartment.auth.CustomUserDetail;
+import linh.sunhouse_apartment.entity.Question;
 import linh.sunhouse_apartment.entity.Survey;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.SurveyRepository;
@@ -62,6 +63,13 @@ public class SurveyController {
         }
 
         return "createSurvey";
+    }
+    @GetMapping("/surveys/view")
+    public String viewSurvey(@RequestParam("id") int id, Model model) {
+        Survey survey = surveyService.getSurveyById(id);
+        model.addAttribute("survey", survey);
+        model.addAttribute("question", new Question());
+        return "surveyDetail"; // Tên template hiển thị form thêm câu hỏi
     }
 
 

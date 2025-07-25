@@ -20,6 +20,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,8 +50,8 @@ public class Question implements Serializable {
     @JoinColumn(name = "survey_id", referencedColumnName = "id")
     @ManyToOne
     private Survey surveyId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionId")
-    private Set<QuestionOption> questionOptionSet;
+    @OneToMany(mappedBy = "questionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionOption> questionOptionSet = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionId")
     private Set<Response> responseSet;
 
@@ -89,11 +91,11 @@ public class Question implements Serializable {
         this.surveyId = surveyId;
     }
 
-    public Set<QuestionOption> getQuestionOptionSet() {
+    public List<QuestionOption> getQuestionOptionSet() {
         return questionOptionSet;
     }
 
-    public void setQuestionOptionSet(Set<QuestionOption> questionOptionSet) {
+    public void setQuestionOptionSet(List<QuestionOption> questionOptionSet) {
         this.questionOptionSet = questionOptionSet;
     }
 

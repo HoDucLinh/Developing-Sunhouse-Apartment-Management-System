@@ -34,7 +34,7 @@
                         <td th:text="${s.description}">Nội dung</td>
                         <td th:text="${s.type}">MULTIPLE_CHOICE</td>
                         <td>
-                            <a th:href="@{'/surveys/view/' + ${s.id}}" class="btn btn-sm btn-info">Xem</a>
+                            <a th:href="@{'/surveys/view?id=' + ${s.id}}" class="btn btn-sm btn-info">Xem</a>
                         </td>
                     </tr>
 
