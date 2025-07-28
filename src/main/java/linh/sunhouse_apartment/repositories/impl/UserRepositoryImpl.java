@@ -46,6 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
         return (User) query.getSingleResult();
     }
 
+
     @Override
     public User saveUser(User user) {
         Session session = sessionFactory.getCurrentSession();

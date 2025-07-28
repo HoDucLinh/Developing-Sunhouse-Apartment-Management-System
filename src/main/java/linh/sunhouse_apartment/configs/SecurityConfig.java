@@ -1,5 +1,9 @@
 package linh.sunhouse_apartment.configs;
 
+import linh.sunhouse_apartment.auth.JWTAuthenticationFilter;
+import linh.sunhouse_apartment.services.JWTService;
+import linh.sunhouse_apartment.services.UserService;
+import linh.sunhouse_apartment.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,6 +26,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
 
+    @Autowired
+    private UserServiceImpl userService;
+
+    @Autowired
+    private JWTService jwtService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -30,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/api/user/login").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(new JWTAuthenticationFilter(jwtService, userService),
+                        UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/manage-room", true)

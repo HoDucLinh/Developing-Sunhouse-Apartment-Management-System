@@ -4,6 +4,9 @@ import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
+import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.dtos.response.UserResponse;
+import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.LockerRepository;
 import linh.sunhouse_apartment.repositories.UserRepository;
@@ -124,6 +127,34 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     }
 
     @Override
+    public UserResponse getProfileForClient(String username) {
+        User user = userRepository.getUserByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user"));
+
+        Room room = user.getRoomId();
+
+        RoomResponse roomResponse = null;
+        if (room != null) {
+            roomResponse = new RoomResponse();
+            roomResponse.setId(room.getId());
+            roomResponse.setRoomNumber(room.getRoomNumber());
+            roomResponse.setFloorId(room.getFloor() != null ? room.getFloor().getId() : null);
+            roomResponse.setMaxPeople(room.getMaxPeople());
+            roomResponse.setArea(room.getArea());
+            roomResponse.setDescription(room.getDescription());
+        }
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                roomResponse
+        );
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.getUserByUserName(username)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
@@ -132,6 +163,13 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             throw new UsernameNotFoundException("Access denied: not an ADMIN");
         }
 
+        return new CustomUserDetail(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsernameForClient(String username) {
+        User user = userRepository.getUserByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetail(user);
     }
 

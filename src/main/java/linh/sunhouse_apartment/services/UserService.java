@@ -3,7 +3,9 @@ package linh.sunhouse_apartment.services;
 import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
+import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,4 +18,6 @@ public interface UserService {
     User editProfile(Integer id, EditProfileRequest dto, MultipartFile file);
     List<User> getUsers(Map<String, String> params);
     int blockUser(Integer id);
+    UserResponse getProfileForClient(String username);
+    UserDetails loadUserByUsernameForClient(String username);
 }
