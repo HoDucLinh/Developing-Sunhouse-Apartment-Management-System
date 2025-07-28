@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    // AuthenticationResponse authenticate (AuthenticationRequest request);
+    AuthenticationResponse authenticate (AuthenticationRequest request);
     boolean createUser(User user);
     User getUserById(Integer id);
     User editProfile(Integer id, EditProfileRequest dto, MultipartFile file);
     List<User> getUsers(Map<String, String> params);
     int blockUser(Integer id);
-
-
 }

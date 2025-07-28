@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,21 +41,27 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Autowired
     private Cloudinary cloudinary;
 
-//    @Override
-//    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-//        try{
-//            User user = userRepository.getUserByUserName(request.getUsername()).orElseThrow(() ->new BadCredentialsException("Username or password invalid"));
-//            if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-//                throw new BadCredentialsException("Username or password invalid");
-//            }
-//            String token = jwtService.generateToken(user.getId(), user.getUsername());
-//
-//            return new AuthenticationResponse(token, user.getUsername());
-//
-//        } catch (BadCredentialsException e) {
-//            throw new RuntimeException("Wrong username or password");
-//        }
-//    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Override
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        try{
+            User user = userRepository.getUserByUserName(request.getUsername()).orElseThrow(() ->new BadCredentialsException("Username or password invalid"));
+            if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+                throw new BadCredentialsException("Username or password invalid");
+            }
+            String token = jwtService.generateToken(user.getId(), user.getUsername());
+
+            return new AuthenticationResponse(token, user.getUsername());
+
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Wrong username or password");
+        }
+    }
 
     @Override
     public boolean createUser(User user) {
