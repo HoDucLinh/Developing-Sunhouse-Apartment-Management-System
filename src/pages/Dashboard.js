@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import { authApis,endpoints } from '../configs/Apis';
 import '../styles/sidebar.css';
 
 const Dashboard = () => {
+
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await authApis().get(endpoints.profile);
+        setUser(res.data);
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
@@ -16,7 +31,7 @@ const Dashboard = () => {
           </Col>
           <Col md={6} className="text-end">
             <img
-              src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg"
+              src={user?.avatar}
               alt="avatar"
               className="rounded-circle"
               width={40}
@@ -29,17 +44,27 @@ const Dashboard = () => {
         <Card className="mb-4 shadow-sm border-0 rounded-4">
           <Card.Body className="d-flex justify-content-between align-items-center">
             <div>
-              <h4><strong>Xin chào, User! 👋</strong></h4>
-              <p className="mb-0">
-                Căn hộ: P.1203 – Block B<br />
-                Diện tích: 80m² – Tầng 12<br />
-                Sống từ: 01/03/2023
-              </p>
+              <Card className="mb-4 shadow-sm border-0 rounded-4">
+                <Card.Body className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h4><strong>Xin chào, {user?.fullName} 👋</strong></h4>
+                    {user?.room && (
+                      <p className="mb-0">
+                        Căn hộ: {user.room.roomNumber} – Tầng {user.room.floorId}<br />
+                        Diện tích: {user.room.area}m²<br />
+                        Số người tối đa: {user.room.maxPeople}<br />
+                        Số người còn lại: {user.room.availableSlots}
+                      </p>
+                    )}
+                  </div>
+                </Card.Body>
+              </Card>
             </div>
             <img
-              src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg"
-              alt="rocket"
+              src={user?.avatar}
+              alt="avatar"
               style={{ height: '100px' }}
+              className="rounded-circle"
             />
           </Card.Body>
         </Card>

@@ -5,6 +5,7 @@ const BASE_URL = 'http://localhost:8081/api/';
 
 export const endpoints = {
   login: 'user/login',
+  profile: 'user/secure/profile'
   // add other endpoints here
 };
 
