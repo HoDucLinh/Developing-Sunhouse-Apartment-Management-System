@@ -82,6 +82,17 @@ public class RoomRepositoryImpl implements RoomRepository {
         session.persist(newHead);
     }
 
+    @Override
+    public List<User> getUsersByRoomId(Room room) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+
+        CriteriaQuery<User> userQuery = cb.createQuery(User.class);
+        Root<User> userRoot = userQuery.from(User.class);
+        userQuery.select(userRoot).where(cb.equal(userRoot.get("roomId"), room));
+        return session.createQuery(userQuery).getResultList();
+    }
+
     private RoomResponse mapToRoomResponse(Session session, CriteriaBuilder cb, Room room) {
         RoomResponse dto = new RoomResponse();
         dto.setId(room.getId());

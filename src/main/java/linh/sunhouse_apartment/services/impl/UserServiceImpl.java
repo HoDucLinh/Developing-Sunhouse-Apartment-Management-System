@@ -9,6 +9,7 @@ import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.LockerRepository;
+import linh.sunhouse_apartment.repositories.RoomRepository;
 import linh.sunhouse_apartment.repositories.UserRepository;
 import linh.sunhouse_apartment.services.JWTService;
 import linh.sunhouse_apartment.services.UserService;
@@ -38,6 +39,8 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoomRepository roomRepository;
     @Autowired
     private LockerRepository lockerRepository;
 
@@ -132,6 +135,9 @@ public class UserServiceImpl implements UserService, UserDetailsService{
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user"));
 
         Room room = user.getRoomId();
+        List<User> users = roomRepository.getUsersByRoomId(room);
+        int available = room.getMaxPeople() - (users != null ? users.size() : 0);
+
 
         RoomResponse roomResponse = null;
         if (room != null) {
@@ -142,6 +148,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             roomResponse.setMaxPeople(room.getMaxPeople());
             roomResponse.setArea(room.getArea());
             roomResponse.setDescription(room.getDescription());
+            roomResponse.setAvailableSlots(available);
         }
 
         return new UserResponse(
@@ -150,6 +157,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
+                user.getAvatarUrl(),
                 roomResponse
         );
     }
