@@ -54,25 +54,12 @@ public class ApiUserController {
                     .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
-    @PatchMapping(path = "/edit/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> editProfile(
-            @PathVariable Integer id,
-            @ModelAttribute EditProfileRequest editProfileRequest,
-            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
-        try {
-            User updatedUser = userService.editProfile(id, editProfileRequest, avatar);
-            System.out.println("Username là : " + updatedUser.getUsername() + updatedUser.getId());
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
     @PutMapping(path = "/update-profile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateProfile(
             @PathVariable("id") int userId,
-            @RequestPart(value = "fullName", required = false) String fullName,
-            @RequestPart(value = "email", required = false) String email,
-            @RequestPart(value = "phone", required = false) String phone,
+            @RequestParam(value = "fullName", required = false) String fullName,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phone", required = false) String phone,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
         UpdateProfileRequest request = new UpdateProfileRequest();

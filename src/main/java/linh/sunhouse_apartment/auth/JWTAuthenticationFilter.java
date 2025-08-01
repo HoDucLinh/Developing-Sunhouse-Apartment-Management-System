@@ -39,7 +39,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         token = header.substring(7);
-        username = jwtService.extractUsername(token); // cần implement trong JWTService
+        username = jwtService.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userService.loadUserByUsernameForClient(username);
