@@ -1,45 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 import { Container, Row, Col, Card, Form } from 'react-bootstrap';
 import { authApis,endpoints } from '../configs/Apis';
 import '../styles/sidebar.css';
+import { useUser } from '../contexts/UserContext';
 
 const Dashboard = () => {
 
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await authApis().get(endpoints.profile);
-        setUser(res.data);
-      } catch (err) {
-        console.error('Failed to fetch profile:', err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  const { user } = useUser();
+  
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
-
       <Container fluid className="py-4 px-5" style={{ marginLeft: '220px'}}>
-        {/* Search & Avatar */}
-        <Row className="mb-4">
-          <Col md={6}>
-            <Form.Control type="text" placeholder="Tìm kiếm..." className="rounded-pill" />
-          </Col>
-          <Col md={6} className="text-end">
-            <img
-              src={user?.avatar}
-              alt="avatar"
-              className="rounded-circle"
-              width={40}
-              height={40}
-            />
-          </Col>
-        </Row>
-
+        {user && <Header user={user} />}
         {/* Welcome Box */}
         <Card className="mb-4 shadow-sm border-0 rounded-4">
           <Card.Body className="d-flex justify-content-between align-items-center">

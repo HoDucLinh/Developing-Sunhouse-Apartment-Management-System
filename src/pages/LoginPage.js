@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import logoImg from '../assets/illustration.jpg';
-import { endpoints, publicApi } from '../configs/Apis';
+import { endpoints, publicApi, authApis } from '../configs/Apis';
 import cookie from 'react-cookies';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,6 +29,9 @@ const LoginPage = () => {
 
       cookie.save('token', token, { path: '/' });
       cookie.save('username', returnedUsername, { path: '/' });
+
+      const profile = await authApis().get(endpoints.profile);
+      setUser(profile.data);
 
       navigate('/dashboard');
     } catch (err) {

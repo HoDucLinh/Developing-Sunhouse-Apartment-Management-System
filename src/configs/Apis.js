@@ -5,8 +5,9 @@ const BASE_URL = 'http://localhost:8081/api/';
 
 export const endpoints = {
   login: 'user/login',
-  profile: 'user/secure/profile'
-  // add other endpoints here
+  profile: 'user/secure/profile',
+  changePassword: (userId) => `user/change-password/${userId}`,
+  editProfile: (userId) => `user/update-profile/${userId}`
 };
 
 // Axios không có token (dùng cho login, register,...)
