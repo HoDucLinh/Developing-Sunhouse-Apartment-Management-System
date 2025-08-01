@@ -1,8 +1,10 @@
 package linh.sunhouse_apartment.services.impl;
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
+import linh.sunhouse_apartment.dtos.request.UpdateProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UserResponse;
@@ -14,11 +16,7 @@ import linh.sunhouse_apartment.repositories.UserRepository;
 import linh.sunhouse_apartment.services.JWTService;
 import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,12 +24,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 @Transactional
@@ -93,27 +94,39 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Override
     public User editProfile(Integer id, EditProfileRequest dto, MultipartFile file) {
         User user = userRepository.getUserById(id);
-        if (user == null)
+        if (user == null) {
             throw new RuntimeException("User not found");
+        }
 
-        user.setFullName(dto.getFullName());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhone());
+        // Cập nhật các trường chỉ khi có dữ liệu hợp lệ
+        if (StringUtils.hasText(dto.getFullName())) {
+            user.setFullName(dto.getFullName());
+        }
 
+        if (StringUtils.hasText(dto.getEmail())) {
+            user.setEmail(dto.getEmail());
+        }
+
+        if (StringUtils.hasText(dto.getPhone())) {
+            user.setPhone(dto.getPhone());
+        }
+
+        // Upload avatar nếu có file
         if (file != null && !file.isEmpty()) {
             try {
-                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
+                Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
                 user.setAvatarUrl(uploadResult.get("secure_url").toString());
             } catch (IOException e) {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
 
-        if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
-            if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
-                throw new RuntimeException("Mật khẩu xác nhận không khớp");
+        // Đổi mật khẩu nếu có newPassword
+        if (StringUtils.hasText(dto.getNewPassword()) && StringUtils.hasText(dto.getConfirmPassword())) {
+            if (!passwordEncoder.matches(dto.getConfirmPassword(), user.getPassword())) {
+                throw new RuntimeException("Password doesn't match");
             }
-            user.setPassword(new BCryptPasswordEncoder().encode(dto.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         }
 
         return userRepository.editProfile(user);
@@ -180,5 +193,57 @@ public class UserServiceImpl implements UserService, UserDetailsService{
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetail(user);
     }
+
+    @Override
+    public boolean changePassword(int userId, String oldPassword, String newPassword) {
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            return false;
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false; // Sai mật khẩu cũ
+        }
+
+        // Cập nhật mật khẩu mới
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.editProfile(user);
+        return true;
+    }
+    @Override
+    public User updateProfile(int userId, UpdateProfileRequest updateProfileRequest) {
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            return null;
+        }
+        if (updateProfileRequest.getFullName() != null &&
+                !updateProfileRequest.getFullName().equals(user.getFullName())) {
+            user.setFullName(updateProfileRequest.getFullName());
+        }
+
+        if (updateProfileRequest.getEmail() != null &&
+                !updateProfileRequest.getEmail().equals(user.getEmail())) {
+            user.setEmail(updateProfileRequest.getEmail());
+        }
+
+        if (updateProfileRequest.getPhone() != null &&
+                !updateProfileRequest.getPhone().equals(user.getPhone())) {
+            user.setPhone(updateProfileRequest.getPhone());
+        }
+        if (updateProfileRequest.getFile() != null && !updateProfileRequest.getFile().isEmpty()) {
+            try {
+                Map res = cloudinary.uploader().upload(updateProfileRequest.getFile().getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                user.setAvatarUrl(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return userRepository.editProfile(user);
+    }
+
+
 
 }

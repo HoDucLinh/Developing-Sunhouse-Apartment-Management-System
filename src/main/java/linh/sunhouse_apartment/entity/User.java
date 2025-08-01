@@ -84,16 +84,21 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bod")
+    @JsonIgnore
     private Set<Appointment> appointmentSet;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Locker locker;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<Feedback> feedbackSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Response> responseSet;
     @OneToMany(mappedBy = "adminId")
+    @JsonIgnore
     private Set<Survey> surveySet;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<Invoice> invoiceSet;
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     @ManyToOne
@@ -101,6 +106,7 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Card> cardSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Relative> relativeSet;
     @OneToOne(mappedBy = "userId")
     private RoomHead roomHead;

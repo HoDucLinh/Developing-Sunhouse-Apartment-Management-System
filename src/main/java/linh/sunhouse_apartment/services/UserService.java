@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.services;
 
 import linh.sunhouse_apartment.dtos.request.AuthenticationRequest;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
+import linh.sunhouse_apartment.dtos.request.UpdateProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
 import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.User;
@@ -20,4 +21,6 @@ public interface UserService {
     int blockUser(Integer id);
     UserResponse getProfileForClient(String username);
     UserDetails loadUserByUsernameForClient(String username);
+    boolean changePassword(int userId, String oldPassword, String newPassword);
+    User updateProfile(int userId, UpdateProfileRequest updateProfileRequest);
 }

@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.configs;
 
+import jakarta.servlet.http.HttpServletResponse;
 import linh.sunhouse_apartment.auth.JWTAuthenticationFilter;
 import linh.sunhouse_apartment.services.JWTService;
 import linh.sunhouse_apartment.services.UserService;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -41,8 +43,6 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/api/user/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JWTAuthenticationFilter(jwtService, userService),
-                        UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/manage-room", true)
@@ -52,6 +52,8 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                 )
+                .addFilterBefore(new JWTAuthenticationFilter(jwtService, userService),
+                        UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basic -> basic.disable()); // Tắt httpBasic nếu dùng JWT
         return http.build();
     }
