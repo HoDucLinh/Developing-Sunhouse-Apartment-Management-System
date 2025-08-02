@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import linh.sunhouse_apartment.entity.Appointment;
+import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.AppointmentRepository;
 import org.hibernate.Session;
@@ -43,7 +44,6 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         Root root = q.from(Appointment.class);
         q.select(root);
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(b.equal(root.get("status"), Appointment.AppointmentStatus.PENDING));
 
         if (params != null) {
 
@@ -61,5 +61,20 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
 
         Query query = session.createQuery(q);
         return query.getResultList();
+    }
+
+    @Override
+    public Appointment getAppointmentById(int id) {
+        return this.factory.getObject().getCurrentSession().get(Appointment.class, id);
+    }
+
+    @Override
+    public boolean updateAppointment(Appointment appointment) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if(appointment != null) {
+            s.merge(appointment);
+            return true;
+        }
+        return false;
     }
 }

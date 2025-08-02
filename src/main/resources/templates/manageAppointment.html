@@ -1,10 +1,21 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
         <main class="p-3">
-            <div class="d-flex gap-2">
-                <a class="nav-link" th:href="@{/create-new-appointment}">Thêm mới</a>
+            <div class="d-flex justify-content-between mb-3">
+                <form th:action="@{/manage-appointment}" method="get" class="d-flex gap-2">
+                    <input type="text" name="kw" class="form-control" placeholder="Tìm theo tên"
+                           th:value="${kw}" />
+                    <input type="text" name="email" class="form-control" placeholder="Tìm theo email"
+                           th:value="${email}" />
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a th:href="@{/manage-appointment}" class="btn btn-secondary">Reset</a>
+                </form>
             </div>
-            <h2>List Apartment</h2>
+
+            <h2>Danh sách cuộc hẹn</h2>
+
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead class="table-light">
@@ -17,18 +28,43 @@
                         <th>Date</th>
                         <th>Status</th>
                         <th>Note</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td th:text="1"></td>
-                        <td th:text=" 'Nguyen Van A' "></td>
-                        <td th:text="'Tran Thi B'"></td>
-                        <td th:text=" 'tranthib@gmail.com' "></td>
-                        <td th:text=" '0123456789' "></td>
-                        <td th:text="'12/07/2025'"></td>
-                        <td th:text="'Pending'"></td>
-
+                    <tr th:each="appointment : ${appointments}">
+                        <td th:text="${appointment.id}"></td>
+                        <td th:text="${appointment.bod != null ? appointment.bod.fullName : 'Chưa xử lý'}"></td>
+                        <td th:text="${appointment.fullName}"></td>
+                        <td th:text="${appointment.email}"></td>
+                        <td th:text="${appointment.phone}"></td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td>
+                            <span class="badge"
+                                  th:switch="${appointment.status.name()}">
+                                <span th:case="'PENDING'" class="badge bg-warning text-dark">Pending</span>
+                                <span th:case="'APPROVED'" class="badge bg-success">Approved</span>
+                                <span th:case="'REJECTED'" class="badge bg-danger">Rejected</span>
+                                <span th:case="*"
+                                      class="badge bg-secondary"
+                                      th:text="${appointment.status}">Unknown</span>
+                            </span>
+                        </td>
+                        <td th:text="${appointment.note}"></td>
+                        <td>
+                            <form th:action="@{/appointments/update-status}" method="post" class="d-flex gap-2">
+                                <input type="hidden" name="appointmentId" th:value="${appointment.id}" />
+                                <select name="status" class="form-select form-select-sm">
+                                    <option value="PENDING"
+                                            th:selected="${appointment.status.name() == 'PENDING'}">Pending</option>
+                                    <option value="APPROVED"
+                                            th:selected="${appointment.status.name() == 'APPROVED'}">Approved</option>
+                                    <option value="REJECTED"
+                                            th:selected="${appointment.status.name() == 'REJECTED'}">Rejected</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
+                            </form>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

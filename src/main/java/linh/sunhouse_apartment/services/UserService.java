@@ -23,4 +23,5 @@ public interface UserService {
     UserDetails loadUserByUsernameForClient(String username);
     boolean changePassword(int userId, String oldPassword, String newPassword);
     User updateProfile(int userId, UpdateProfileRequest updateProfileRequest);
+    User getUserByUsername(String username);
 }

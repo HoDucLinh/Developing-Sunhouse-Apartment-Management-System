@@ -26,15 +26,15 @@ public class UserRepositoryImpl implements UserRepository {
     private SessionFactory sessionFactory;
 
     @Override
-    public Optional<User> getUserByUserName(String username) {
+    public User getUserByUserName(String username) {
         Session session = sessionFactory.getCurrentSession();
         try {
             User user = session.createNamedQuery("User.findByUsername", User.class)
                     .setParameter("username", username)
                     .getSingleResult();
-            return Optional.of(user);
+            return user;
         } catch (NoResultException ex) {
-            return Optional.empty();
+            return null;
         }
     }
 

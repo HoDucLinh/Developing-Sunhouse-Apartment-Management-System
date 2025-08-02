@@ -8,4 +8,6 @@ import java.util.Map;
 public interface AppointmentRepository {
     Appointment addAppointment(Appointment appointment);
     List<Appointment> getAppointments(Map<String, String> params);
+    Appointment getAppointmentById(int id);
+    boolean updateAppointment(Appointment appointment);
 }

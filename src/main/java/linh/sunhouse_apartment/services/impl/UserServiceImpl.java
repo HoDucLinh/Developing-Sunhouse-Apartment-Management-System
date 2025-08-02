@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try{
-            User user = userRepository.getUserByUserName(request.getUsername()).orElseThrow(() ->new BadCredentialsException("Username or password invalid"));
+            User user = userRepository.getUserByUserName(request.getUsername());
             if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
                 throw new BadCredentialsException("Username or password invalid");
             }
@@ -144,8 +144,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Override
     public UserResponse getProfileForClient(String username) {
-        User user = userRepository.getUserByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user"));
+        User user = userRepository.getUserByUserName(username);
 
         Room room = user.getRoomId();
         List<User> users = roomRepository.getUsersByRoomId(room);
@@ -177,8 +176,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByUserName(username)
-                .orElseThrow(() -> new BadCredentialsException("User not found"));
+        User user = userRepository.getUserByUserName(username);
 
         if ("RESIDENT".equals(user.getRole().name())) {
             throw new UsernameNotFoundException("Access denied: not an ADMIN");
@@ -189,8 +187,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsernameForClient(String username) {
-        User user = userRepository.getUserByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.getUserByUserName(username);
         return new CustomUserDetail(user);
     }
 
@@ -244,6 +241,10 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         return userRepository.editProfile(user);
     }
 
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.getUserByUserName(username);
+    }
 
 
 }
