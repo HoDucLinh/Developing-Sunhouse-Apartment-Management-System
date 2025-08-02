@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .cors(withDefaults())  // ✅ Bật CORS sử dụng corsConfigurationSource phía dưới
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/api/user/login").permitAll()
+                        .requestMatchers("/login", "/api/user/login", "api/appointment/create-appointment").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
