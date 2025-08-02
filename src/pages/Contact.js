@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import HeaderHome from "../components/HeaderHome";
+import { publicApi, endpoints } from "../configs/Apis";
 import {
   FiUser,
   FiMail,
@@ -11,6 +12,37 @@ import {
 import { FaCalendarCheck, FaBuilding } from "react-icons/fa";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    note: "",
+    appointmentTime: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await publicApi.post(endpoints.createAppointment, formData);
+      alert("Đặt lịch thành công!");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        note: "",
+        appointmentTime: "",
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Đặt lịch thất bại!");
+    }
+  };
+
   return (
     <div style={{ marginTop: "80px" }}>
       <HeaderHome />
@@ -50,13 +82,20 @@ const Contact = () => {
           {/* Cột 2: Form đặt lịch */}
           <Col md={6}>
             <Card className="p-4 shadow-sm border-0 rounded-4">
-              <Form>
+              <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>
                     <FiUser className="me-2" />
                     Họ và tên
                   </Form.Label>
-                  <Form.Control type="text" placeholder="Nhập họ và tên" />
+                  <Form.Control
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="Nhập họ và tên"
+                    required
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -64,7 +103,14 @@ const Contact = () => {
                     <FiMail className="me-2" />
                     Email
                   </Form.Label>
-                  <Form.Control type="email" placeholder="Nhập email" />
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Nhập email"
+                    required
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -72,7 +118,14 @@ const Contact = () => {
                     <FiPhone className="me-2" />
                     Số điện thoại
                   </Form.Label>
-                  <Form.Control type="tel" placeholder="Nhập số điện thoại" />
+                  <Form.Control
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Nhập số điện thoại"
+                    required
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -82,13 +135,30 @@ const Contact = () => {
                   </Form.Label>
                   <Form.Control
                     as="textarea"
+                    name="note"
                     rows={2}
+                    value={formData.note}
+                    onChange={handleChange}
                     placeholder="Ghi chú về dịch vụ hoặc thời gian mong muốn"
                   />
                 </Form.Group>
 
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <FaCalendarCheck className="me-2" />
+                    Thời gian muốn gặp
+                  </Form.Label>
+                  <Form.Control
+                    type="datetime-local"
+                    name="appointmentTime"
+                    value={formData.appointmentTime}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+
                 <div className="text-center mt-3">
-                  <Button variant="primary" className="px-4">
+                  <Button variant="primary" className="px-4" type="submit">
                     <FaCalendarCheck className="me-2" />
                     Đặt lịch
                   </Button>

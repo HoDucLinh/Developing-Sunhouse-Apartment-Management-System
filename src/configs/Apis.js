@@ -7,7 +7,8 @@ export const endpoints = {
   login: 'user/login',
   profile: 'user/secure/profile',
   changePassword: (userId) => `user/change-password/${userId}`,
-  editProfile: (userId) => `user/update-profile/${userId}`
+  editProfile: (userId) => `user/update-profile/${userId}`,
+  createAppointment : 'appointment/create-appointment'
 };
 
 // Axios không có token (dùng cho login, register,...)
