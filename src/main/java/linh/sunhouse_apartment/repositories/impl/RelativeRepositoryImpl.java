@@ -23,29 +23,27 @@ public class RelativeRepositoryImpl implements RelativeRepository {
 
     @Override
     public List<Relative> getRelativesByUserId(int userId) {
-        try (Session session = sessionFactory.openSession()) {
-            CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<Relative> cq = cb.createQuery(Relative.class);
-            Root<Relative> root = cq.from(Relative.class);
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Relative> cq = cb.createQuery(Relative.class);
+        Root<Relative> root = cq.from(Relative.class);
 
-            Predicate predicate = cb.equal(root.get("userId").get("id"), userId);
-            cq.select(root).where(predicate);
+        Predicate predicate = cb.equal(root.get("userId").get("id"), userId);
+        cq.select(root).where(predicate);
 
-            return session.createQuery(cq).getResultList();
-        }
+        return session.createQuery(cq).getResultList();
     }
 
     @Override
     public Relative getRelativeById(int id) {
-        try (Session session = sessionFactory.openSession()) {
-            return session.get(Relative.class, id);
-        }
+        Session session = sessionFactory.getCurrentSession(); // ✅ Không dùng try
+        return session.get(Relative.class, id);
     }
 
     @Override
     public Relative addRelative(Relative relative) {
-        Session session = sessionFactory.openSession();
-        if(relative != null){
+        Session session = sessionFactory.getCurrentSession(); // ✅ Đúng rồi
+        if (relative != null) {
             session.persist(relative);
             return relative;
         }
