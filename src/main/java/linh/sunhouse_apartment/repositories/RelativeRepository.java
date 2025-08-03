@@ -7,4 +7,5 @@ import java.util.List;
 public interface RelativeRepository {
     List<Relative> getRelativesByUserId(int userId);
     Relative getRelativeById(int id);
+    Relative addRelative(Relative relative);
 }

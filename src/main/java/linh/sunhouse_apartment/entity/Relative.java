@@ -4,22 +4,13 @@
  */
 package linh.sunhouse_apartment.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -30,6 +21,9 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "relative")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @NamedQueries({
     @NamedQuery(name = "Relative.findAll", query = "SELECT r FROM Relative r"),
     @NamedQuery(name = "Relative.findById", query = "SELECT r FROM Relative r WHERE r.id = :id"),
@@ -38,6 +32,11 @@ import java.util.Set;
     @NamedQuery(name = "Relative.findByRelationship", query = "SELECT r FROM Relative r WHERE r.relationship = :relationship"),
     @NamedQuery(name = "Relative.findByCreatedAt", query = "SELECT r FROM Relative r WHERE r.createdAt = :createdAt")})
 public class Relative implements Serializable {
+
+    public enum EnumRelationship{
+        OWNER,
+        PARENT
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,11 +53,9 @@ public class Relative implements Serializable {
     @Size(max = 15)
     @Column(name = "phone")
     private String phone;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 6)
+    @Enumerated(EnumType.STRING)
     @Column(name = "relationship")
-    private String relationship;
+    private EnumRelationship relationship;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -69,99 +66,4 @@ public class Relative implements Serializable {
     @ManyToOne(optional = false)
     @JsonIgnore
     private User userId;
-
-    public Relative() {
-    }
-
-    public Relative(Integer id) {
-        this.id = id;
-    }
-
-    public Relative(Integer id, String fullName, String relationship) {
-        this.id = id;
-        this.fullName = fullName;
-        this.relationship = relationship;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Set<Card> getCardSet() {
-        return cardSet;
-    }
-
-    public void setCardSet(Set<Card> cardSet) {
-        this.cardSet = cardSet;
-    }
-
-    public User getUserId() {
-        return userId;
-    }
-
-    public void setUserId(User userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Relative)) {
-            return false;
-        }
-        Relative other = (Relative) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.apartment_management.pojo.Relative[ id=" + id + " ]";
-    }
-    
 }

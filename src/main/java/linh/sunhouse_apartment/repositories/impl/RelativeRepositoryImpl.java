@@ -10,10 +10,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class RelativeRepositoryImpl implements RelativeRepository {
 
     @Autowired
@@ -38,6 +40,16 @@ public class RelativeRepositoryImpl implements RelativeRepository {
         try (Session session = sessionFactory.openSession()) {
             return session.get(Relative.class, id);
         }
+    }
+
+    @Override
+    public Relative addRelative(Relative relative) {
+        Session session = sessionFactory.openSession();
+        if(relative != null){
+            session.persist(relative);
+            return relative;
+        }
+        return null;
     }
 
 }
