@@ -1,7 +1,7 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { Link,useNavigate } from 'react-router-dom';
-import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser } from 'react-icons/fi';
+import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser, FiUsers } from 'react-icons/fi';
 import { FaPoll } from 'react-icons/fa';
 import '../styles/sidebar.css';
 import { useUser } from '../contexts/UserContext';
@@ -42,6 +42,9 @@ const Sidebar = () => {
       </Nav.Link>
       <Nav.Link as={Link} to="/profile" className="text-white d-flex align-items-center gap-2">
         <FiUser /> <span>Thông tin</span>
+      </Nav.Link>
+      <Nav.Link as={Link} to="/relative" className="text-white d-flex align-items-center gap-2">
+        <FiUsers /> <span>Người thân</span>
       </Nav.Link>
       <div className="mt-auto pt-3 border-top">
         <Nav.Link
