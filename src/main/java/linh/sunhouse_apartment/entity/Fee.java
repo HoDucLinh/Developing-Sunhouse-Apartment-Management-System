@@ -4,16 +4,16 @@
  */
 package linh.sunhouse_apartment.entity;
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,22 +22,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  *
  * @author ADMIN
  */
-@Entity
-@Table(name = "detail_invoice")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedQueries({
-    @NamedQuery(name = "DetailInvoice.findAll", query = "SELECT d FROM DetailInvoice d"),
-    @NamedQuery(name = "DetailInvoice.findById", query = "SELECT d FROM DetailInvoice d WHERE d.id = :id"),
-    @NamedQuery(name = "DetailInvoice.findByAmount", query = "SELECT d FROM DetailInvoice d WHERE d.amount = :amount")})
-public class DetailInvoice implements Serializable {
+@Entity
+@Table(name = "fee")
+public class Fee implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,19 +41,20 @@ public class DetailInvoice implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "amount")
-    private BigDecimal amount;
+    @Size(max = 100)
+    @Column(name = "name")
+    private String name;
     @Lob
     @Size(max = 65535)
-    @Column(name = "note")
-    private String note;
-    @JoinColumn(name = "fee_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Fee feeId;
-    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Invoice invoiceId;
+    @Column(name = "description")
+    private String description;
+    @Size(max = 7)
+    @Column(name = "type")
+    private String type;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "price")
+    private double price;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId")
+    private Set<DetailInvoice> detailInvoiceSet;
 }

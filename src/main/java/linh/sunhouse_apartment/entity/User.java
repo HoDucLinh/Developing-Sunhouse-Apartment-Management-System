@@ -102,8 +102,10 @@ public class User implements Serializable {
     private Set<Invoice> invoiceSet;
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Room roomId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Card> cardSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     @JsonIgnore

@@ -5,10 +5,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import linh.sunhouse_apartment.services.JWTService;
+import linh.sunhouse_apartment.services.UserService;
 import linh.sunhouse_apartment.services.impl.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,27 +29,46 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String token;
-        final String username;
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String uri = request.getRequestURI();
+        String authHeader = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer ")) {
+//        System.out.println("========== [JWT FILTER] ==========");
+//        System.out.println("Request URI: " + uri);
+//        System.out.println("Authorization Header: " + authHeader);
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        token = header.substring(7);
-        username = jwtService.extractUsername(token);
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userService.loadUserByUsernameForClient(username);
-            boolean valid = jwtService.validateToken(token, userDetails);
-            if (jwtService.validateToken(token, userDetails)) {
-                var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UserDetails userDetails = userService.loadUserByUsernameForClient(username);
+
+            if (userDetails != null && jwtService.validateToken(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                // ⛔ Token invalid OR user not found
+                if (uri.startsWith("/api/")) {
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"error\": \"Invalid token or user not found\"}");
+                    return;
+                }
+            }
+        } else if (username == null) {
+            // ⛔ Không trích xuất được username từ token
+            if (uri.startsWith("/api/")) {
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\": \"Invalid token (no username)\"}");
+                return;
             }
         }
         filterChain.doFilter(request, response);

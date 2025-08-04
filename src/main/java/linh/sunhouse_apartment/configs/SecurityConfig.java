@@ -3,10 +3,8 @@ package linh.sunhouse_apartment.configs;
 import jakarta.servlet.http.HttpServletResponse;
 import linh.sunhouse_apartment.auth.JWTAuthenticationFilter;
 import linh.sunhouse_apartment.services.JWTService;
-import linh.sunhouse_apartment.services.UserService;
 import linh.sunhouse_apartment.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,11 +35,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults())  // ✅ Bật CORS sử dụng corsConfigurationSource phía dưới
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/api/user/login", "api/appointment/create-appointment").permitAll()
-                        .anyRequest().authenticated()
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Dành cho API
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/api/user/login").permitAll() // Cho phép login form + login API
+                        .requestMatchers("/api/**").authenticated() // API yêu cầu token
+                        .anyRequest().authenticated() // Mọi thứ còn lại (web) cũng cần login
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -52,9 +53,22 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String path = request.getRequestURI();
+                            if (path.startsWith("/api/")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                            } else {
+                                response.sendRedirect("/login");
+                            }
+                        })
+                )
                 .addFilterBefore(new JWTAuthenticationFilter(jwtService, userService),
                         UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(basic -> basic.disable()); // Tắt httpBasic nếu dùng JWT
+                .httpBasic(basic -> basic.disable());
+
         return http.build();
     }
 
@@ -69,12 +83,11 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8081"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setExposedHeaders(List.of("Authorization"));  // Cho phép client đọc header Authorization
-        config.setAllowCredentials(true); // Gửi cookie
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 
