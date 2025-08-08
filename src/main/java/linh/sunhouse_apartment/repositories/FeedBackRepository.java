@@ -11,4 +11,6 @@ public interface FeedBackRepository {
     List<Feedback> findAllFeedbackByUserId(Integer userId, Map<String, String> params);
     boolean deleteFeedbackById(Integer id);
     Feedback updateFeedback(Feedback feedback);
+    Feedback findFeedbackById(int id);
+    void updateStatus(int id, Feedback.FeedbackStatus status);
 }

@@ -106,4 +106,20 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
         }
         return null;
     }
+
+    @Override
+    public Feedback findFeedbackById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Feedback.class, id);
+    }
+
+    @Override
+    public void updateStatus(int id, Feedback.FeedbackStatus status) {
+        Session session = sessionFactory.getCurrentSession();
+        Feedback fb = session.get(Feedback.class, id);
+        if (fb != null) {
+            fb.setStatus(status);
+            session.merge(fb);
+        }
+    }
 }

@@ -62,4 +62,13 @@ public class FeedbackServiceImpl implements FeedbackService {
         }});
         return feedback;
     }
+
+    @Override
+    public void updateStatus(int feedbackId, Feedback.FeedbackStatus status) {
+        Feedback feedback = feedBackRepository.findFeedbackById(feedbackId);
+        if (feedback != null) {
+            feedback.setStatus(status); // Cập nhật status mới từ người dùng
+            feedBackRepository.updateStatus(feedbackId, status);
+        }
+    }
 }

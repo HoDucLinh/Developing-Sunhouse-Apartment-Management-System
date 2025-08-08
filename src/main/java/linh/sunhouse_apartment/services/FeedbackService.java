@@ -12,4 +12,5 @@ public interface FeedbackService {
     List<Feedback> getAllFeedback(Map<String, String> params);
     boolean deleteFeedback(Integer id);
     Feedback updateFeedback(Integer id, FeedbackRequest request);
+    void updateStatus(int feedbackId, Feedback.FeedbackStatus status);
 }
