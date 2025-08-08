@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Container, Row, Col, Card, Button, Spinner, Modal, Form } from 'react-bootstrap';
 import { FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
@@ -15,6 +15,27 @@ const ComplaintsPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [editedContent, setEditedContent] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+
+  const loadFeedbacks = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (searchKeyword.trim() !== '') {
+        params.append('kw', searchKeyword.trim());
+      }
+
+      const res = await authApis().get(`${endpoints.getfeedbacks(user.id)}?${params.toString()}`);
+      setComplaints(res.data);
+    } catch (err) {
+      console.error('Lỗi khi tải phản ánh:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!newContent.trim()) return;
@@ -67,22 +88,8 @@ const ComplaintsPage = () => {
     }
   };
 
-  // Lấy danh sách phản ánh từ API
   useEffect(() => {
-    const loadFeedbacks = async () => {
-      if (!user) return;
-
-      try {
-        const res = await authApis().get(endpoints.getfeedbacks(user.id));
-        setComplaints(res.data);
-      } catch (err) {
-        console.error('Lỗi khi tải phản ánh:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFeedbacks();
+    if (user) loadFeedbacks();
   }, [user]);
 
   const handleCreate = () => {
@@ -121,6 +128,11 @@ const ComplaintsPage = () => {
               className="form-control"
               placeholder="Tìm kiếm khiếu nại..."
               style={{ width: '250px' }}
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') loadFeedbacks();
+              }}
             />
           </Col>
         </Row>
