@@ -10,7 +10,11 @@ export const endpoints = {
   editProfile: (userId) => `user/update-profile/${userId}`,
   createAppointment : 'appointment/create-appointment',
   addRelative: 'relative/add-relative',
-  getRelatives: (userId) => `relative/get-relatives/${userId}`
+  getRelatives: (userId) => `relative/get-relatives/${userId}`,
+  getfeedbacks: (userId) => `feedback/get-feedback/${userId}`,
+  createFeedback :'feedback/create-feedback',
+  deleteFeedback :(userId) => `feedback/delete-feedback/${userId}`,
+  updateFeedback : (userId) => `feedback/update-feedback/${userId}`
 };
 
 // Axios không có token (dùng cho login, register,...)
