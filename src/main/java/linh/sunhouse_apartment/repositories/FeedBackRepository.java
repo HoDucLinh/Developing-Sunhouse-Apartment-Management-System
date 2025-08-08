@@ -9,4 +9,6 @@ public interface FeedBackRepository {
     Feedback createFeedback(Feedback feedback);
     List<Feedback> findAllFeedback(Map<String, String> params);
     List<Feedback> findAllFeedbackByUserId(Integer userId);
+    boolean deleteFeedbackById(Integer id);
+    Feedback updateFeedback(Feedback feedback);
 }

@@ -75,4 +75,27 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
 
         return session.createQuery(cq).getResultList();
     }
+
+    @Override
+    public boolean deleteFeedbackById(Integer id) {
+        Session session = sessionFactory.getCurrentSession();
+        Feedback feedback = session.get(Feedback.class, id);
+        if (feedback != null) {
+            session.remove(feedback);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Feedback updateFeedback(Feedback updatedFeedback) {
+        Session session = sessionFactory.getCurrentSession();
+        Feedback existing = session.get(Feedback.class, updatedFeedback.getId());
+        if (existing != null) {
+            existing.setContent(updatedFeedback.getContent());
+            session.merge(existing);
+            return existing;
+        }
+        return null;
+    }
 }

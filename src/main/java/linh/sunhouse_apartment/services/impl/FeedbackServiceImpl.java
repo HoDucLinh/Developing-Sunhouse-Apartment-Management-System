@@ -49,4 +49,17 @@ public class FeedbackServiceImpl implements FeedbackService {
     public List<Feedback> getAllFeedback(Map<String, String> params) {
         return feedBackRepository.findAllFeedback(params);
     }
+    @Override
+    public boolean deleteFeedback(Integer id) {
+        return feedBackRepository.deleteFeedbackById(id);
+    }
+
+    @Override
+    public Feedback updateFeedback(Integer id, FeedbackRequest request) {
+        Feedback feedback = feedBackRepository.updateFeedback(new Feedback() {{
+            setId(id);
+            setContent(request.getContent());
+        }});
+        return feedback;
+    }
 }

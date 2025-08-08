@@ -19,9 +19,8 @@ public class ApiFeedbackController {
     FeedbackService feedbackService;
 
     @PostMapping("/create-feedback")
-    public ResponseEntity<?> createFeedback(@RequestParam String content, @RequestParam Integer userId) {
+    public ResponseEntity<?> createFeedback(@RequestBody FeedbackRequest feedbackRequest) {
         try {
-            FeedbackRequest feedbackRequest = new FeedbackRequest(content, userId);
             Feedback f = feedbackService.createFeedback(feedbackRequest);
 
             if (f == null) {
@@ -42,6 +41,23 @@ public class ApiFeedbackController {
             return ResponseEntity.ok(feedbacks);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Không thể lấy phản hồi: " + e.getMessage());
+        }
+    }
+    @DeleteMapping("/delete-feedback/{id}")
+    public ResponseEntity<?> deleteFeedback(@PathVariable Integer id) {
+        if (feedbackService.deleteFeedback(id)) {
+            return ResponseEntity.ok("Đã xóa feedback");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback");
+        }
+    }
+    @PutMapping("/update-feedback/{id}")
+    public ResponseEntity<?> updateFeedback(@PathVariable Integer id, @RequestBody FeedbackRequest request) {
+        Feedback updated = feedbackService.updateFeedback(id, request);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback để cập nhật");
         }
     }
 
