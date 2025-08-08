@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -35,9 +37,16 @@ public class ApiFeedbackController {
         }
     }
     @GetMapping("/get-feedback/{id}")
-    public ResponseEntity<?> getFeedback(@PathVariable Integer id) {
+    public ResponseEntity<?> getFeedback(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String kw) {
         try {
-            List<Feedback> feedbacks = feedbackService.getFeedbackByUserId(id);
+            Map<String, String> params = new HashMap<>();
+            if (kw != null && !kw.isEmpty()) {
+                params.put("kw", kw);
+            }
+
+            List<Feedback> feedbacks = feedbackService.getFeedbackByUserId(id, params);
             return ResponseEntity.ok(feedbacks);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Không thể lấy phản hồi: " + e.getMessage());

@@ -37,12 +37,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public List<Feedback> getFeedbackByUserId(Integer userId) {
+    public List<Feedback> getFeedbackByUserId(Integer userId, Map<String, String> params) {
         User user = userRepository.getUserById(userId);
         if(user == null){
             throw new RuntimeException("Không tìm thấy người dùng");
         }
-        return feedBackRepository.findAllFeedbackByUserId(userId);
+        return feedBackRepository.findAllFeedbackByUserId(userId, params);
     }
 
     @Override

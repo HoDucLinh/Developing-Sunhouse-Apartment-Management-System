@@ -64,16 +64,24 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
     }
 
     @Override
-    public List<Feedback> findAllFeedbackByUserId(Integer userId) {
+    public List<Feedback> findAllFeedbackByUserId(Integer userId, Map<String, String> params) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Feedback> cq = cb.createQuery(Feedback.class);
         Root<Feedback> root = cq.from(Feedback.class);
+        List<Predicate> predicates = new ArrayList<>();
 
-        Predicate predicate = cb.equal(root.get("userId").get("id"), userId);
-        cq.select(root).where(predicate);
+        predicates.add(cb.equal(root.get("userId").get("id"), userId));
+        if (params != null) {
 
-        return session.createQuery(cq).getResultList();
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                predicates.add(cb.like(root.get("content"), String.format("%%%s%%", kw)));
+            }
+            cq.where(predicates.toArray(Predicate[]::new));
+        }
+        Query query = session.createQuery(cq);
+        return query.getResultList();
     }
 
     @Override

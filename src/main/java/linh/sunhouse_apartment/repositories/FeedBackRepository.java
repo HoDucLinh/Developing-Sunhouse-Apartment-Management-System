@@ -8,7 +8,7 @@ import java.util.Map;
 public interface FeedBackRepository {
     Feedback createFeedback(Feedback feedback);
     List<Feedback> findAllFeedback(Map<String, String> params);
-    List<Feedback> findAllFeedbackByUserId(Integer userId);
+    List<Feedback> findAllFeedbackByUserId(Integer userId, Map<String, String> params);
     boolean deleteFeedbackById(Integer id);
     Feedback updateFeedback(Feedback feedback);
 }
