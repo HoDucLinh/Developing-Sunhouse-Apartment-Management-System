@@ -6,6 +6,10 @@ package linh.sunhouse_apartment.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -14,6 +18,9 @@ import java.util.Set;
  *
  * @author ADMIN
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "survey")
 @NamedQueries({
@@ -54,98 +61,4 @@ public class Survey implements Serializable {
     @JoinColumn(name = "admin_id", referencedColumnName = "id")
     @ManyToOne
     private User adminId;
-
-    public Survey() {
-    }
-
-    public Survey(Integer id) {
-        this.id = id;
-    }
-
-    public Survey(Integer id, SurveyType type) {
-        this.id = id;
-        this.type = type;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public SurveyType getType() {
-        return type;
-    }
-
-    public void setType(SurveyType type) {
-        this.type = type;
-    }
-
-    public Set<Question> getQuestionSet() {
-        return questionSet;
-    }
-
-    public void setQuestionSet(Set<Question> questionSet) {
-        this.questionSet = questionSet;
-    }
-
-    public User getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(User adminId) {
-        this.adminId = adminId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Survey)) {
-            return false;
-        }
-        Survey other = (Survey) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.apartment_management.pojo.Survey[ id=" + id + " ]";
-    }
-    
 }

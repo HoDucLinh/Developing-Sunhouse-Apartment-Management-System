@@ -19,6 +19,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,9 @@ import java.util.Set;
  *
  * @author ADMIN
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "question")
 @NamedQueries({
@@ -54,82 +61,4 @@ public class Question implements Serializable {
     private List<QuestionOption> questionOptionSet = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionId")
     private Set<Response> responseSet;
-
-    public Question() {
-    }
-
-    public Question(Integer id) {
-        this.id = id;
-    }
-
-    public Question(Integer id, String content) {
-        this.id = id;
-        this.content = content;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Survey getSurveyId() {
-        return surveyId;
-    }
-
-    public void setSurveyId(Survey surveyId) {
-        this.surveyId = surveyId;
-    }
-
-    public List<QuestionOption> getQuestionOptionSet() {
-        return questionOptionSet;
-    }
-
-    public void setQuestionOptionSet(List<QuestionOption> questionOptionSet) {
-        this.questionOptionSet = questionOptionSet;
-    }
-
-    public Set<Response> getResponseSet() {
-        return responseSet;
-    }
-
-    public void setResponseSet(Set<Response> responseSet) {
-        this.responseSet = responseSet;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Question)) {
-            return false;
-        }
-        Question other = (Question) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.apartment_management.pojo.Question[ id=" + id + " ]";
-    }
-    
 }
