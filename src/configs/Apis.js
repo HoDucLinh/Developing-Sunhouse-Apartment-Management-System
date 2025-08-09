@@ -15,7 +15,8 @@ export const endpoints = {
   createFeedback :'feedback/create-feedback',
   deleteFeedback :(userId) => `feedback/delete-feedback/${userId}`,
   updateFeedback : (userId) => `feedback/update-feedback/${userId}`,
-  getPackages : (userId) => `package/get-packages/${userId}`
+  getPackages : (userId) => `package/get-packages/${userId}`,
+  getSurveys : 'survey/get-surveys'
 };
 
 // Axios không có token (dùng cho login, register,...)
