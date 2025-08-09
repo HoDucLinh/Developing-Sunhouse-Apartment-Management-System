@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package linh.sunhouse_apartment.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +35,7 @@ public class Locker implements Serializable {
     @NotNull
     @Column(name = "id")
     private Integer id;
+    @JsonIgnore
     @OneToMany(mappedBy = "lockerId")
     private Set<Package> packageSet;
     @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
