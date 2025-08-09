@@ -67,7 +67,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".change-status-form").forEach(form => {
             form.addEventListener("submit", async function (e) {
-                e.preventDefault(); // ❌ Không reload
+                e.preventDefault();
 
                 const formData = new FormData(this);
                 const id = formData.get("id");
@@ -80,8 +80,6 @@
                     });
 
                     if (!response.ok) throw new Error("Lỗi server");
-
-                    // ✅ Giao diện được cập nhật mà không reload
                     alert("Đã cập nhật trạng thái mới cho phản ánh #" + id);
                 } catch (err) {
                     alert("Không thể cập nhật trạng thái!");
