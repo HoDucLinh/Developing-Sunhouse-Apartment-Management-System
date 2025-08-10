@@ -6,6 +6,7 @@ import linh.sunhouse_apartment.entity.Question;
 import linh.sunhouse_apartment.entity.Survey;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.SurveyRepository;
+import linh.sunhouse_apartment.services.QuestionService;
 import linh.sunhouse_apartment.services.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,9 @@ import java.util.List;
 public class SurveyController {
     @Autowired
     private SurveyService surveyService;
+
+    @Autowired
+    private QuestionService questionService;
 
     @Autowired
     private HttpSession session;
@@ -67,9 +71,12 @@ public class SurveyController {
     @GetMapping("/surveys/view")
     public String viewSurvey(@RequestParam("id") int id, Model model) {
         Survey survey = surveyService.getSurveyById(id);
+        List<Question> questions = questionService.getQuestionsBySurveyId(id);
+
         model.addAttribute("survey", survey);
+        model.addAttribute("questions", questions);
         model.addAttribute("question", new Question());
-        return "surveyDetail"; // Tên template hiển thị form thêm câu hỏi
+        return "surveyDetail";
     }
 
 

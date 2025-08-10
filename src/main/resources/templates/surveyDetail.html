@@ -67,7 +67,7 @@
             <!-- Danh sách câu hỏi -->
             <h4 class="mt-4">Danh sách câu hỏi</h4>
             <div class="row row-cols-1 g-3 mb-4">
-                <div th:each="q, iterStat : ${survey.questionSet}" class="col">
+                <div th:each="q, iterStat : ${questions}" class="col">
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h5 class="card-title text-primary mb-2">
@@ -88,7 +88,7 @@
                 </div>
 
                 <!-- Nếu không có câu hỏi -->
-                <div th:if="${#lists.isEmpty(survey.questionSet)}" class="col text-muted">
+                <div th:if="${#lists.isEmpty(questions)}" class="col text-muted">
                     <div class="alert alert-secondary">
                         <i class="bi bi-info-circle"></i> Chưa có câu hỏi nào trong khảo sát này.
                     </div>
