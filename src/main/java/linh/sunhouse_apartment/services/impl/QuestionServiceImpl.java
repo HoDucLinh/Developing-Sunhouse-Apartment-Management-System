@@ -47,4 +47,9 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.save(question);
         return true;
     }
+
+    @Override
+    public List<Question> getQuestionsBySurveyId(int surveyId) {
+        return questionRepository.findQuestionsBySurveyId(surveyId);
+    }
 }

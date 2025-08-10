@@ -39,24 +39,10 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         CriteriaBuilder cb = getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
         Root<Survey> root = cq.from(Survey.class);
-
-        // Fetch questionSet để tránh lazy load
-        root.fetch("questionSet", JoinType.LEFT);
-
         cq.select(root)
-                .where(cb.equal(root.get("id"), id))
-                .distinct(true);
+                .where(cb.equal(root.get("id"), id));
 
-        Survey survey = getCurrentSession().createQuery(cq).uniqueResult();
-
-        // ✅ Khởi tạo thủ công questionOptionSet cho từng Question
-        if (survey != null && survey.getQuestionSet() != null) {
-            for (Question question : survey.getQuestionSet()) {
-                Hibernate.initialize(question.getQuestionOptionSet());
-            }
-        }
-
-        return survey;
+        return getCurrentSession().createQuery(cq).uniqueResult();
     }
 
 
