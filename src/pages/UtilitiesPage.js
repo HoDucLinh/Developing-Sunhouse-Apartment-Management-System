@@ -1,11 +1,17 @@
 // src/pages/UtilitiesPage.js
-import React from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Container, Row, Col, Card, Table, Badge, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Alert } from 'react-bootstrap';
 import '../styles/sidebar.css';
+import { authApis, endpoints } from '../configs/Apis';
+import cookie from 'react-cookies';
+import { Link } from 'react-router-dom';
 
 const UtilitiesPage = () => {
-  const utilities = Array(6).fill({ name: 'Hồ Bơi', icon: 'https://cdn-icons-png.flaticon.com/512/808/808484.png' });
+  const [utilities, setUtilities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
+
 
   const bills = [
     { name: 'Tiền điện', amount: '560.000', status: 'Chưa thanh toán' },
@@ -34,24 +40,56 @@ const UtilitiesPage = () => {
     }
   };
 
+  useEffect(() => {
+    const loadUtilities = async () => {
+      try {
+        let token = cookie.load("token");
+        let res = await authApis(token).get(endpoints.getUtilities);
+        setUtilities(res.data.data);
+      } catch (ex) {
+        console.error("Lỗi load tiện ích:", ex);
+        setErr("Không thể tải danh sách tiện ích. Vui lòng thử lại sau.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUtilities();
+  }, []);
+
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
       <Container fluid className="main-content bg-light-purple px-5 py-4" style={{ marginLeft: '220px'}}>
         {/* Tiện ích */}
         <h5 className="mb-3">Tiện ích</h5>
-        <Row className="g-3 mb-4">
-          {utilities.map((u, idx) => (
-            <Col xs={6} md={2} key={idx}>
-              <Card className="text-center hover-shadow">
-                <Card.Body>
-                  <img src={u.icon} alt={u.name} width={48} className="mb-2" />
-                  <Card.Text>{u.name}</Card.Text>
-                </Card.Body>
-              </Card>
+        {loading ? (
+          <Spinner animation="border" />
+        ) : err ? (
+          <Alert variant="danger">{err}</Alert>
+        ) : (
+          <Row className="g-4">
+          {utilities.map((u) => (
+            <Col xs={12} sm={6} md={4} lg={3} key={u.id}>
+              <Link to={`/utilities/${u.id}`} className="text-decoration-none">
+                <Card className="h-100 shadow-sm border-0 hover-shadow">
+                  <Card.Img
+                    variant="top"
+                    src={u.image}
+                    alt={u.name}
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                  <Card.Body>
+                    <Card.Title>{u.name}</Card.Title>
+                    <Card.Text className="text-muted">
+                      {u.description}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
           ))}
         </Row>
+        )}
 
         {/* Hóa đơn dịch vụ */}
         <h5 className="mb-3">Hoá đơn - Dịch vụ</h5>
