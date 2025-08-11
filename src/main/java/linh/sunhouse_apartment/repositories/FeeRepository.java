@@ -11,5 +11,6 @@ public interface FeeRepository {
     void updateFee(Fee fee);
     int deleteFee(int id);
     Fee getFeeById(int id);
+    List<Fee> getUtilities();
 
 }

@@ -98,4 +98,16 @@ public class FeeRepositoryImpl implements FeeRepository {
         Session session = sessionFactory.getCurrentSession();
         return session.get(Fee.class, id);
     }
+    @Override
+    public List<Fee> getUtilities() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
+        Root<Fee> root = cq.from(Fee.class);
+
+        cq.select(root)
+                .where(cb.equal(root.get("type"), Fee.FeeType.UTILITY));
+
+        return session.createQuery(cq).getResultList();
+    }
 }

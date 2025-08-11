@@ -12,4 +12,5 @@ public interface FeeService {
     void updateFee(Fee fee);
     int deleteFee(int id);
     Fee getFeeById(int id);
+    List<Fee> getUtilities();
 }

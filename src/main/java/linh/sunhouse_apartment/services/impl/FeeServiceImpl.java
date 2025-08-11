@@ -56,4 +56,8 @@ public class FeeServiceImpl implements FeeService {
     public Fee getFeeById(int id) {
         return feeRepository.getFeeById(id);
     }
+    @Override
+    public List<Fee> getUtilities() {
+        return feeRepository.getUtilities();
+    }
 }

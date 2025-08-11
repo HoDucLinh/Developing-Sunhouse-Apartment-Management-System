@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package linh.sunhouse_apartment.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -54,5 +55,6 @@ public class Fee implements Serializable {
     @Column(name = "image")
     private String image;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId")
+    @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;
 }
