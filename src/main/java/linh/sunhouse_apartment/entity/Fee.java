@@ -50,6 +50,9 @@ public class Fee implements Serializable {
     @NotNull
     @Column(name = "price")
     private double price;
+    @Size(max = 500)
+    @Column(name = "image")
+    private String image;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId")
     private Set<DetailInvoice> detailInvoiceSet;
 }

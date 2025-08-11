@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
@@ -30,9 +31,10 @@ public class FeeController {
     // Xử lý thêm Fee mới
     @PostMapping("/add-fee")
     public String addFee(@ModelAttribute("fee") Fee fee,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile file,
                          RedirectAttributes redirectAttributes) {
         try {
-            feeService.addFee(fee);
+            feeService.addFee(fee, file);
             redirectAttributes.addFlashAttribute("success", "Thêm phí thành công!");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
