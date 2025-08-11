@@ -48,4 +48,39 @@ public class FeeController {
         return "addFee"; // trỏ tới file addFee.html
     }
 
+    @GetMapping("/edit-fee")
+    public String showEditFeeForm(@RequestParam("id") int id, Model model) {
+        Fee fee = feeService.getFeeById(id);
+        if (fee == null) {
+            return "redirect:/manage-fee";
+        }
+        model.addAttribute("fee", fee);
+        return "editFee";
+    }
+
+    // Xử lý cập nhật
+    @PostMapping("/edit-fee")
+    public String updateFee(@ModelAttribute("fee") Fee fee,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            feeService.updateFee(fee);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật phí thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
+        return "redirect:/manage-fee";
+    }
+
+    // Xóa phí
+    @GetMapping("/delete-fee")
+    public String deleteFee(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
+        try {
+            feeService.deleteFee(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa phí thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể xóa: " + e.getMessage());
+        }
+        return "redirect:/manage-fee";
+    }
+
 }

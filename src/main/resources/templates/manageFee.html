@@ -58,10 +58,10 @@
                         <td th:text="${f.type}"></td>
                         <td th:text="${#numbers.formatDecimal(f.price, 1, 'COMMA', 2, 'POINT')}"></td>
                         <td>
-                            <a th:href="@{'/admin/fees/edit/' + ${f.id}}" class="btn btn-sm btn-warning me-1" title="Chỉnh sửa">
+                            <a th:href="@{/edit-fee(id=${f.id})}" class="btn btn-sm btn-warning me-1" title="Chỉnh sửa">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a th:href="@{'/admin/fees/delete/' + ${f.id}}" class="btn btn-sm btn-danger"
+                            <a th:href="@{/delete-fee(id=${f.id})}" class="btn btn-sm btn-danger"
                                onclick="return confirm('Bạn có chắc chắn muốn xóa loại phí này?')"
                                title="Xóa">
                                 <i class="bi bi-trash"></i>

@@ -27,4 +27,19 @@ public class FeeServiceImpl implements FeeService {
     public List<Fee> getFees(Map<String, String> params) {
         return feeRepository.getFees(params);
     }
+    @Override
+    public void updateFee(Fee fee) {
+        if (fee == null) throw new IllegalArgumentException("Fee object must not be null");
+        feeRepository.updateFee(fee);
+    }
+
+    @Override
+    public int deleteFee(int id) {
+        return feeRepository.deleteFee(id);
+    }
+
+    @Override
+    public Fee getFeeById(int id) {
+        return feeRepository.getFeeById(id);
+    }
 }

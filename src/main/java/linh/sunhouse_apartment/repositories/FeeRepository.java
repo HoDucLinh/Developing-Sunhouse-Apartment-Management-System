@@ -8,4 +8,8 @@ import java.util.Map;
 public interface FeeRepository {
     void addFee(Fee fee);
     List<Fee> getFees(Map<String, String> params);
+    void updateFee(Fee fee);
+    int deleteFee(int id);
+    Fee getFeeById(int id);
+
 }

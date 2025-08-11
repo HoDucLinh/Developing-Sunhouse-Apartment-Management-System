@@ -59,4 +59,43 @@ public class FeeRepositoryImpl implements FeeRepository {
 
         return session.createQuery(cq).getResultList();
     }
+    @Override
+    public void updateFee(Fee fee) {
+        Session session = sessionFactory.getCurrentSession();
+        Fee existingFee = session.get(Fee.class, fee.getId());
+
+        if (existingFee != null) {
+            // Chỉ cập nhật nếu giá trị mới khác giá trị cũ
+            if (fee.getName() != null && !fee.getName().equals(existingFee.getName())) {
+                existingFee.setName(fee.getName());
+            }
+            if (fee.getDescription() != null && !fee.getDescription().equals(existingFee.getDescription())) {
+                existingFee.setDescription(fee.getDescription());
+            }
+            if (fee.getType() != null && !fee.getType().equals(existingFee.getType())) {
+                existingFee.setType(fee.getType());
+            }
+            if (fee.getPrice() != existingFee.getPrice()) {
+                existingFee.setPrice(fee.getPrice());
+            }
+
+            session.merge(existingFee);
+        }
+    }
+    @Override
+    public int deleteFee(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        Fee f = session.get(Fee.class, id);
+        if (f != null) {
+            session.remove(f);
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public Fee getFeeById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Fee.class, id);
+    }
 }
