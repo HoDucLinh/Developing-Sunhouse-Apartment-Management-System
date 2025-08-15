@@ -1,0 +1,10 @@
+package linh.sunhouse_apartment.services;
+
+import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
+import linh.sunhouse_apartment.dtos.response.InvoiceResponse;
+import linh.sunhouse_apartment.entity.Invoice;
+
+public interface InvoiceService {
+
+    InvoiceResponse saveInvoice(InvoiceRequest invoiceRequest);
+}

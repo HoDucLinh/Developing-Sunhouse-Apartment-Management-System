@@ -33,10 +33,6 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedQueries({
-    @NamedQuery(name = "DetailInvoice.findAll", query = "SELECT d FROM DetailInvoice d"),
-    @NamedQuery(name = "DetailInvoice.findById", query = "SELECT d FROM DetailInvoice d WHERE d.id = :id"),
-    @NamedQuery(name = "DetailInvoice.findByAmount", query = "SELECT d FROM DetailInvoice d WHERE d.amount = :amount")})
 public class DetailInvoice implements Serializable {
 
     private static final long serialVersionUID = 1L;
