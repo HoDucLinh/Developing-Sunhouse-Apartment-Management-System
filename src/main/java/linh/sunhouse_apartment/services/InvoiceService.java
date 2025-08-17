@@ -10,4 +10,5 @@ public interface InvoiceService {
 
     InvoiceResponse saveInvoice(InvoiceRequest invoiceRequest);
     List<InvoiceResponse> getInvoicesByUserId(Integer userId);
+    void cancelInvoice(Integer invoiceId);
 }

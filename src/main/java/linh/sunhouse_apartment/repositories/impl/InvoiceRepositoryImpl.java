@@ -69,4 +69,31 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
 
         return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
     }
+
+    @Override
+    public Integer updateInvoice(Invoice invoice) {
+        Session session = sessionFactory.getCurrentSession();
+        if(invoice != null) {
+            session.merge(invoice);
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public Invoice findInvoiceById(Integer id) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Invoice> cq = cb.createQuery(Invoice.class);
+        Root<Invoice> root = cq.from(Invoice.class);
+        cq.select(root);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("isActive"), true));
+        predicates.add(cb.equal(root.get("id"), id));
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        // Thực thi query
+        List<Invoice> results = session.createQuery(cq).getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
 }

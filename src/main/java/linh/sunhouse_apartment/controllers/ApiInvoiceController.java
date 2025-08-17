@@ -53,9 +53,21 @@ public class ApiInvoiceController {
 
             return ResponseEntity.ok(invoices);
         } catch (Exception e) {
-            e.printStackTrace(); // log chi tiết cho dev
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Có lỗi xảy ra khi lấy danh sách hóa đơn: " + e.getMessage());
+        }
+    }
+    @PutMapping("/cancel-invoice/{invoiceId}")
+    public ResponseEntity<?> cancelInvoice(@PathVariable Integer invoiceId) {
+        try {
+            invoiceService.cancelInvoice(invoiceId);
+            return ResponseEntity.status(HttpStatus.OK).body("Cập nhật thành công!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // log ra console
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Có lỗi xảy ra khi hủy đăng kí");
         }
     }
 }

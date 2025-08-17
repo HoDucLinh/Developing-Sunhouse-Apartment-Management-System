@@ -117,4 +117,14 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void cancelInvoice(Integer invoiceId) {
+        Invoice invoice = invoiceRepository.findInvoiceById(invoiceId);
+        if (invoice == null) {
+            throw new RuntimeException("Invoice not found or already inactive with id: " + invoiceId);
+        }
+        invoice.setActive(false);
+        invoiceRepository.updateInvoice(invoice);
+    }
+
 }
