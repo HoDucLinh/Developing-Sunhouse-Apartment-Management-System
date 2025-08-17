@@ -20,7 +20,8 @@ export const endpoints = {
   getQuestions : (surveyId) => `survey/${surveyId}/questions`,
   submitSurvey : 'survey/submit',
   getUtilities : 'fee/utilities',
-  registerUtility:'invoice/addInvoice'
+  registerUtility:'invoice/addInvoice',
+  getInvoices: (userId) => `invoice/get-invoices/${userId}`
 };
 
 // Axios không có token (dùng cho login, register,...)

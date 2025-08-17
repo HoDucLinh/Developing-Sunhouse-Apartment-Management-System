@@ -1,4 +1,3 @@
-// src/pages/UtilitiesPage.js
 import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Alert, Form, Modal } from 'react-bootstrap';
@@ -6,6 +5,8 @@ import '../styles/sidebar.css';
 import { authApis, endpoints } from '../configs/Apis';
 import cookie from 'react-cookies';
 import { useUser } from '../contexts/UserContext';
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import InvoicePDF from '../components/InvoicePDF';
 
 const UtilitiesPage = () => {
   const { user } = useUser(); 
@@ -13,20 +14,29 @@ const UtilitiesPage = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
+  const [invoices, setInvoices] = useState([]);
+  const [loadingInvoices, setLoadingInvoices] = useState(true);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedUtility, setSelectedUtility] = useState(null);
   const [months, setMonths] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("CASH");
 
+  const [showPDF, setShowPDF] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  const bills = [
-    { name: 'Tiền điện', amount: '560.000', status: 'Chưa thanh toán' },
-    { name: 'Vệ sinh', amount: '70.000', status: 'Đã thanh toán' },
-    { name: 'Phòng gym', amount: '120.000', status: 'Đã thanh toán' },
-    { name: 'Phí giữ xe', amount: '80.000', status: 'Chưa thanh toán' },
-    { name: 'Tiền nước', amount: '185.000', status: 'Đã thanh toán' }
-  ];
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+
+  const handleShowPDF = async (invoice) => {
+    setSelectedInvoice(invoice);
+    setShowPDF(true);
+
+    const blob = await pdf(<InvoicePDF invoice={invoice} user={user} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
+  };
 
   const registeredServices = [
     { name: 'Phòng gym', fee: '120.000', status: 'Chờ duyệt', expire: '31-07-2025' },
@@ -102,6 +112,26 @@ const UtilitiesPage = () => {
     };
     loadUtilities();
   }, []);
+
+  // load invoices
+  const loadInvoices = async () => {
+    if (!user) return;
+    try {
+      setLoadingInvoices(true);
+      let token = cookie.load("token");
+      let res = await authApis(token).get(endpoints.getInvoices(user.id));
+      setInvoices(res.data);
+    } catch (ex) {
+      console.error("Lỗi load invoices:", ex);
+      setErr("Không thể tải danh sách hoá đơn.");
+    } finally {
+      setLoadingInvoices(false);
+    }
+  };
+
+  useEffect(() => {
+    loadInvoices();
+  }, [user]);
 
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
@@ -182,27 +212,59 @@ const UtilitiesPage = () => {
         </Modal>
 
         {/* Hóa đơn dịch vụ */}
-        <h5 className="mb-3">Hoá đơn - Dịch vụ</h5>
-        <Table striped bordered hover responsive className="shadow-sm">
-          <thead>
-            <tr>
-              <th>Hoá đơn</th>
-              <th>Thành tiền</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bills.map((b, idx) => (
-              <tr key={idx}>
-                <td>{b.name}</td>
-                <td>{b.amount}</td>
-                <td>{statusBadge(b.status)}</td>
-                <td><Button variant="outline-primary" size="sm">Xem hoá đơn</Button></td>
+        <h5 className="mb-3 mt-5">Hoá đơn - Dịch vụ</h5>
+        {loadingInvoices ? (
+          <Spinner animation="border" />
+        ) : invoices.length === 0 ? (
+          <Alert variant="info">Bạn chưa có hoá đơn nào.</Alert>
+        ) : (
+          <Table striped bordered hover responsive className="shadow-sm">
+            <thead>
+              <tr>
+                <th>Mã hoá đơn</th>
+                <th>Thành tiền</th>
+                <th>Phương thức thanh toán</th>
+                <th>Trạng thái</th>
+                <th>Minh chứng</th>
+                <th>Hành động</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {invoices.map((inv) => (
+                <tr key={inv.id}>
+                  <td>{inv.id}</td>
+                  <td>{inv.totalAmount} VND</td>
+                  <td>{inv.paymentMethod}</td>
+                  <td>{statusBadge(inv.status)}</td>
+                  <td>{inv.paymentProof ? inv.paymentProof : "Chưa có"}</td>
+                  <td>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => handleShowPDF(inv)}
+                    >
+                      Xem / In
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+        <Modal show={showPDF} onHide={() => setShowPDF(false)} fullscreen>
+          <Modal.Header closeButton>
+            <Modal.Title>Xem và In hóa đơn</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+          {pdfUrl && (
+            <iframe
+              src={pdfUrl}
+              title="Invoice Preview"
+              style={{ width: "100%", height: "90vh", border: "none" }}
+            />
+          )}
+        </Modal.Body>
+        </Modal>
 
         {/* Dịch vụ đã đăng ký */}
         <h5 className="mt-5 mb-3">Dịch vụ đã đăng ký</h5>
