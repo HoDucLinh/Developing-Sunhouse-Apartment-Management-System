@@ -2,8 +2,11 @@ package linh.sunhouse_apartment.controllers;
 
 import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
+import linh.sunhouse_apartment.entity.User;
+import linh.sunhouse_apartment.services.EmailService;
 import linh.sunhouse_apartment.services.PackageService;
 import linh.sunhouse_apartment.services.LockerService;
+import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,12 @@ public class PackageController {
 
     @Autowired
     private LockerService lockerService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private UserService userService;
 
     // Hiển thị danh sách packages của 1 locker
     @GetMapping("/packages/{lockerId}")
@@ -49,7 +58,17 @@ public class PackageController {
             @RequestParam("file") MultipartFile file
     ) {
         Package newPackage = packageService.addPackage(name, file, lockerId);
-        newPackage.setLockerId(lockerService.getLockerById(lockerId)); // gán locker cho package
+        newPackage.setLockerId(lockerService.getLockerById(lockerId));// gán locker cho package
+        User user = userService.getUserById(lockerId);
+        if(user != null && user.getEmail() != null) {
+            try {
+                emailService.sendNewPackageNotification(user.getEmail(), name, newPackage.getCreatedAt());
+            } catch (jakarta.mail.MessagingException e) {
+                e.printStackTrace(); // log lỗi
+                return "Lỗi khi gửi thông báo";
+            }
+        }
+
         return "redirect:/packages/" + lockerId;
     }
 
