@@ -19,7 +19,8 @@ export const endpoints = {
   getSurveys : 'survey/get-surveys',
   getQuestions : (surveyId) => `survey/${surveyId}/questions`,
   submitSurvey : 'survey/submit',
-  getUtilities : 'fee/utilities'
+  getUtilities : 'fee/utilities',
+  registerUtility:'invoice/addInvoice'
 };
 
 // Axios không có token (dùng cho login, register,...)
