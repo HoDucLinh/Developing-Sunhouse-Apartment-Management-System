@@ -15,10 +15,8 @@ import linh.sunhouse_apartment.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -87,7 +85,6 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
         }
 
-        // Trả về DTO, không trả entity để tránh lazy load error
         return new InvoiceResponse(
                 savedInvoice.getId(),
                 savedInvoice.getIssuedDate(),
@@ -98,6 +95,26 @@ public class InvoiceServiceImpl implements InvoiceService {
                 savedInvoice.getStatus(),
                 savedInvoice.getUserId().getId()
         );
+    }
+
+    @Override
+    public List<InvoiceResponse> getInvoicesByUserId(Integer userId) {
+        if(userId == null || userRepository.getUserById(userId) == null) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+        List<Invoice> invoices = invoiceRepository.findAllInvoicesByUserId(userId);
+        return invoices.stream()
+                .map(inv -> new InvoiceResponse(
+                        inv.getId(),
+                        inv.getIssuedDate(),
+                        inv.getDueDate(),
+                        inv.getPaymentMethod(),
+                        inv.getPaymentProof(),
+                        inv.getTotalAmount(),
+                        inv.getStatus(),
+                        inv.getUserId().getId()
+                ))
+                .collect(Collectors.toList());
     }
 
 }
