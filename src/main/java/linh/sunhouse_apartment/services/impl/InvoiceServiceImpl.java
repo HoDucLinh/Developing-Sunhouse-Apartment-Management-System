@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.services.impl;
 
 import linh.sunhouse_apartment.dtos.request.DetailInvoiveRequest;
 import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
+import linh.sunhouse_apartment.dtos.response.DetailInvoiceResponse;
 import linh.sunhouse_apartment.dtos.response.InvoiceResponse;
 import linh.sunhouse_apartment.entity.DetailInvoice;
 import linh.sunhouse_apartment.entity.Fee;
@@ -68,6 +69,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Lưu invoice
         Invoice savedInvoice = invoiceRepository.saveInvoice(invoice);
 
+        List<DetailInvoiceResponse> detailResponses = new ArrayList<>();
+
         // Lưu chi tiết hóa đơn nếu có
         if (invoiceRequest.getDetails() != null && !invoiceRequest.getDetails().isEmpty()) {
             for (DetailInvoiveRequest d : invoiceRequest.getDetails()) {
@@ -82,6 +85,13 @@ public class InvoiceServiceImpl implements InvoiceService {
                 detail.setAmount(d.getAmount());
                 detail.setNote(d.getNote());
                 detailInvoiceRepository.saveDetailInvoice(detail);
+
+                detailResponses.add(new DetailInvoiceResponse(
+                        fee.getId(),
+                        fee.getName(),
+                        d.getAmount(),
+                        d.getNote()
+                ));
             }
         }
 
@@ -93,27 +103,45 @@ public class InvoiceServiceImpl implements InvoiceService {
                 savedInvoice.getPaymentProof(),
                 savedInvoice.getTotalAmount(),
                 savedInvoice.getStatus(),
-                savedInvoice.getUserId().getId()
+                savedInvoice.getUserId().getFullName(),
+                detailResponses
+
         );
     }
 
     @Override
     public List<InvoiceResponse> getInvoicesByUserId(Integer userId) {
-        if(userId == null || userRepository.getUserById(userId) == null) {
+        if (userId == null || userRepository.getUserById(userId) == null) {
             throw new RuntimeException("User not found with id: " + userId);
         }
+
         List<Invoice> invoices = invoiceRepository.findAllInvoicesByUserId(userId);
+
         return invoices.stream()
-                .map(inv -> new InvoiceResponse(
-                        inv.getId(),
-                        inv.getIssuedDate(),
-                        inv.getDueDate(),
-                        inv.getPaymentMethod(),
-                        inv.getPaymentProof(),
-                        inv.getTotalAmount(),
-                        inv.getStatus(),
-                        inv.getUserId().getId()
-                ))
+                .map(inv -> {
+                    // lấy danh sách detail của invoice
+                    List<DetailInvoiceResponse> details = detailInvoiceRepository.findByInvoiceId(inv.getId())
+                            .stream()
+                            .map(d -> new DetailInvoiceResponse(
+                                    d.getFeeId().getId(),
+                                    d.getFeeId().getName(),
+                                    d.getAmount(),
+                                    d.getNote()
+                            ))
+                            .toList();
+
+                    return new InvoiceResponse(
+                            inv.getId(),
+                            inv.getIssuedDate(),
+                            inv.getDueDate(),
+                            inv.getPaymentMethod(),
+                            inv.getPaymentProof(),
+                            inv.getTotalAmount(),
+                            inv.getStatus(),
+                            inv.getUserId().getFullName(),
+                            details
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -127,4 +155,41 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoiceRepository.updateInvoice(invoice);
     }
 
+    @Override
+    public List<Invoice> getAllInvoices(Map<String, String> params) {
+        return invoiceRepository.findAllInvoices(params);
+    }
+
+    @Override
+    public InvoiceResponse getInvoiceDetail(Integer invoiceId) {
+        Invoice invoice = invoiceRepository.findInvoiceById(invoiceId);
+        if (invoice == null) {
+            throw new RuntimeException("Invoice not found with id: " + invoiceId);
+        }
+
+        List<DetailInvoiceResponse> detailResponses = detailInvoiceRepository
+                .findByInvoiceId(invoice.getId())
+                .stream()
+                .map(d -> new DetailInvoiceResponse(
+                        d.getFeeId().getId(),
+                        d.getFeeId().getName(),
+                        d.getAmount(),
+                        d.getNote()
+                ))
+                .toList();
+
+        System.out.println(detailResponses);
+
+        return new InvoiceResponse(
+                invoice.getId(),
+                invoice.getIssuedDate(),
+                invoice.getDueDate(),
+                invoice.getPaymentMethod(),
+                invoice.getPaymentProof(),
+                invoice.getTotalAmount(),
+                invoice.getStatus(),
+                invoice.getUserId().getFullName(),
+                detailResponses
+        );
+    }
 }

@@ -37,6 +37,8 @@ public class DetailInvoiceRepositoryImpl implements DetailInvoiceRepository {
         cq.select(root)
                 .where(cb.equal(root.get("invoiceId").get("id"), invoiceId));
 
+
+
         return session.createQuery(cq).getResultList();
     }
 }

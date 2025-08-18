@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -20,5 +21,7 @@ public class InvoiceResponse {
     private String paymentProof;
     private BigDecimal totalAmount;
     private Invoice.Status status;
-    private Integer userId;
+    private String fullName;
+
+    private List<DetailInvoiceResponse> details;
 }
