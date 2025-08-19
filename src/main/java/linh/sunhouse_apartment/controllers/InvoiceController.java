@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -36,6 +37,12 @@ public class InvoiceController {
         InvoiceResponse invoice = invoiceService.getInvoiceDetail(id);
         model.addAttribute("invoice", invoice);
         return "invoiceDetail";
+    }
+
+    @PutMapping("/invoice/cancel-invoice/{id}")
+    public String cancelInvoice(@PathVariable("id") Integer id) {
+        invoiceService.cancelInvoice(id);
+        return "redirect:/manage-invoice";
     }
 
 

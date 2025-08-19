@@ -7,9 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,7 +18,8 @@ import java.util.Set;
  *
  * @author ADMIN
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -76,7 +75,7 @@ public class Invoice implements Serializable {
     @Size(max = 6)
     @Column(name = "status")
     private Status status;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "invoiceId")
+    @OneToMany(mappedBy = "invoiceId")
     @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 
 @Configuration
@@ -31,6 +32,11 @@ public class AppConfig {
                 "api_secret", env.getProperty("cloudinary.api_secret"),
                 "secure", true));
         return cloudinary;
+    }
+
+    @Bean
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
     }
 }
 

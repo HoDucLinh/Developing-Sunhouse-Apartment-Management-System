@@ -67,10 +67,13 @@
                             <a th:href="@{'/invoice/edit/' + ${invoice.id}}" class="btn btn-sm btn-outline-warning">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a th:href="@{'/invoice/delete/' + ${invoice.id}}" class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Bạn có chắc muốn hủy hóa đơn này?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                            <form th:action="@{'/invoice/cancel-invoice/' + ${invoice.id}}" method="post">
+                                <input type="hidden" name="_method" value="put"/>
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Bạn có chắc muốn hủy hóa đơn này?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(invoices)}">
