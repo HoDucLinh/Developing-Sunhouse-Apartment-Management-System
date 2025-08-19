@@ -64,9 +64,6 @@
                             <a th:href="@{'/invoice/' + ${invoice.id}}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a th:href="@{'/invoice/edit/' + ${invoice.id}}" class="btn btn-sm btn-outline-warning">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
                             <form th:action="@{'/invoice/cancel-invoice/' + ${invoice.id}}" method="post">
                                 <input type="hidden" name="_method" value="put"/>
                                 <button type="submit" class="btn btn-sm btn-outline-danger"
