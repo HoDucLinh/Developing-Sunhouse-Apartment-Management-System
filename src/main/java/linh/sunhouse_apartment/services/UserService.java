@@ -24,4 +24,5 @@ public interface UserService  {
     boolean changePassword(int userId, String oldPassword, String newPassword);
     User updateProfile(int userId, UpdateProfileRequest updateProfileRequest);
     User getUserByUsername(String username);
+    List<User> getAllRoomHead();
 }

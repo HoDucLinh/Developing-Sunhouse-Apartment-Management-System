@@ -15,4 +15,6 @@ public interface InvoiceService {
     void cancelInvoice(Integer invoiceId);
     List<Invoice> getAllInvoices(Map<String,String> params);
     InvoiceResponse getInvoiceDetail(Integer invoiceId);
+    void createInvoicesForAllRoomHeads(Integer feeId);
+
 }

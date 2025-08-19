@@ -13,4 +13,5 @@ public interface UserRepository {
     List<User> getAllUsers(Map<String, String> params);
     User editProfile(User user);
     int blockUser(int id);
+    List<User> getAllRoomHead();
 }

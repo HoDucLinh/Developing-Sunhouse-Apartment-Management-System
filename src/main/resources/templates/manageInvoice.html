@@ -6,9 +6,15 @@
                 <h2 class="mb-0">
                     <i class="bi bi-receipt-cutoff text-primary"></i> Danh sách Hóa đơn
                 </h2>
-                <a class="btn btn-success" th:href="@{/create-new-invoice}">
-                    <i class="bi bi-plus-circle"></i> Tạo mới
-                </a>
+                <form class="d-flex align-items-center" method="post" th:action="@{/invoice/auto-apartment}">
+                    <select class="form-select me-2" name="feeId" required>
+                        <option value="">-- Chọn loại phí --</option>
+                        <option th:each="fee : ${fees}" th:value="${fee.id}" th:text="${fee.name}"></option>
+                    </select>
+                    <button class="btn btn-success" type="submit">
+                        <i class="bi bi-plus-circle"></i> Tạo hóa đơn tiền nhà
+                    </button>
+                </form>
             </div>
 
             <!-- Form tìm kiếm -->

@@ -246,5 +246,10 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         return userRepository.getUserByUserName(username);
     }
 
+    @Override
+    public List<User> getAllRoomHead() {
+        return userRepository.getAllRoomHead();
+    }
+
 
 }

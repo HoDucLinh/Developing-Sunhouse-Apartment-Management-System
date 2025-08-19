@@ -84,5 +84,4 @@ public class FeeController {
         }
         return "redirect:/manage-fee";
     }
-
 }

@@ -103,4 +103,19 @@ public class UserRepositoryImpl implements UserRepository {
         return 0;
     }
 
+    @Override
+    public List<User> getAllRoomHead() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        Root root = q.from(User.class);
+        q.select(root);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(b.equal(root.get("isActive"), true));
+        predicates.add(b.isNotNull(root.get("roomHead")));
+        q.select(root).where(predicates.toArray(new Predicate[0]));
+        Query query = session.createQuery(q);
+        return query.getResultList();
+    }
+
 }

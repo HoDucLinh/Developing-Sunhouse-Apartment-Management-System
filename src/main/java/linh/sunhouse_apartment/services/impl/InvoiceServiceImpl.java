@@ -16,6 +16,7 @@ import linh.sunhouse_apartment.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -192,4 +193,51 @@ public class InvoiceServiceImpl implements InvoiceService {
                 detailResponses
         );
     }
+
+    @Override
+    public void createInvoicesForAllRoomHeads(Integer feeId) {
+        // Lấy danh sách trưởng phòng
+        List<User> roomHeads = userRepository.getAllRoomHead();
+
+        // Lấy thông tin phí
+        Fee fee = feeRepository.getFeeById(feeId);
+        if (fee == null) {
+            throw new RuntimeException("Fee not found with id: " + feeId);
+        }
+
+        for (User u : roomHeads) {
+            // Khởi tạo Invoice mới hoàn toàn
+            Invoice invoice = new Invoice();
+            invoice.setUserId(u);
+            invoice.setPaymentMethod(Invoice.PAYMENT_METHOD.TRANSFER);   // mặc định CASH
+            invoice.setPaymentProof(null);      // chưa có minh chứng
+            invoice.setTotalAmount(BigDecimal.valueOf(fee.getPrice()));
+            invoice.setAccept(false);
+            invoice.setActive(true);
+            invoice.setStatus(Invoice.Status.UNPAID);
+
+            // Ngày xuất = hôm nay
+            Date now = new Date();
+            invoice.setIssuedDate(now);
+
+            // Ngày hết hạn = +7 ngày
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(now);
+            cal.add(Calendar.DAY_OF_MONTH, 7);
+            invoice.setDueDate(cal.getTime());
+
+            // Lưu Invoice (hàm save của repo chỉ persist đối tượng mới)
+            Invoice savedInvoice = invoiceRepository.saveInvoice(invoice);
+
+            // Tạo chi tiết hóa đơn
+            DetailInvoice detail = new DetailInvoice();
+            detail.setInvoiceId(savedInvoice);
+            detail.setFeeId(fee);
+            detail.setAmount(BigDecimal.valueOf(fee.getPrice()));
+            detail.setNote("Hóa đơn tiền nhà " + u.getRoomId().getRoomNumber());
+
+            detailInvoiceRepository.saveDetailInvoice(detail);
+        }
+    }
+
 }
