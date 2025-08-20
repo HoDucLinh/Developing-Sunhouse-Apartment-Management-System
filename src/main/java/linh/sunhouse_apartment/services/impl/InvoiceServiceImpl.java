@@ -1,5 +1,7 @@
 package linh.sunhouse_apartment.services.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import linh.sunhouse_apartment.dtos.request.DetailInvoiveRequest;
 import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
 import linh.sunhouse_apartment.dtos.response.DetailInvoiceResponse;
@@ -15,9 +17,13 @@ import linh.sunhouse_apartment.repositories.UserRepository;
 import linh.sunhouse_apartment.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +40,9 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Autowired
     private DetailInvoiceRepository detailInvoiceRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public InvoiceResponse saveInvoice(InvoiceRequest invoiceRequest) {
@@ -252,6 +261,24 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setAccept(true);
         invoice.setStatus(Invoice.Status.PAID);
         invoiceRepository.updateInvoice(invoice);
+    }
+
+    @Override
+    public void uploadProof(Integer invoiceId, MultipartFile file) {
+        Invoice invoice = invoiceRepository.findInvoiceById(invoiceId);
+        if (invoice == null) {
+            throw new RuntimeException("Invoice not found or already inactive with id: " + invoiceId);
+        }
+        if (invoice.getPaymentProof() == null) {
+            try {
+                Map res = cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                invoice.setPaymentProof(res.get("secure_url").toString());
+                invoiceRepository.updateInvoice(invoice);
+            } catch (IOException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }

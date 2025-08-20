@@ -54,7 +54,12 @@
                                     <i class="bi bi-bank text-primary"></i> Chuyển khoản
                                 </span>
                         </td>
-                        <td th:text="${invoice.paymentProof != null ? invoice.paymentProof : '-'}"></td>
+                        <td>
+                            <span th:if="${invoice.paymentProof != null}">
+                                <a th:href="${invoice.paymentProof}" target="_blank">Xem hình ảnh</a>
+                            </span>
+                            <span th:if="${invoice.paymentProof == null}">-</span>
+                        </td>
                         <td>
                             <span class="fw-bold text-danger" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')}"></span> đ
                         </td>
@@ -77,7 +82,7 @@
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
-                            <form th:if="${invoice.paymentProof == null and invoice.isAccept() == false}"
+                            <form th:if="${invoice.paymentProof != null and invoice.isAccept() == false}"
                                   th:action="@{'/invoice/change-accept/' + ${invoice.id}}" method="post" class="d-inline">
                                 <input type="hidden" name="_method" value="put"/>
                                 <button type="submit" class="btn btn-sm btn-outline-success"

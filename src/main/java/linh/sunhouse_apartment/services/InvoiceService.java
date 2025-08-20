@@ -1,9 +1,9 @@
 package linh.sunhouse_apartment.services;
 
 import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
-import linh.sunhouse_apartment.dtos.response.DetailInvoiceResponse;
 import linh.sunhouse_apartment.dtos.response.InvoiceResponse;
 import linh.sunhouse_apartment.entity.Invoice;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -17,5 +17,6 @@ public interface InvoiceService {
     InvoiceResponse getInvoiceDetail(Integer invoiceId);
     void createInvoicesForAllRoomHeads(Integer feeId);
     void changeAccept(Integer invoiceId);
+    void uploadProof(Integer invoiceId, MultipartFile file);
 
 }

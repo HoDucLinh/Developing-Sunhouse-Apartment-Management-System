@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -55,6 +56,16 @@ public class ApiInvoiceController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Có lỗi xảy ra khi lấy danh sách hóa đơn: " + e.getMessage());
+        }
+    }
+    @PutMapping("/upload-proof")
+    public ResponseEntity<?> getInvoicesByUserId(@RequestParam Integer invoiceId, @RequestParam MultipartFile file) {
+        try {
+            invoiceService.uploadProof(invoiceId, file);
+            return ResponseEntity.ok("upload proof successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Có lỗi xảy ra khi upload minh chứng: " + e.getMessage());
         }
     }
 }
