@@ -5,7 +5,7 @@ import '../styles/sidebar.css';
 import { authApis, endpoints } from '../configs/Apis';
 import cookie from 'react-cookies';
 import { useUser } from '../contexts/UserContext';
-import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import {pdf } from "@react-pdf/renderer";
 import InvoicePDF from '../components/InvoicePDF';
 
 const UtilitiesPage = () => {
@@ -13,6 +13,9 @@ const UtilitiesPage = () => {
   const [utilities, setUtilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+
+  const [errUtilities, setErrUtilities] = useState(null);
+  const [errInvoices, setErrInvoices] = useState(null);
 
   const [invoices, setInvoices] = useState([]);
   const [loadingInvoices, setLoadingInvoices] = useState(true);
@@ -27,6 +30,8 @@ const UtilitiesPage = () => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   const [pdfUrl, setPdfUrl] = useState(null);
+
+  const [uploading, setUploading] = useState(false);
 
 
   const handleShowPDF = async (invoice) => {
@@ -72,7 +77,7 @@ const UtilitiesPage = () => {
       let req = {
         userId: user.id,
         paymentMethod: paymentMethod,
-        paymentProof: "",
+        paymentProof: null,
         totalAmount: selectedUtility.price * months,
         details: [
           {
@@ -89,6 +94,8 @@ const UtilitiesPage = () => {
       console.log("Invoice saved:", res.data);
 
       setShowModal(false);
+
+      loadInvoices();
     } catch (ex) {
       console.error("Lỗi đăng ký tiện ích:", ex);
       alert("Đăng ký tiện ích thất bại!");
@@ -96,6 +103,36 @@ const UtilitiesPage = () => {
       setSubmitting(false);
     }
   };
+  const handleUploadProof = async (invoiceId, file) => {
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      let token = cookie.load("token");
+
+      let formData = new FormData();
+      formData.append("invoiceId", invoiceId);
+      formData.append("file", file);
+
+      let res = await authApis(token).put(endpoints.uploadProof, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("Tải minh chứng thành công!");
+      console.log(res.data);
+
+      // reload invoices
+      loadInvoices();
+    } catch (err) {
+      console.error("Lỗi upload proof:", err);
+      alert("Upload proof thất bại!");
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   useEffect(() => {
     const loadUtilities = async () => {
@@ -105,7 +142,7 @@ const UtilitiesPage = () => {
         setUtilities(res.data.data);
       } catch (ex) {
         console.error("Lỗi load tiện ích:", ex);
-        setErr("Không thể tải danh sách tiện ích. Vui lòng thử lại sau.");
+        setErrUtilities("Không thể tải danh sách tiện ích. Vui lòng thử lại sau.");
       } finally {
         setLoading(false);
       }
@@ -123,7 +160,7 @@ const UtilitiesPage = () => {
       setInvoices(res.data);
     } catch (ex) {
       console.error("Lỗi load invoices:", ex);
-      setErr("Không thể tải danh sách hoá đơn.");
+      setErrInvoices("Không thể tải danh sách hoá đơn.");
     } finally {
       setLoadingInvoices(false);
     }
@@ -142,7 +179,7 @@ const UtilitiesPage = () => {
         {loading ? (
           <Spinner animation="border" />
         ) : err ? (
-          <Alert variant="danger">{err}</Alert>
+          <Alert variant="danger">{errUtilities}</Alert>
         ) : (
           <Row className="g-4">
           {utilities.map((u) => (
@@ -236,7 +273,22 @@ const UtilitiesPage = () => {
                   <td>{inv.totalAmount} VND</td>
                   <td>{inv.paymentMethod}</td>
                   <td>{statusBadge(inv.status)}</td>
-                  <td>{inv.paymentProof ? inv.paymentProof : "Chưa có"}</td>
+                  <td>
+                    {inv.paymentProof ? (
+                      <a href={inv.paymentProof} target="_blank" rel="noreferrer">
+                        Xem minh chứng
+                      </a>
+                    ) : (
+                      <>
+                        <Form.Control
+                          type="file"
+                          size="sm"
+                          onChange={(e) => handleUploadProof(inv.id, e.target.files[0])}
+                          disabled={uploading}
+                        />
+                      </>
+                    )}
+                  </td>
                   <td>
                     <Button
                       variant="outline-success"
@@ -244,6 +296,13 @@ const UtilitiesPage = () => {
                       onClick={() => handleShowPDF(inv)}
                     >
                       Xem / In
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => alert("Vui lòng liên hệ ban quản lý để được hỗ trợ xoá hoá đơn.")}
+                    >
+                      Xóa
                     </Button>
                   </td>
                 </tr>
