@@ -16,5 +16,6 @@ public interface InvoiceService {
     List<Invoice> getAllInvoices(Map<String,String> params);
     InvoiceResponse getInvoiceDetail(Integer invoiceId);
     void createInvoicesForAllRoomHeads(Integer feeId);
+    void changeAccept(Integer invoiceId);
 
 }

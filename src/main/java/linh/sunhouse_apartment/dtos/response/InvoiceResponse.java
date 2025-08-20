@@ -21,6 +21,7 @@ public class InvoiceResponse {
     private String paymentProof;
     private BigDecimal totalAmount;
     private Invoice.Status status;
+    private Boolean isAccepted;
     private String fullName;
 
     private List<DetailInvoiceResponse> details;

@@ -104,6 +104,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 savedInvoice.getPaymentProof(),
                 savedInvoice.getTotalAmount(),
                 savedInvoice.getStatus(),
+                savedInvoice.isAccept(),
                 savedInvoice.getUserId().getFullName(),
                 detailResponses
 
@@ -139,6 +140,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                             inv.getPaymentProof(),
                             inv.getTotalAmount(),
                             inv.getStatus(),
+                            inv.isAccept(),
                             inv.getUserId().getFullName(),
                             details
                     );
@@ -189,6 +191,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoice.getPaymentProof(),
                 invoice.getTotalAmount(),
                 invoice.getStatus(),
+                invoice.isAccept(),
                 invoice.getUserId().getFullName(),
                 detailResponses
         );
@@ -238,6 +241,17 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             detailInvoiceRepository.saveDetailInvoice(detail);
         }
+    }
+
+    @Override
+    public void changeAccept(Integer invoiceId) {
+        Invoice invoice = invoiceRepository.findInvoiceById(invoiceId);
+        if (invoice == null) {
+            throw new RuntimeException("Invoice not found or already inactive with id: " + invoiceId);
+        }
+        invoice.setAccept(true);
+        invoice.setStatus(Invoice.Status.PAID);
+        invoiceRepository.updateInvoice(invoice);
     }
 
 }

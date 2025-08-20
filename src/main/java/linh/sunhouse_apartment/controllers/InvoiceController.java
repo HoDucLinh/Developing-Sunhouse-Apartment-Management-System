@@ -58,5 +58,11 @@ public class InvoiceController {
         return "redirect:/manage-invoice";
     }
 
+    @PutMapping("/invoice/change-accept/{id}")
+    public String changeAccept(@PathVariable("id") Integer invoiceId){
+        invoiceService.changeAccept(invoiceId);
+        return "redirect:/manage-invoice";
+    }
+
 
 }
