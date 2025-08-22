@@ -17,6 +17,7 @@ import About from './pages/About';
 import PrivateRoute from './components/PrivateRoute';
 import Contact from './pages/Contact';
 import Relative from './pages/Relative';
+import Invoice from './pages/Invoice';
 
 function App() {
   return (
@@ -42,7 +43,7 @@ function App() {
           <Route path="/surveys" element={<SurveysPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/relative" element={<Relative />} />
-
+          <Route path="/invoices" element={<Invoice />} />
         </Route>
       </Routes>
     </UserProvider>
