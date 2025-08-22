@@ -6,8 +6,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import linh.sunhouse_apartment.entity.Invoice;
-import linh.sunhouse_apartment.entity.Survey;
-import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.InvoiceRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

@@ -44,7 +44,6 @@ public class Fee implements Serializable {
     @Column(name = "description")
     private String description;
     @Enumerated(EnumType.STRING)
-    @Size(max = 7)
     @Column(name = "type")
     private FeeType type;
     @Basic(optional = false)
@@ -54,7 +53,7 @@ public class Fee implements Serializable {
     @Size(max = 500)
     @Column(name = "image")
     private String image;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;
 }
