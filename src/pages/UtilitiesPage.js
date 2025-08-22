@@ -25,6 +25,7 @@ const UtilitiesPage = () => {
   const [months, setMonths] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("CASH");
+  const [userUtilities, setUserUtilities] = useState([]);
 
   const [showPDF, setShowPDF] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -42,12 +43,6 @@ const UtilitiesPage = () => {
     const url = URL.createObjectURL(blob);
     setPdfUrl(url);
   };
-
-  const registeredServices = [
-    { name: 'Phòng gym', fee: '120.000', status: 'Chờ duyệt', expire: '31-07-2025' },
-    { name: 'Khu vui chơi', fee: '100.000', status: 'Thành viên', expire: '31-07-2025' },
-    { name: 'Hồ vui chơi', fee: '120.000', status: 'Thành viên', expire: '31-07-2025' },
-  ];
 
   const statusBadge = (status) => {
     switch (status) {
@@ -91,7 +86,6 @@ const UtilitiesPage = () => {
       let res = await authApis(token).post(endpoints.registerUtility, req);
 
       alert("Đăng ký tiện ích thành công!");
-      console.log("Invoice saved:", res.data);
 
       setShowModal(false);
 
@@ -168,6 +162,22 @@ const UtilitiesPage = () => {
 
   useEffect(() => {
     loadInvoices();
+  }, [user]);
+
+  //hiển thị các dịch vụ đã đăng kí
+  useEffect(() => {
+  const loadUserUtilities = async () => {
+    if (!user) return;
+    try {
+      let token = cookie.load("token");
+      let res = await authApis(token).get(endpoints.getUtilitiesOfUser(user.id));
+      setUserUtilities(res.data.data);   // server trả về list FeeResponse
+    } catch (ex) {
+      console.error("Lỗi load tiện ích của user:", ex);
+      setErrUtilities("Không thể tải tiện ích của user.");
+    }
+  };
+    loadUserUtilities();
   }, [user]);
 
   return (
@@ -333,18 +343,29 @@ const UtilitiesPage = () => {
               <th>Loại dịch vụ</th>
               <th>Phí hàng tháng</th>
               <th>Trạng thái</th>
-              <th>Ngày đến hạn</th>
+              <th>Ngày đăng kí</th>
             </tr>
           </thead>
           <tbody>
-            {registeredServices.map((s, idx) => (
-              <tr key={idx}>
-                <td>{s.name}</td>
-                <td>{s.fee}</td>
-                <td>{statusBadge(s.status)}</td>
-                <td>{s.expire}</td>
+            {userUtilities.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center">Bạn chưa đăng ký tiện ích nào.</td>
               </tr>
-            ))}
+            ) : (
+              userUtilities.map((u, idx) => (
+                <tr key={idx}>
+                  <td>{u.name}</td>
+                  <td>{u.price} VND</td>
+                  <td><Badge bg="success">Đang sử dụng</Badge></td>
+                  <td>
+                    {(() => {
+                      const [year, month, day] = u.createdDate.split("-");
+                      return new Date(year, month - 1, day).toLocaleDateString("vi-VN");
+                    })()}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Container>

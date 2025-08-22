@@ -22,7 +22,8 @@ export const endpoints = {
   getUtilities : 'fee/utilities',
   registerUtility:'invoice/addInvoice',
   getInvoices: (userId) => `invoice/get-invoices/${userId}`,
-  uploadProof :'invoice/upload-proof'
+  uploadProof :'invoice/upload-proof',
+  getUtilitiesOfUser : (userId) => `fee/get-utilities-of-user?userId=${userId}`
 };
 
 // Axios không có token (dùng cho login, register,...)
