@@ -68,7 +68,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                predicates.add(b.like(root.get("username"), String.format("%%%s%%", kw)));
+                predicates.add(b.like(root.get("fullName"), String.format("%%%s%%", kw)));
             }
             String roomNumber = params.get("room_number");
             if (roomNumber != null && !roomNumber.isEmpty()) {

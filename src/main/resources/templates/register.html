@@ -11,7 +11,8 @@
                                type="radio"
                                th:field="*{role}"
                                th:value="${role}"
-                               th:id="'role-' + ${role}" />
+                               th:id="'role-' + ${role}"
+                                required/>
                         <label class="form-check-label"
                                th:for="'role-' + ${role}"
                                th:text="${role}"></label>
@@ -22,7 +23,7 @@
                 <div id="floorRoomFields" style="display: none;">
                     <div class="mb-3">
                         <label>Floor:</label>
-                        <select name="floorId" id="floorSelect" class="form-select">
+                        <select name="floorId" id="floorSelect" class="form-select" required>
                             <option value="">-- Chọn tầng --</option>
                             <option th:each="floor : ${floors}"
                                     th:value="${floor.id}"
@@ -34,7 +35,7 @@
 
                     <div class="mb-3">
                         <label>Room:</label>
-                        <select name="roomIdParam" id="roomSelect" class="form-select">
+                        <select name="roomIdParam" id="roomSelect" class="form-select" required>
                             <option value="">-- Chọn phòng --</option>
                             <option th:each="room : ${rooms}"
                                     th:value="${room.id}"
@@ -48,10 +49,14 @@
                 <div class="mb-3">
                     <label for="username" class="form-label">User name</label>
                     <input type="text" class="form-control" id="username" th:field="*{username}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('username')}"
+                         th:errors="*{username}">Username Error</div>
                 </div>
                 <div class="mb-3">
                     <label for="pwd" class="form-label">Password</label>
                     <input type="password" class="form-control" id="pwd" th:field="*{password}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('password')}"
+                         th:errors="*{password}">Password Error</div>
                 </div>
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Full name</label>
@@ -60,10 +65,14 @@
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone</label>
                     <input type="text" class="form-control" id="phone" th:field="*{phone}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
+                         th:errors="*{phone}">Phone Error</div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="text" class="form-control" id="email" th:field="*{email}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('email')}"
+                         th:errors="*{email}">Email Error</div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Add user</button>

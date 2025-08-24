@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.controllers;
 
+import jakarta.validation.Valid;
 import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.entity.Room;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -57,10 +59,18 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerSubmit(
-            @ModelAttribute("user") User user,
+            @Valid @ModelAttribute("user") User user,
+            BindingResult bindingResult,
             @RequestParam(value = "roomIdParam", required = false) Integer roomId,
-            @RequestParam(value = "floorId", required = false) Integer floorId
+            @RequestParam(value = "floorId", required = false) Integer floorId,
+            Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", User.Role.values());
+            model.addAttribute("floors", floorService.findAll());
+            model.addAttribute("rooms", List.of());
+            return "register";
+        }
         if (user.getRole() == User.Role.RESIDENT && roomId != null) {
             Room room = roomService.findById(roomId);
             user.setRoomId(room);

@@ -11,7 +11,7 @@
             <!-- Search form -->
             <form class="row g-3 mb-4" method="get" th:action="@{/manage-user}">
                 <div class="col-md-4">
-                    <input type="text" name="kw" th:value="${params['kw']}" class="form-control" placeholder="Search by username...">
+                    <input type="text" name="kw" th:value="${params['kw']}" class="form-control" placeholder="Search by fullName...">
                 </div>
                 <div class="col-md-4">
                     <input type="text" name="room_number" th:value="${params['room_number']}" class="form-control" placeholder="Search by room number...">
