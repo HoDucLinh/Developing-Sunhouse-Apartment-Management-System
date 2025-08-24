@@ -71,6 +71,13 @@ public class UserController {
             model.addAttribute("rooms", List.of());
             return "register";
         }
+        if (userService.getUserByUsername(user.getUsername()) != null) {
+            bindingResult.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
+            model.addAttribute("roles", User.Role.values());
+            model.addAttribute("floors", floorService.findAll());
+            model.addAttribute("rooms", List.of());
+            return "register";
+        }
         if (user.getRole() == User.Role.RESIDENT && roomId != null) {
             Room room = roomService.findById(roomId);
             user.setRoomId(room);
