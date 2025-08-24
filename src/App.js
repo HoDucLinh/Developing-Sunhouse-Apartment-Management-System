@@ -18,6 +18,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Contact from './pages/Contact';
 import Relative from './pages/Relative';
 import Invoice from './pages/Invoice';
+import ApartmentPage from './pages/ApartmentPage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/apartment" element={<ApartmentPage />} />
 
         {/* Các route cần đăng nhập (dùng PrivateRoute bao bọc) */}
         <Route element={<PrivateRoute />}>

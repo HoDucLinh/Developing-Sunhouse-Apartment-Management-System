@@ -24,6 +24,7 @@ const HeaderHome = () => {
             <Button variant="outline-primary" onClick={() => navigate("/login")}>
               LOGIN
             </Button>
+            <Nav.Link onClick={() => navigate("/apartment")}>SƠ ĐỒ CHUNG CƯ</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
