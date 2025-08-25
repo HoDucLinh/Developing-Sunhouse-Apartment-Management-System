@@ -49,6 +49,9 @@ const Sidebar = () => {
       <Nav.Link as={Link} to="/relative" className="text-white d-flex align-items-center gap-2">
         <FiUsers /> <span>Người thân</span>
       </Nav.Link>
+      <Nav.Link as={Link} to="/chat" className="text-white d-flex align-items-center gap-2">
+        <FiUsers /> <span>Chat Room</span>
+      </Nav.Link>
       <div className="mt-auto pt-3 border-top">
         <Nav.Link
           as="button"

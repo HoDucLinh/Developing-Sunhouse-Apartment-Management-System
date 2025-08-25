@@ -19,6 +19,7 @@ import Contact from './pages/Contact';
 import Relative from './pages/Relative';
 import Invoice from './pages/Invoice';
 import ApartmentPage from './pages/ApartmentPage';
+import ChatRoom from './pages/ChatRoom';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/relative" element={<Relative />} />
           <Route path="/invoices" element={<Invoice />} />
+          <Route path="/chat" element={<ChatRoom />} />
         </Route>
       </Routes>
     </UserProvider>
