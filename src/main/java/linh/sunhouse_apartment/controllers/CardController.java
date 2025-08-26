@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.controllers;
 
+import linh.sunhouse_apartment.dtos.request.CardRequest;
 import linh.sunhouse_apartment.entity.Card;
 import linh.sunhouse_apartment.entity.Relative;
 import linh.sunhouse_apartment.entity.User;
@@ -48,18 +49,8 @@ public class CardController {
     }
 
     @PostMapping("/create-new-card")
-    public String createCard(@RequestParam("userId") int userId,
-                             @RequestParam(name = "useRelative", required = false) boolean useRelative,
-                             @RequestParam(name = "relativeId", required = false) Integer relativeId) {
-
-        Card card = new Card();
-        card.setUserId(userService.getUserById(userId));
-
-        if (useRelative && relativeId != null) {
-            card.setRelativeId(relativeService.getRelativeById(relativeId));
-        }
-
-        cardService.addCard(card);
+    public String createCard(CardRequest cardRequest) {
+        cardService.addCard(cardRequest);
         return "redirect:/manage-card";
     }
 

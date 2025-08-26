@@ -1,0 +1,41 @@
+package linh.sunhouse_apartment.controllers;
+
+
+import linh.sunhouse_apartment.dtos.request.CardRequest;
+import linh.sunhouse_apartment.entity.Card;
+import linh.sunhouse_apartment.services.CardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/card")
+@CrossOrigin(origins = "*")
+public class ApiCardController {
+
+    @Autowired
+    private CardService cardService;
+
+    @GetMapping("/get-cards/{userId}")
+    public ResponseEntity<?> getCards(@PathVariable Integer userId) {
+        try{
+            List<Card> cards = cardService.getCardsByUserId(userId);
+            return  ResponseEntity.ok(cards);
+        }
+        catch (Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/create-card")
+    public ResponseEntity<?> createCard(@RequestBody CardRequest cardRequest) {
+        try {
+            Card card = cardService.addCard(cardRequest);
+            return  ResponseEntity.ok(card);
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+}
