@@ -50,12 +50,10 @@ public class Invoice implements Serializable {
     @Column(name = "due_date")
     @Temporal(TemporalType.DATE)
     private Date dueDate;
-    @Size(max = 8)
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method")
     private PAYMENT_METHOD paymentMethod;
     @Lob
-    @Size(max = 65535)
     @Column(name = "payment_proof")
     private String paymentProof;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -72,7 +70,6 @@ public class Invoice implements Serializable {
     @Column(name = "is_active")
     private boolean isActive;
     @Enumerated(EnumType.STRING)
-    @Size(max = 6)
     @Column(name = "status")
     private Status status;
     @OneToMany(mappedBy = "invoiceId")
