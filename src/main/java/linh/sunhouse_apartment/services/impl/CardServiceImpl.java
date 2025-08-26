@@ -1,6 +1,7 @@
 package linh.sunhouse_apartment.services.impl;
 
 import linh.sunhouse_apartment.dtos.request.CardRequest;
+import linh.sunhouse_apartment.dtos.response.CardResponse;
 import linh.sunhouse_apartment.entity.Card;
 import linh.sunhouse_apartment.entity.Relative;
 import linh.sunhouse_apartment.entity.User;
@@ -11,6 +12,7 @@ import linh.sunhouse_apartment.services.RelativeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +30,7 @@ public class CardServiceImpl implements CardService {
     private RelativeService relativeService;
 
     @Override
-    public Card addCard(CardRequest cardRequest) {
+    public CardResponse addCard(CardRequest cardRequest) {
         User u = userRepo.getUserById(cardRequest.getUserId());
         if (u != null ) {
             Card card = new Card();
@@ -44,15 +46,39 @@ public class CardServiceImpl implements CardService {
             cal.setTime(card.getIssueDate());
             cal.add(Calendar.MONTH, 3);
             card.setExpirationDate(cal.getTime());
-            return cardRepo.addCard(card);
+            Card savedCard = cardRepo.addCard(card);
+            return new CardResponse(
+                    savedCard.getId(),
+                    savedCard.getIssueDate(),
+                    savedCard.getExpirationDate(),
+                    savedCard.getStatus(),
+                    savedCard.getUserId() != null ? savedCard.getUserId().getId() : null,
+                    savedCard.getRelativeId() != null ? savedCard.getRelativeId().getId() : null,
+                    card.getRelativeId().getFullName() != null ? card.getRelativeId().getFullName() : null,
+                    card.getRelativeId().getRelationship() != null ? card.getRelativeId().getRelationship() : null
+            );
         }
         return null;
     }
 
     @Override
-    public List<Card> getCardsByUserId(int userId) {
+    public List<CardResponse> getCardsByUserId(int userId) {
         if(userRepo.getUserById(userId) != null) {
-            return cardRepo.getCardsByUserId(userId);
+            List<Card> cards = cardRepo.getCardsByUserId(userId);
+            List<CardResponse> cardResponses = new ArrayList<>();
+            for (Card card : cards) {
+                CardResponse cardResponse = new CardResponse(card.getId(),
+                        card.getIssueDate(),
+                        card.getExpirationDate(),
+                        card.getStatus(),
+                        card.getUserId() != null ? card.getUserId().getId() : null,
+                        card.getRelativeId() != null ? card.getRelativeId().getId() : null,
+                        card.getRelativeId().getFullName() != null ? card.getRelativeId().getFullName() : null,
+                        card.getRelativeId().getRelationship() != null ? card.getRelativeId().getRelationship() : null
+                );
+                cardResponses.add(cardResponse);
+            }
+            return cardResponses;
         }
         return null;
     }

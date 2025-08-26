@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.controllers;
 
 
 import linh.sunhouse_apartment.dtos.request.CardRequest;
+import linh.sunhouse_apartment.dtos.response.CardResponse;
 import linh.sunhouse_apartment.entity.Card;
 import linh.sunhouse_apartment.services.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class ApiCardController {
     @GetMapping("/get-cards/{userId}")
     public ResponseEntity<?> getCards(@PathVariable Integer userId) {
         try{
-            List<Card> cards = cardService.getCardsByUserId(userId);
+            List<CardResponse> cards = cardService.getCardsByUserId(userId);
             return  ResponseEntity.ok(cards);
         }
         catch (Exception ex){
@@ -32,7 +33,7 @@ public class ApiCardController {
     @PostMapping("/create-card")
     public ResponseEntity<?> createCard(@RequestBody CardRequest cardRequest) {
         try {
-            Card card = cardService.addCard(cardRequest);
+            CardResponse card = cardService.addCard(cardRequest);
             return  ResponseEntity.ok(card);
         }catch (Exception ex){
             return ResponseEntity.badRequest().body(ex.getMessage());
