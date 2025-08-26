@@ -1,6 +1,8 @@
 .sidebar {
   width: 220px;
-  min-height: 100vh;
+  height: 100vh;              /* ép sidebar cao bằng viewport */
+  display: flex;
+  flex-direction: column;     /* xếp dọc */
   background: white;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
@@ -10,7 +12,6 @@
   z-index: 1000;
   padding-top: 30px;
 }
-
 .sidebar .nav-link {
   color: black !important;
   font-weight: 500;

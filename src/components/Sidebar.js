@@ -17,52 +17,50 @@ const Sidebar = () => {
   };
 
   return(
-  <div className="sidebar d-flex flex-column text-white p-3">
-    <div className="text-center mb-4">
-      <i className="bi bi-building fs-3"></i>
-    </div>
-    <Nav className="flex-column gap-2">
-      <Nav.Link as={Link} to="/dashboard" className="text-white d-flex align-items-center gap-2">
-        <FiHome /> <span>Trang chủ</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/utilities" className="text-white d-flex align-items-center gap-2">
-        <FiTool /> <span>Tiện ích</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/invoices" className="text-white d-flex align-items-center gap-2">
-        <FiFileText /> <span>Hóa đơn</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/lockers" className="text-white d-flex align-items-center gap-2">
-        <FiPackage /> <span>Tủ đồ</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/cards" className="text-white d-flex align-items-center gap-2">
-        <FiPackage /> <span>Thẻ ra vào</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/complaints" className="text-white d-flex align-items-center gap-2">
-        <FiMessageSquare /> <span>Phản ánh</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/surveys" className="text-white d-flex align-items-center gap-2">
-        <FaPoll /> <span>Khảo sát</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/profile" className="text-white d-flex align-items-center gap-2">
-        <FiUser /> <span>Thông tin</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/relative" className="text-white d-flex align-items-center gap-2">
-        <FiUsers /> <span>Người thân</span>
-      </Nav.Link>
-      <Nav.Link as={Link} to="/chat" className="text-white d-flex align-items-center gap-2">
-        <FiUsers /> <span>Chat Room</span>
-      </Nav.Link>
+    <div className="sidebar d-flex flex-column p-3">
+      <Nav className="flex-column gap-2">
+        <Nav.Link as={Link} to="/dashboard" className="d-flex align-items-center gap-2">
+          <FiHome /> <span>Trang chủ</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/utilities" className="d-flex align-items-center gap-2">
+          <FiTool /> <span>Tiện ích</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/invoices" className="d-flex align-items-center gap-2">
+          <FiFileText /> <span>Hóa đơn</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/lockers" className="d-flex align-items-center gap-2">
+          <FiPackage /> <span>Tủ đồ</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/cards" className="d-flex align-items-center gap-2">
+          <FiPackage /> <span>Thẻ ra vào</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/complaints" className="d-flex align-items-center gap-2">
+          <FiMessageSquare /> <span>Phản ánh</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/surveys" className="d-flex align-items-center gap-2">
+          <FaPoll /> <span>Khảo sát</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/profile" className="d-flex align-items-center gap-2">
+          <FiUser /> <span>Thông tin</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/relative" className="d-flex align-items-center gap-2">
+          <FiUsers /> <span>Người thân</span>
+        </Nav.Link>
+        <Nav.Link as={Link} to="/chat" className="d-flex align-items-center gap-2">
+          <FiUsers /> <span>Chat Room</span>
+        </Nav.Link>
+      </Nav>
+
+      {/* Đặt ngoài Nav để mt-auto hoạt động đúng */}
       <div className="mt-auto pt-3 border-top">
-        <Nav.Link
-          as="button"
-          className="text-white d-flex align-items-center gap-2 btn btn-link text-start"
+        <button
           onClick={handleLogout}
+          className="w-100 d-flex align-items-center gap-2 btn btn-link text-start text-black"
         >
           <FiLogOut /> <span>Đăng xuất</span>
-        </Nav.Link>
+        </button>
       </div>
-    </Nav>
-  </div>
+    </div>
   )
 }
 
