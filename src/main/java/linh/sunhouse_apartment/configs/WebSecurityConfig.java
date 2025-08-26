@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.configs;
 
+import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/statistics/**").hasRole(User.Role.ADMIN.toString())
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
