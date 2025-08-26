@@ -14,4 +14,5 @@ public interface UserRepository {
     User editProfile(User user);
     int blockUser(int id);
     List<User> getAllRoomHead();
+    List<Object[]> getResidentStatistics(int year, String period);
 }

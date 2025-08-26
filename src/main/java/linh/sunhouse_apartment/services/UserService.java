@@ -25,4 +25,6 @@ public interface UserService  {
     User updateProfile(int userId, UpdateProfileRequest updateProfileRequest);
     User getUserByUsername(String username);
     List<User> getAllRoomHead();
+    Map<Integer, Long> getResidentStatistics(int year, String period);
+
 }

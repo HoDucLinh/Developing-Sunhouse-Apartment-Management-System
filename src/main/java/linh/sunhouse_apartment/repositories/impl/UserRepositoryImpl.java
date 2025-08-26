@@ -2,10 +2,7 @@ package linh.sunhouse_apartment.repositories.impl;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.UserRepository;
 import org.hibernate.Session;
@@ -116,6 +113,38 @@ public class UserRepositoryImpl implements UserRepository {
         q.select(root).where(predicates.toArray(new Predicate[0]));
         Query query = session.createQuery(q);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> getResidentStatistics(int year, String period) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<User> root = cq.from(User.class);
+
+        // Group by theo month hoặc quarter
+        Expression<Integer> groupExp;
+        if ("quarter".equalsIgnoreCase(period)) {
+            groupExp = cb.function("QUARTER", Integer.class, root.get("createdAt"));
+        } else {
+            // mặc định là theo tháng
+            groupExp = cb.function("MONTH", Integer.class, root.get("createdAt"));
+        }
+
+        cq.multiselect(
+                        groupExp,                           // tháng hoặc quý
+                        cb.count(root.get("id"))            // số lượng user
+                )
+                .where(
+                        cb.and(
+                                cb.equal(root.get("role"), User.Role.RESIDENT),
+                                cb.equal(cb.function("YEAR", Integer.class, root.get("createdAt")), year)
+                        )
+                )
+                .groupBy(groupExp)
+                .orderBy(cb.asc(groupExp));
+
+        return session.createQuery(cq).getResultList();
     }
 
 }

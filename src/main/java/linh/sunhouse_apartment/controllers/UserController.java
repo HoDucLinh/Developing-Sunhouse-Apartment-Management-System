@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -146,4 +147,29 @@ public class UserController {
         }
         return "redirect:/manage-user";
     }
+    @GetMapping("/residents-statistics")
+    public String getResidentStatistics(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "month") String period,
+            Model model
+    ) {
+        if (year == null) {
+            year = java.time.Year.now().getValue();
+        }
+
+        Map<Integer, Long> stats = userService.getResidentStatistics(year, period);
+
+        // convert map -> 2 list cho Chart.js
+        List<Integer> labels = new ArrayList<>(stats.keySet());
+        List<Long> values = new ArrayList<>(stats.values());
+
+        model.addAttribute("year", year);
+        model.addAttribute("period", period);
+        model.addAttribute("stats", stats);
+        model.addAttribute("labels", labels);
+        model.addAttribute("values", values);
+
+        return "statistics";
+    }
+
 }

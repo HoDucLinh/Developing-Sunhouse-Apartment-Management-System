@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -251,5 +252,13 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         return userRepository.getAllRoomHead();
     }
 
-
+    @Override
+    public Map<Integer, Long> getResidentStatistics(int year, String period) {
+        List<Object[]> result = userRepository.getResidentStatistics(year, period);
+        Map<Integer, Long> stats = new LinkedHashMap<>();
+        for (Object[] row : result) {
+            stats.put((Integer) row[0], (Long) row[1]);
+        }
+        return stats;
+    }
 }
