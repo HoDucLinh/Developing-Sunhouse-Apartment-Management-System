@@ -1,98 +1,159 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Container, Table, Button } from 'react-bootstrap';
+import { Button, Modal, Form, Card, Row, Col } from 'react-bootstrap';
+import { authApis, endpoints } from '../configs/Apis';
+import { useUser } from '../contexts/UserContext';
 
+import img from '../images/the-cu-dan.png'; // Ảnh cố định cho tất cả các thẻ
 
 const CardsPage = () => {
-  const accessCardItems = [
-    {
-      name: 'Nguyễn Văn B',
-      role: 'Anh trai',
-      room: 'Biển số: 92 - NI S4S',
-      status: 'Hiển thị lần cuối: 31/08/2025',
-      action: ['Xem chi tiết', 'Gia hạn', 'Xóa'],
-      buttonColors: ['btn-primary', 'btn-success', 'btn-danger'],
-      image: 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg', // Placeholder cho ảnh
-    },
-    {
-      name: 'Lê Thị C',
-      role: 'Mẹ',
-      room: 'Biển số: 02 - NL04S',
-      status: 'Đang chờ duyệt',
-      action: ['Xem chi tiết'],
-      buttonColors: ['btn-primary'],
-      image: 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg', // Placeholder cho ảnh
-    },
-    {
-      name: 'Trần Văn D',
-      role: 'Bạn bè',
-      room: 'Biển số: 92 - NI S5S',
-      status: 'Đã kiểm',
-      action: ['Xem chi tiết', 'Gia hạn', 'Xóa'],
-      buttonColors: ['btn-primary', 'btn-success', 'btn-danger'],
-      image: 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-016.jpg', // Placeholder cho ảnh
-    },
-    {
-      title: '', // Thẻ trống với icon
-      status: '',
-      action: '',
-      buttonColors: '',
-      isEmpty: true,
-    },
-  ];
+  const { user } = useUser();
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [relatives, setRelatives] = useState([]);
+  const [selectedRelative, setSelectedRelative] = useState(null);
+
+  // 1️⃣ Lấy danh sách card
+  useEffect(() => {
+    const fetchCards = async () => {
+      if (!user) return;
+      try {
+        const res = await authApis().get(endpoints.getCardByUserId(user.id));
+        setCards(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error("Lỗi khi load cards:", err);
+        setCards([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCards();
+  }, [user]);
+
+  // 2️⃣ Mở modal tạo card → load relatives
+  const openCreateCardModal = async () => {
+    if (!user) return;
+    try {
+      const res = await authApis().get(endpoints.getRelatives(user.id));
+      setRelatives(Array.isArray(res.data) ? res.data : []);
+      setSelectedRelative(null);
+      setShowModal(true);
+    } catch (err) {
+      console.error("Lỗi khi load relatives:", err);
+    }
+  };
+
+  // 3️⃣ Tạo card
+  const handleCreateCard = async () => {
+    if (!user) return;
+    try {
+      const payload = {
+        userId: user.id,
+        useRelative: !!selectedRelative,
+        relativeId: selectedRelative || null,
+      };
+      const res = await authApis().post(endpoints.createCard, payload);
+      setCards(prev => [...prev, res.data]);
+      setShowModal(false);
+    } catch (err) {
+      console.error("Lỗi khi tạo card:", err);
+    }
+  };
 
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
       <div className="content p-4" style={{ marginLeft: '250px', flex: 1 }}>
-        <div className="search-bar mb-4 d-flex align-items-center justify-content-between" style={{ gap: '10px' }}>
-          <input
-            type="text"
-            className="form-control rounded-pill"
-            placeholder="Tìm kiếm..."
-            style={{ width: '250px' }}
-          />
-          <img
-            src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg"
-            alt="avatar"
-            className="rounded-circle rounded-circle me-4"
-            width={40}
-            height={40}
-          />
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h3>Danh sách thẻ ra vào</h3>
+          <Button onClick={openCreateCardModal}>Tạo thẻ mới</Button>
         </div>
-        <div className="card-container d-flex flex-wrap gap-3">
-          {accessCardItems.map((item, index) => (
-            <div key={index} className="card" style={{ width: '300px', border: 'none', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', padding: '10px' }}>
-              {item.isEmpty ? (
-                <div className="card-body text-center p-4 d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
-                  <span className="spinner-grow text-primary" style={{ width: '50px', height: '50px' }} role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </span>
-                  <span className="position-absolute" style={{ fontSize: '24px', color: '#6a0dad' }}>+</span>
-                </div>
-              ) : (
-                <div className="card-body text-center">
-                  <img src={item.image} alt={item.name} className="rounded-circle mb-2" style={{ width: '50px', height: '50px' }} />
-                  <h6 className="mb-1">{item.name}</h6>
-                  <p className="text-muted mb-1" style={{ fontSize: '0.9rem' }}>Mối quan hệ: {item.role}</p>
-                  <p className="text-muted mb-1" style={{ fontSize: '0.9rem' }}>{item.room}</p>
-                  <p className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>{item.status}</p>
-                  <div className="d-flex justify-content-center gap-2">
-                    {item.action.map((action, idx) => (
-                      <button key={idx} className={`btn ${item.buttonColors[idx]} btn-sm`} style={{ padding: '2px 10px', fontSize: '0.8rem' }}>
-                        {action}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+
+        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+          {loading ? (
+            <p>Đang tải...</p>
+          ) : cards.length > 0 ? (
+            cards.map((card) => (
+              <Col key={card.id}>
+                <Card 
+                  style={{ 
+                    borderRadius: '20px', 
+                    overflow: 'hidden', 
+                    boxShadow: '0 6px 15px rgba(0,0,0,0.2)',
+                    border: 'none'
+                  }}
+                >
+                  <Card.Img 
+                    variant="top" 
+                    src={img} 
+                    style={{ height: '140px', objectFit: 'cover' }} 
+                  />
+                  <Card.Body className="text-center">
+                    <Card.Title className="mt-2 fw-bold text-primary">
+                      {card.relativeName ? card.relativeName : user.fullName}
+                    </Card.Title>
+
+                    {/* Hiển thị badge trạng thái */}
+                    <div className="mb-2">
+                      <span className="me-2">
+                        <span 
+                          className={`badge ${
+                            card.status === "ACTIVE" ? "bg-success" : "bg-secondary"
+                          }`}
+                        >
+                          {card.status}
+                        </span>
+                      </span>
+                      <span>
+                        <span className="badge bg-info text-dark">
+                          {card.relationship || "Chủ hộ"}
+                        </span>
+                      </span>
+                    </div>
+
+                    <Card.Text style={{ fontSize: '0.95rem', color: '#333' }}>
+                      <strong>Ngày hết hạn:</strong>{" "}
+                      {new Date(card.expirationDate).toLocaleDateString()}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <p>Chưa có thẻ nào</p>
+          )}
+        </Row>
+
+        {/* Modal tạo card mới */}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tạo thẻ mới</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group>
+              <Form.Label>Chọn người thân (nếu có)</Form.Label>
+              <Form.Select
+                value={selectedRelative || ""}
+                onChange={(e) => setSelectedRelative(e.target.value || null)}
+              >
+                <option value="">Không chọn</option>
+                {relatives.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.fullName} ({r.relationship})
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</Button>
+            <Button variant="primary" onClick={handleCreateCard}>Tạo thẻ</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
 };
-
 
 export default CardsPage;
