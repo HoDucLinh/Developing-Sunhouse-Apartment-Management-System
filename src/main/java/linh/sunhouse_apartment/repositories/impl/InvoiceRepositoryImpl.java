@@ -1,10 +1,8 @@
 package linh.sunhouse_apartment.repositories.impl;
 
 import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.repositories.InvoiceRepository;
 import org.hibernate.Session;
@@ -13,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,5 +97,49 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
         // Thực thi query
         List<Invoice> results = session.createQuery(cq).getResultList();
         return results.isEmpty() ? null : results.get(0);
+    }
+
+    @Override
+    public Map<Integer, BigDecimal> getRevenueStatistics(int year, String period) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+        Root<Invoice> root = cq.from(Invoice.class);
+
+        // Group theo month hoặc quarter
+        Expression<Integer> groupExp;
+        if ("quarter".equalsIgnoreCase(period)) {
+            groupExp = cb.function("QUARTER", Integer.class, root.get("issuedDate"));
+        } else {
+            groupExp = cb.function("MONTH", Integer.class, root.get("issuedDate"));
+        }
+
+        // Sum totalAmount
+        Expression<BigDecimal> sumExp = cb.sum(root.get("totalAmount"));
+
+        cq.multiselect(
+                        groupExp.alias("periodKey"),
+                        sumExp.alias("totalRevenue")
+                )
+                .where(
+                        cb.and(
+                                cb.equal(cb.function("YEAR", Integer.class, root.get("issuedDate")), year),
+                                cb.equal(root.get("status"), Invoice.Status.PAID) // chỉ lấy hóa đơn đã thanh toán
+                        )
+                )
+                .groupBy(groupExp)
+                .orderBy(cb.asc(groupExp));
+
+        List<Tuple> results = session.createQuery(cq).getResultList();
+
+        Map<Integer, BigDecimal> revenueStats = new LinkedHashMap<>();
+        for (Tuple t : results) {
+            revenueStats.put(
+                    t.get("periodKey", Integer.class),
+                    t.get("totalRevenue", BigDecimal.class)
+            );
+        }
+
+        return revenueStats;
     }
 }

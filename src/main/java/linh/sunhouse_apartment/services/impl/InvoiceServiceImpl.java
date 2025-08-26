@@ -281,4 +281,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
+    @Override
+    public Map<Integer, BigDecimal> getRevenueStatistics(int year, String period) {
+        return invoiceRepository.getRevenueStatistics(year, period);
+    }
+
 }

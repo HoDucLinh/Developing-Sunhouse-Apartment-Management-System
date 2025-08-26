@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.repositories;
 
 import linh.sunhouse_apartment.entity.Invoice;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -11,4 +12,5 @@ public interface InvoiceRepository {
     List<Invoice> findAllInvoicesByUserId(Integer userId);
     Integer updateInvoice(Invoice invoice);
     Invoice findInvoiceById(Integer id);
+    Map<Integer, BigDecimal> getRevenueStatistics(int year, String period);
 }
