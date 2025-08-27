@@ -1,57 +1,55 @@
-import React from 'react';
-import { Nav } from 'react-bootstrap';
-import { Link,useNavigate } from 'react-router-dom';
-import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser, FiUsers, FiFileText  } from 'react-icons/fi';
-import { FaPoll } from 'react-icons/fa';
-import '../styles/sidebar.css';
-import { useUser } from '../contexts/UserContext';
-
+import { NavLink, useNavigate } from "react-router-dom";
+import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser, FiUsers, FiFileText } from "react-icons/fi";
+import { FaPoll } from "react-icons/fa";
+import "../styles/sidebar.css";
+import { useUser } from "../contexts/UserContext";
 
 const Sidebar = () => {
   const { logout } = useUser();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();              // Xóa token + user
-    navigate('/login');    // Chuyển về trang đăng nhập
+    logout();
+    navigate("/login");
   };
 
-  return(
+  return (
     <div className="sidebar d-flex flex-column p-3">
-      <Nav className="flex-column gap-2">
-        <Nav.Link as={Link} to="/dashboard" className="d-flex align-items-center gap-2">
-          <FiHome /> <span>Trang chủ</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/utilities" className="d-flex align-items-center gap-2">
-          <FiTool /> <span>Tiện ích</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/invoices" className="d-flex align-items-center gap-2">
-          <FiFileText /> <span>Hóa đơn</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/lockers" className="d-flex align-items-center gap-2">
-          <FiPackage /> <span>Tủ đồ</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/cards" className="d-flex align-items-center gap-2">
-          <FiPackage /> <span>Thẻ ra vào</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/complaints" className="d-flex align-items-center gap-2">
-          <FiMessageSquare /> <span>Phản ánh</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/surveys" className="d-flex align-items-center gap-2">
-          <FaPoll /> <span>Khảo sát</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/profile" className="d-flex align-items-center gap-2">
-          <FiUser /> <span>Thông tin</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/relative" className="d-flex align-items-center gap-2">
-          <FiUsers /> <span>Người thân</span>
-        </Nav.Link>
-        <Nav.Link as={Link} to="/chat" className="d-flex align-items-center gap-2">
-          <FiUsers /> <span>Chat Room</span>
-        </Nav.Link>
-      </Nav>
+      <div className="text-center mb-3">
+        <FiHome size={30} color="#0d6efd" />
+        <div className="fw-bold mt-2">Chung cư</div>
+      </div>
+      <NavLink to="/dashboard" className="nav-link d-flex align-items-center gap-2">
+        <FiHome /> <span>Trang chủ</span>
+      </NavLink>
+      <NavLink to="/utilities" className="nav-link d-flex align-items-center gap-2">
+        <FiTool /> <span>Tiện ích</span>
+      </NavLink>
+      <NavLink to="/invoices" className="nav-link d-flex align-items-center gap-2">
+        <FiFileText /> <span>Hóa đơn</span>
+      </NavLink>
+      <NavLink to="/lockers" className="nav-link d-flex align-items-center gap-2">
+        <FiPackage /> <span>Tủ đồ</span>
+      </NavLink>
+      <NavLink to="/cards" className="nav-link d-flex align-items-center gap-2">
+        <FiPackage /> <span>Thẻ ra vào</span>
+      </NavLink>
+      <NavLink to="/complaints" className="nav-link d-flex align-items-center gap-2">
+        <FiMessageSquare /> <span>Phản ánh</span>
+      </NavLink>
+      <NavLink to="/surveys" className="nav-link d-flex align-items-center gap-2">
+        <FaPoll /> <span>Khảo sát</span>
+      </NavLink>
+      <NavLink to="/profile" className="nav-link d-flex align-items-center gap-2">
+        <FiUser /> <span>Thông tin</span>
+      </NavLink>
+      <NavLink to="/relative" className="nav-link d-flex align-items-center gap-2">
+        <FiUsers /> <span>Người thân</span>
+      </NavLink>
+      <NavLink to="/chat" className="nav-link d-flex align-items-center gap-2">
+        <FiUsers /> <span>Chat Room</span>
+      </NavLink>
 
-      {/* Đặt ngoài Nav để mt-auto hoạt động đúng */}
       <div className="mt-auto pt-3 border-top">
         <button
           onClick={handleLogout}
@@ -61,7 +59,7 @@ const Sidebar = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Sidebar;

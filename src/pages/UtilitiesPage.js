@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Alert, Form, Modal } from 'react-bootstrap';
 import '../styles/sidebar.css';
@@ -54,6 +54,8 @@ const UtilitiesPage = () => {
       alert("Đăng ký tiện ích thành công!");
 
       setShowModal(false);
+
+      await loadUserUtilities();
     } catch (ex) {
       console.error("Lỗi đăng ký tiện ích:", ex);
       alert("Đăng ký tiện ích thất bại!");
@@ -62,37 +64,39 @@ const UtilitiesPage = () => {
     }
   };
 
+  const loadUtilities = async () => {
+    try {
+      let token = cookie.load("token");
+      let res = await authApis(token).get(endpoints.getUtilities);
+      setUtilities(res.data.data);
+    } catch (ex) {
+      console.error("Lỗi load tiện ích:", ex);
+      setErrUtilities("Không thể tải danh sách tiện ích. Vui lòng thử lại sau.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadUtilities = async () => {
-      try {
-        let token = cookie.load("token");
-        let res = await authApis(token).get(endpoints.getUtilities);
-        setUtilities(res.data.data);
-      } catch (ex) {
-        console.error("Lỗi load tiện ích:", ex);
-        setErrUtilities("Không thể tải danh sách tiện ích. Vui lòng thử lại sau.");
-      } finally {
-        setLoading(false);
-      }
-    };
     loadUtilities();
   }, []);
 
-  //hiển thị các dịch vụ đã đăng kí
-  useEffect(() => {
-  const loadUserUtilities = async () => {
+  const loadUserUtilities = useCallback(async () => {
     if (!user) return;
     try {
       let token = cookie.load("token");
       let res = await authApis(token).get(endpoints.getUtilitiesOfUser(user.id));
-      setUserUtilities(res.data.data);   // server trả về list FeeResponse
+      setUserUtilities(res.data.data);
     } catch (ex) {
       console.error("Lỗi load tiện ích của user:", ex);
       setErrUtilities("Không thể tải tiện ích của user.");
     }
-  };
-    loadUserUtilities();
   }, [user]);
+
+  //hiển thị các dịch vụ đã đăng kí
+  useEffect(() => {
+    loadUserUtilities();
+  }, [loadUserUtilities]);
 
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
