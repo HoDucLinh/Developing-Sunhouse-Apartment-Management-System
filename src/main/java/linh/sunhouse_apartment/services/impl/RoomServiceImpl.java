@@ -7,6 +7,7 @@ import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,6 +38,13 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> findByFloorId(Integer floorId) {
-        return roomRepository.findByFloorId(floorId);
+        List<Room> rs = new ArrayList<>();
+        List<Room> rooms = roomRepository.findByFloorId(floorId);
+        for (Room room : rooms) {
+            RoomResponse r = roomRepository.findRoomWithUsers(room.getId());
+            if (r.getUsers().size() < room.getMaxPeople())
+                rs.add(room);
+        }
+        return rs;
     }
 }
