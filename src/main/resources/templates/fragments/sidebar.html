@@ -1,4 +1,15 @@
 <div th:fragment="sidebar" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <style>
+        .list-group-item.active {
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); /* xanh nhạt -> tím nhạt */
+            color: #fff !important;
+            font-weight: bold;
+            border: none;
+        }
+        .list-group-item.active i {
+            color: #fff !important; /* icon cũng đổi thành trắng */
+        }
+    </style>
     <div class="list-group list-group-flush">
         <a th:href="@{/statistics}"
            class="list-group-item list-group-item-action"
@@ -39,4 +50,15 @@
             <i class="bi bi-gear me-2"></i> Cài đặt
         </a>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.pathname;
+            document.querySelectorAll(".list-group a").forEach(link => {
+                const linkUrl = link.getAttribute("href");
+                if (currentUrl === linkUrl) { // chỉ active khi URL trùng hoàn toàn
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
 </div>
