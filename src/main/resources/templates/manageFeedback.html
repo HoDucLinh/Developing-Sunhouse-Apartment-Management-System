@@ -43,9 +43,16 @@
                                   th:attr="data-id=${f.id}">
                                 <input type="hidden" name="id" th:value="${f.id}" />
 
-                                <select name="status" class="form-select form-select-sm" style="width: auto;">
-                                    <option value="PENDING" th:selected="${f.status == T(linh.sunhouse_apartment.entity.Feedback.FeedbackStatus).PENDING}">PENDING</option>
-                                    <option value="RESOLVED" th:selected="${f.status == T(linh.sunhouse_apartment.entity.Feedback.FeedbackStatus).RESOLVED}">RESOLVED</option>
+                                <select name="status" class="form-select form-select-sm w-auto fw-bold px-2 py-1"
+                                        th:classappend="${f.status == T(linh.sunhouse_apartment.entity.Feedback.FeedbackStatus).PENDING} ? ' bg-warning text-dark' : ' bg-success text-white'">
+                                    <option value="PENDING"
+                                            th:selected="${f.status == T(linh.sunhouse_apartment.entity.Feedback.FeedbackStatus).PENDING}">
+                                        PENDING
+                                    </option>
+                                    <option value="RESOLVED"
+                                            th:selected="${f.status == T(linh.sunhouse_apartment.entity.Feedback.FeedbackStatus).RESOLVED}">
+                                        RESOLVED
+                                    </option>
                                 </select>
 
                                 <button type="submit" class="btn btn-sm btn-primary">
@@ -80,6 +87,17 @@
                     });
 
                     if (!response.ok) throw new Error("Lỗi server");
+
+                    // cập nhật trực tiếp UI
+                    const select = this.querySelector("select");
+                    select.value = status;
+                    select.classList.remove("bg-warning", "text-dark", "bg-success", "text-white");
+                    if (status === "PENDING") {
+                        select.classList.add("bg-warning", "text-dark");
+                    } else {
+                        select.classList.add("bg-success", "text-white");
+                    }
+
                     alert("Đã cập nhật trạng thái mới cho phản ánh #" + id);
                 } catch (err) {
                     alert("Không thể cập nhật trạng thái!");

@@ -46,7 +46,6 @@ public class Feedback implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Enumerated(EnumType.STRING)
-    @Size(max = 8)
     @Column(name = "status")
     private FeedbackStatus status;
     @JoinColumn(name = "user_id", referencedColumnName = "id")

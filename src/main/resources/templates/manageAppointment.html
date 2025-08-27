@@ -34,7 +34,9 @@
                     <tbody>
                     <tr th:each="appointment : ${appointments}">
                         <td th:text="${appointment.id}"></td>
-                        <td th:text="${appointment.bod != null ? appointment.bod.fullName : 'Chưa xử lý'}"></td>
+                        <td th:text="${appointment.bod != null ? appointment.bod.fullName : 'Chưa xử lý'}"
+                            th:classappend="${appointment.bod != null} ? 'fw-bold text-success' : 'fw-bold text-danger'">
+                        </td>
                         <td th:text="${appointment.fullName}"></td>
                         <td th:text="${appointment.email}"></td>
                         <td th:text="${appointment.phone}"></td>
