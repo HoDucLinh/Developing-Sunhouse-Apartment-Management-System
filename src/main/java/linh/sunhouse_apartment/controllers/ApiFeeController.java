@@ -20,9 +20,9 @@ public class ApiFeeController {
     private FeeService feeService;
 
     @GetMapping("/utilities")
-    public ResponseEntity<?> getUtilities() {
+    public ResponseEntity<?> getUtilities(@RequestParam Map<String,String> params) {
         try {
-            List<Fee> utilities = feeService.getUtilities();
+            List<Fee> utilities = feeService.getUtilities(params);
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "Lấy danh sách tiện ích thành công",

@@ -75,8 +75,8 @@ public class FeeServiceImpl implements FeeService {
     }
 
     @Override
-    public List<Fee> getUtilities() {
-        return feeRepository.getUtilities();
+    public List<Fee> getUtilities(Map<String,String> params) {
+        return feeRepository.getUtilities(params);
     }
 
     @Override

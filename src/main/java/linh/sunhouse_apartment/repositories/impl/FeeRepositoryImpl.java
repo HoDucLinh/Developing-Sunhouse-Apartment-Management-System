@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.repositories.impl;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.repositories.FeeRepository;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,19 +100,30 @@ public class FeeRepositoryImpl implements FeeRepository {
         Session session = sessionFactory.getCurrentSession();
         return session.get(Fee.class, id);
     }
+
+    //lấy những phí dịch vụ
     @Override
-    public List<Fee> getUtilities() {
+    public List<Fee> getUtilities(Map<String,String> params) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
         Root<Fee> root = cq.from(Fee.class);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("type"), Fee.FeeType.UTILITY));
 
-        cq.select(root)
-                .where(cb.equal(root.get("type"), Fee.FeeType.UTILITY));
+        if(params != null && !params.isEmpty()) {
+            String kw = params.get("kw");
+            if(kw != null && !kw.trim().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + kw.toLowerCase() + "%"));
+            }
+        }
+
+        cq.select(root).where(predicates.toArray(new Predicate[0]));
 
         return session.createQuery(cq).getResultList();
     }
 
+    //lấy những phí cố định
     @Override
     public List<Fee> getFeeOfFee() {
         Session session = sessionFactory.getCurrentSession();

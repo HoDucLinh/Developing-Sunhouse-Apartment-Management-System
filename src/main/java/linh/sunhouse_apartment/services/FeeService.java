@@ -13,7 +13,7 @@ public interface FeeService {
     void updateFee(Fee fee);
     int deleteFee(int id);
     Fee getFeeById(int id);
-    List<Fee> getUtilities();
+    List<Fee> getUtilities(Map<String,String> params);
     List<Fee> getFeeOfFee();
     List<FeeResponse> getUtilitiesOfUser(Integer userId);
 }
