@@ -14,7 +14,7 @@ const UtilitiesPage = () => {
   const [err, setErr] = useState(null);
 
   const [errUtilities, setErrUtilities] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedUtility, setSelectedUtility] = useState(null);
   const [months, setMonths] = useState(1);
@@ -64,10 +64,10 @@ const UtilitiesPage = () => {
     }
   };
 
-  const loadUtilities = async () => {
+  const loadUtilities = async (kw="") => {
     try {
       let token = cookie.load("token");
-      let res = await authApis(token).get(endpoints.getUtilities);
+      let res = await authApis(token).get(endpoints.getUtilities(kw));
       setUtilities(res.data.data);
     } catch (ex) {
       console.error("Lỗi load tiện ích:", ex);
@@ -98,10 +98,25 @@ const UtilitiesPage = () => {
     loadUserUtilities();
   }, [loadUserUtilities]);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    loadUtilities(searchTerm);
+  };
+
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
       <Container fluid className="main-content bg-light-purple px-5 py-4" style={{ marginLeft: '220px'}}>
+        <Form className="mb-3 d-flex" onSubmit={handleSearch}>
+          <Form.Control
+            type="text"
+            placeholder="Tìm kiếm dịch vụ..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="me-2"
+          />
+          <Button type="submit" variant="primary">Tìm kiếm</Button>
+        </Form>
         {/* Tiện ích */}
         <h5 className="mb-3">Tiện ích</h5>
         {loading ? (

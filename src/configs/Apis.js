@@ -19,7 +19,7 @@ export const endpoints = {
   getSurveys : 'survey/get-surveys',
   getQuestions : (surveyId) => `survey/${surveyId}/questions`,
   submitSurvey : 'survey/submit',
-  getUtilities : 'fee/utilities',
+  getUtilities : (kw) => kw ? `fee/utilities?kw=${kw}` : 'fee/utilities' ,
   registerUtility:'invoice/addInvoice',
   getInvoices: (userId) => `invoice/get-invoices/${userId}`,
   uploadProof :'invoice/upload-proof',
