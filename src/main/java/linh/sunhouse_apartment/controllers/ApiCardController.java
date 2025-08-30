@@ -6,9 +6,11 @@ import linh.sunhouse_apartment.dtos.response.CardResponse;
 import linh.sunhouse_apartment.entity.Card;
 import linh.sunhouse_apartment.services.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -34,9 +36,12 @@ public class ApiCardController {
     public ResponseEntity<?> createCard(@RequestBody CardRequest cardRequest) {
         try {
             CardResponse card = cardService.addCard(cardRequest);
+            if (card == null)
+                return ResponseEntity.badRequest().body("Bad request!!!");
             return  ResponseEntity.ok(card);
-        }catch (Exception ex){
-            return ResponseEntity.badRequest().body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
 }

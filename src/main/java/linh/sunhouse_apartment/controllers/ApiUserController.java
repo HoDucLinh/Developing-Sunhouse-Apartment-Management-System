@@ -61,20 +61,25 @@ public class ApiUserController {
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "phone", required = false) String phone,
             @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            UpdateProfileRequest request = new UpdateProfileRequest();
+            request.setFullName(fullName);
+            request.setEmail(email);
+            request.setPhone(phone);
+            request.setFile(file);
 
-        UpdateProfileRequest request = new UpdateProfileRequest();
-        request.setFullName(fullName);
-        request.setEmail(email);
-        request.setPhone(phone);
-        request.setFile(file);
+            User updatedUser = userService.updateProfile(userId, request);
 
-        User updatedUser = userService.updateProfile(userId, request);
-
-        if (updatedUser != null) {
-            return ResponseEntity.ok(Collections.singletonMap("message", "Cập nhật hồ sơ thành công"));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("message", "Người dùng không tồn tại"));
+            if (updatedUser != null) {
+                return ResponseEntity.ok(Collections.singletonMap("message", "Cập nhật hồ sơ thành công"));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("message", "Người dùng không tồn tại"));
+            }
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
 }

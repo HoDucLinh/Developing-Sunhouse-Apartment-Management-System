@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,19 +55,29 @@ public class ApiFeedbackController {
     }
     @DeleteMapping("/delete-feedback/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Integer id) {
-        if (feedbackService.deleteFeedback(id)) {
-            return ResponseEntity.ok("Đã xóa feedback");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback");
+        try {
+            if (feedbackService.deleteFeedback(id)) {
+                return ResponseEntity.ok("Đã xóa feedback");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback");
+            }
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
     @PutMapping("/update-feedback/{id}")
     public ResponseEntity<?> updateFeedback(@PathVariable Integer id, @RequestBody FeedbackRequest request) {
-        Feedback updated = feedbackService.updateFeedback(id, request);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback để cập nhật");
+        try {
+            Feedback updated = feedbackService.updateFeedback(id, request);
+            if (updated != null) {
+                return ResponseEntity.ok(updated);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy feedback để cập nhật");
+            }
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
 
