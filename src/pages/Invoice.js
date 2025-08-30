@@ -33,6 +33,28 @@ const Invoice = () => {
         }
     };
 
+    const handlePayZalo = async (invoice) => {
+        try {
+            let token = cookie.load("token");
+            let res = await authApis(token).post(endpoints.paymentInvoice, {
+            userId: user.id,
+            amount: invoice.totalAmount,
+            invoiceId: invoice.id,
+            });
+
+            // backend trả về json trong đó có "order_url"
+            const data = res.data;
+            if (data.order_url) {
+            window.location.href = data.order_url; // redirect sang ZaloPay
+            } else {
+            alert("Không tạo được đơn hàng.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Thanh toán thất bại!");
+        }
+    };
+
     const handleShowPDF = async (invoice) => {
         setSelectedInvoice(invoice);
         setShowPDF(true);
@@ -143,6 +165,13 @@ const Invoice = () => {
                         onClick={() => alert("Vui lòng liên hệ ban quản lý để được hỗ trợ xoá hoá đơn.")}
                         >
                         Xóa
+                        </Button>
+                        <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handlePayZalo(inv)}
+                        >
+                        Thanh toán ZaloPay
                         </Button>
                     </td>
                     </tr>
