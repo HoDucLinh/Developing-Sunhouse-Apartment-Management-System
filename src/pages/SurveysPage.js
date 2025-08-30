@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
 import { authApis, endpoints } from '../configs/Apis';
 import cookie from 'react-cookies';
@@ -22,22 +22,23 @@ const SurveysPage = () => {
   // Lưu câu trả lời người dùng, dạng { questionId: answer }
   const [answers, setAnswers] = useState({});
 
+  const loadSurveys = useCallback(async () => {
+    try {
+      let token = cookie.load("token");
+      let res = await authApis(token).get(endpoints.getSurveys, {
+        params: { title: keyword, userId: user.id }
+      });
+      setSurveys(res.data);
+    } catch (err) {
+      console.error("Lỗi khi tải surveys:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [keyword, user.id]); // dependency chuẩn
+
   useEffect(() => {
-    const loadSurveys = async () => {
-      try {
-        let token = cookie.load("token");
-        let res = await authApis(token).get(endpoints.getSurveys, {
-          params: { title: keyword }
-        });
-        setSurveys(res.data);
-      } catch (err) {
-        console.error("Lỗi khi tải surveys:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadSurveys();
-  }, [keyword]);
+  }, [loadSurveys]); 
 
   const openSurveyModal = async (survey) => {
     setSelectedSurvey(survey);
@@ -132,6 +133,7 @@ const SurveysPage = () => {
 
       alert('Gửi khảo sát thành công!');
       closeSurveyModal();
+      await loadSurveys(); 
     } catch (err) {
       console.error('Lỗi khi gửi khảo sát:', err);
       const serverMsg = err?.response?.data;
