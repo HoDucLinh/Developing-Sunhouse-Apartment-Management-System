@@ -1,19 +1,19 @@
 package linh.sunhouse_apartment.repositories.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import linh.sunhouse_apartment.entity.DetailSurvey;
 import linh.sunhouse_apartment.entity.Question;
 import linh.sunhouse_apartment.entity.Survey;
 import linh.sunhouse_apartment.repositories.SurveyRepository;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -59,4 +59,36 @@ public class SurveyRepositoryImpl implements SurveyRepository {
 
         return getCurrentSession().createQuery(cq).getResultList();
     }
+
+    @Override
+    public List<Survey> getSurveysNotCompletedByUser(int userId, String title) {
+        CriteriaBuilder cb = getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
+        Root<Survey> surveyRoot = cq.from(Survey.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Subquery: chọn survey_id trong detail_survey mà user đã COMPLETED
+        Subquery<Integer> sub = cq.subquery(Integer.class);
+        Root<DetailSurvey> dsRoot = sub.from(DetailSurvey.class);
+        sub.select(dsRoot.get("survey").get("id"))
+                .where(
+                        cb.equal(dsRoot.get("user").get("id"), userId),
+                        cb.equal(dsRoot.get("status"), DetailSurvey.Status.COMPLETED)
+                );
+
+        // Thêm điều kiện NOT IN
+        predicates.add(cb.not(surveyRoot.get("id").in(sub)));
+
+        // Nếu có truyền title thì thêm điều kiện LIKE
+        if (title != null && !title.trim().isEmpty()) {
+            predicates.add(cb.like(cb.lower(surveyRoot.get("title")), "%" + title.toLowerCase() + "%"));
+        }
+
+        // Gộp tất cả predicate
+        cq.select(surveyRoot).where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return getCurrentSession().createQuery(cq).getResultList();
+    }
+
 }

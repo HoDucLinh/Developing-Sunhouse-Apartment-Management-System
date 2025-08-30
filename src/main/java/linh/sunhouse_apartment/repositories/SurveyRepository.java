@@ -8,4 +8,5 @@ public interface SurveyRepository {
     void save(Survey survey);
     Survey findById(int id);
     List<Survey> findAll(String title);
+    List<Survey> getSurveysNotCompletedByUser(int userId, String title);
 }

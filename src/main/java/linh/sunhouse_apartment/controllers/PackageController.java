@@ -76,7 +76,7 @@ public class PackageController {
     @GetMapping("/delete-package/{id}")
     public String deletePackage(@PathVariable("id") int packageId, @RequestParam("lockerId") int lockerId) {
         packageService.deletePackage(packageId);
-        return "redirect:/locker/" + lockerId;
+        return "redirect:/packages/" + lockerId;
     }
 
     @PostMapping("/change-package-status")

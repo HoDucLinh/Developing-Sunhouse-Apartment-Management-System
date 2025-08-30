@@ -9,4 +9,5 @@ public interface SurveyService {
     void createSurvey(Survey survey, User currentUser);
     Survey getSurveyById(int id);
     List<Survey> findAllSurvey(String title);
+    List<Survey> getSurveysNotCompletedByUser(int userId, String title);
 }

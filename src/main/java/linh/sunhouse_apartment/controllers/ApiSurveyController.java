@@ -8,6 +8,7 @@ import linh.sunhouse_apartment.dtos.response.QuestionResponse;
 import linh.sunhouse_apartment.dtos.response.SurveyResponse;
 import linh.sunhouse_apartment.entity.Question;
 import linh.sunhouse_apartment.entity.Survey;
+import linh.sunhouse_apartment.services.DetailSurveyService;
 import linh.sunhouse_apartment.services.QuestionService;
 import linh.sunhouse_apartment.services.ResponseService;
 import linh.sunhouse_apartment.services.SurveyService;
@@ -32,10 +33,13 @@ public class ApiSurveyController {
     @Autowired
     private ResponseService responseService;
 
+    @Autowired
+    private DetailSurveyService detailSurveyService;
+
     @GetMapping("/get-surveys")
-    public ResponseEntity<?> getAllSurveys(@RequestParam(value = "title", required = false) String title) {
+    public ResponseEntity<?> getAllSurveys(@RequestParam(value = "title", required = false) String title, @RequestParam("userId") Integer userId) {
         try {
-            List<Survey> surveys = surveyService.findAllSurvey(title);
+            List<Survey> surveys = surveyService.getSurveysNotCompletedByUser(userId,title);
 
             // Chuyển Survey -> SurveyResponse DTO
             List<SurveyResponse> responseList = surveys.stream()
@@ -100,6 +104,7 @@ public class ApiSurveyController {
                                           @RequestParam Integer userId) {
         try {
             responseService.saveResponses(request.getSurveyId(), userId, request.getAnswers());
+            detailSurveyService.save(request.getSurveyId(), userId);
             return ResponseEntity.ok().body("Nộp khảo sát thành công");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

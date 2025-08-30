@@ -39,4 +39,11 @@ public class SurveyServiceImpl implements SurveyService {
     public List<Survey> findAllSurvey(String title) {
         return surveyRepository.findAll(title);
     }
+
+    @Override
+    public List<Survey> getSurveysNotCompletedByUser(int userId, String title) {
+        return surveyRepository.getSurveysNotCompletedByUser(userId, title);
+    }
+
+
 }
