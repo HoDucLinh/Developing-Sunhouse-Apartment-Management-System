@@ -206,6 +206,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
     }
 
+
     @Override
     public void createInvoicesForAllRoomHeads(Integer feeId) {
         // Lấy danh sách trưởng phòng

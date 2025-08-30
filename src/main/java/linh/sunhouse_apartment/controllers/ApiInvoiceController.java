@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.controllers;
 
 import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
 import linh.sunhouse_apartment.dtos.response.InvoiceResponse;
+import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,13 +60,25 @@ public class ApiInvoiceController {
         }
     }
     @PutMapping("/upload-proof")
-    public ResponseEntity<?> getInvoicesByUserId(@RequestParam Integer invoiceId, @RequestParam MultipartFile file) {
+    public ResponseEntity<?> uploadProof(@RequestParam Integer invoiceId, @RequestParam MultipartFile file) {
         try {
             invoiceService.uploadProof(invoiceId, file);
             return ResponseEntity.ok("upload proof successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Có lỗi xảy ra khi upload minh chứng: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-invoice/{invoiceId}")
+    public ResponseEntity<?> getInvoiceById(@PathVariable Integer invoiceId) {
+        try {
+            InvoiceResponse invoice = invoiceService.getInvoiceDetail(invoiceId);
+
+            return ResponseEntity.ok(invoice);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Có lỗi xảy ra khi lấy danh sách hóa đơn: " + e.getMessage());
         }
     }
 }
