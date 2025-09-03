@@ -93,6 +93,15 @@ public class RoomRepositoryImpl implements RoomRepository {
         return session.createQuery(userQuery).getResultList();
     }
 
+    @Override
+    public Room update(Room room) {
+        if (room != null) {
+            sessionFactory.getCurrentSession().merge(room);
+            return room;
+        }
+        return null;
+    }
+
     private RoomResponse mapToRoomResponse(Session session, CriteriaBuilder cb, Room room) {
         RoomResponse dto = new RoomResponse();
         dto.setId(room.getId());

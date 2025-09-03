@@ -1,14 +1,13 @@
 package linh.sunhouse_apartment.controllers;
 
+import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,5 +36,23 @@ public class RoomController {
                                  @RequestParam("newHeadId") Integer newHeadId) {
         roomService.changeRoomHead(id, newHeadId);
         return "redirect:/" + id + "/members";
+    }
+
+    @GetMapping("/manage-room/edit/{id}")
+    public String editRoomForm(@PathVariable Integer id, Model model) {
+        Room room = roomService.findById(id);
+        if (room == null) {
+            return "redirect:/manage-room"; // nếu không tìm thấy thì quay về danh sách
+        }
+
+        model.addAttribute("room", room);
+        return "edit_room"; // trang form edit
+    }
+
+    @PostMapping("/manage-room/edit/{id}")
+    public String updateRoom(@PathVariable Integer id,
+                             @ModelAttribute RoomRequest roomRequest) {
+        roomService.updateRoom(id, roomRequest);
+        return "redirect:/manage-room";
     }
 }

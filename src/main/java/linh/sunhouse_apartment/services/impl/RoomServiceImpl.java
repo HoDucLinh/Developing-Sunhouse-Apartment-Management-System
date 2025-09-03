@@ -1,6 +1,9 @@
 package linh.sunhouse_apartment.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
+import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.entity.Floor;
 import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.repositories.RoomRepository;
 import linh.sunhouse_apartment.services.RoomService;
@@ -30,6 +33,35 @@ public class RoomServiceImpl implements RoomService {
     public void changeRoomHead(Integer roomId, Integer newHeadId) {
         roomRepository.updateRoomHead(roomId, newHeadId);
     }
+
+    @Override
+    public Room updateRoom(Integer roomId, RoomRequest dto) {
+        Room existingRoom = roomRepository.findById(roomId);
+        if (existingRoom == null) {
+            throw new EntityNotFoundException("Room not found with id " + roomId);
+        }
+
+        if (dto.getRoomNumber() != null) {
+            existingRoom.setRoomNumber(dto.getRoomNumber());
+        }
+        if (dto.getMaxPeople() != null) {
+            existingRoom.setMaxPeople(dto.getMaxPeople());
+        }
+        if (dto.getArea() != null) {
+            existingRoom.setArea(dto.getArea());
+        }
+        if (dto.getDescription() != null) {
+            existingRoom.setDescription(dto.getDescription());
+        }
+        if (dto.getFloorId() != null) {
+            Floor floor = new Floor();
+            floor.setId(dto.getFloorId());
+            existingRoom.setFloor(floor);
+        }
+
+        return roomRepository.update(existingRoom);
+    }
+
 
     @Override
     public Room findById(Integer id) {

@@ -42,6 +42,10 @@
                                th:href="@{/{id}/members(id=${room.id})}">
                             <i class="bi bi-people"></i> Xem thành viên
                             </a>
+                            <a class="btn btn-sm btn-outline-warning"
+                               th:href="@{/manage-room/edit/{id}(id=${room.id})}">
+                                <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                            </a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(rooms)}">

@@ -13,4 +13,5 @@ public interface RoomRepository {
     RoomResponse findRoomWithUsers(Integer roomId);
     void updateRoomHead(Integer roomId, Integer newHeadId);
     List<User> getUsersByRoomId(Room room);
+    Room update (Room room);
 }
