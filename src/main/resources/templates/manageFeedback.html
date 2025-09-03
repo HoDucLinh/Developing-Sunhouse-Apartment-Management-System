@@ -4,18 +4,50 @@
             <h2 class="mb-4">Danh sách phản ánh</h2>
 
             <!-- Form tìm kiếm -->
-            <form method="get" action="/manage-feedback" class="row g-3 align-items-center mb-4">
-                <div class="col-auto">
-                    <input type="text" id="kw" name="kw" class="form-control" placeholder="Tìm theo nội dung"
+            <form method="get" action="/manage-feedback" class="row g-3 align-items-end mb-4">
+                <!-- Nội dung -->
+                <div class="col-md-3">
+                    <label for="kw" class="form-label">Nội dung</label>
+                    <input type="text" id="kw" name="kw" class="form-control"
+                           placeholder="Tìm theo nội dung"
                            th:value="${params['kw']}">
                 </div>
 
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Tìm kiếm
+                <!-- Người gửi -->
+                <div class="col-md-3">
+                    <label for="name" class="form-label">Người gửi</label>
+                    <input type="text" id="name" name="name" class="form-control"
+                           placeholder="Tên người gửi"
+                           th:value="${params['name']}">
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Trạng thái</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="PENDING" th:selected="${params['status'] == 'PENDING'}">PENDING</option>
+                        <option value="RESOLVED" th:selected="${params['status'] == 'RESOLVED'}">RESOLVED</option>
+                    </select>
+                </div>
+
+                <!-- Sắp xếp -->
+                <div class="col-md-2">
+                    <label for="sort" class="form-label">Sắp xếp</label>
+                    <select id="sort" name="sort" class="form-select">
+                        <option value="newest" th:selected="${params['sort'] == 'newest'}">Mới nhất</option>
+                        <option value="oldest" th:selected="${params['sort'] == 'oldest'}">Cũ nhất</option>
+                    </select>
+                </div>
+
+                <!-- Nút lọc -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Lọc
                     </button>
                 </div>
             </form>
+
 
             <!-- Bảng phản ánh -->
             <div class="table-responsive">

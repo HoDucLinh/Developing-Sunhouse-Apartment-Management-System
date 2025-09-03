@@ -55,7 +55,25 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
             if (name != null && !name.isEmpty()) {
                 predicates.add(b.like(root.get("userId").get("fullName"), String.format("%%%s%%", name)));
             }
-            q.where(predicates.toArray(Predicate[]::new));
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                try {
+                    Feedback.FeedbackStatus st = Feedback.FeedbackStatus.valueOf(status.toUpperCase());
+                    predicates.add(b.equal(root.get("status"), st));
+                } catch (IllegalArgumentException e) {
+                    // Nếu status không hợp lệ thì bỏ qua
+                }
+            }
+            if (!predicates.isEmpty()) {
+                q.where(predicates.toArray(Predicate[]::new));
+            }
+            String sort = params.get("sort");
+            if ("oldest".equalsIgnoreCase(sort)) {
+                q.orderBy(b.asc(root.get("createdAt")));
+            } else {
+                // mặc định newest
+                q.orderBy(b.desc(root.get("createdAt")));
+            }
 
         }
 
