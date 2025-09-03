@@ -5,6 +5,7 @@ import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.entity.Floor;
 import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.repositories.FloorRepository;
 import linh.sunhouse_apartment.repositories.RoomRepository;
 import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private FloorRepository floorRepository;
 
     @Override
     public List<RoomResponse> findAll(String keyword) {
@@ -60,6 +64,26 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return roomRepository.update(existingRoom);
+    }
+
+    @Override
+    public Room addRoom(RoomRequest dto) {
+        Room room = roomRepository.findRoomWithRoomNumber(dto.getRoomNumber());
+        Floor floor = floorRepository.findFloorById(dto.getFloorId());
+        if(room != null){
+            throw new EntityNotFoundException("Room already exists with room number " + dto.getRoomNumber());
+        }
+        if(floor == null){
+            throw new EntityNotFoundException("Floor not found with floor id " + dto.getFloorId());
+        }
+        room = new Room();
+        room.setRoomNumber(dto.getRoomNumber());
+        room.setMaxPeople(dto.getMaxPeople());
+        room.setArea(dto.getArea());
+        room.setDescription(dto.getDescription());
+        room.setFloor(floor);
+        roomRepository.addRoom(room);
+        return room;
     }
 
 

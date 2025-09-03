@@ -1,8 +1,10 @@
 package linh.sunhouse_apartment.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.services.FloorService;
 import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,9 @@ public class RoomController {
 
     @Autowired
     RoomService roomService;
+
+    @Autowired
+    FloorService floorService;
 
     @GetMapping("/manage-room")
     public String manageRoom(@RequestParam(value = "kw", required = false) String keyword, Model model) {
@@ -55,4 +60,26 @@ public class RoomController {
         roomService.updateRoom(id, roomRequest);
         return "redirect:/manage-room";
     }
+
+
+    @GetMapping("/add-room")
+    public String addRoomForm(Model model) {
+        model.addAttribute("roomRequest", new RoomRequest());
+        model.addAttribute("floors", floorService.findAll());
+        return "add_room";
+    }
+
+    @PostMapping("/add-room")
+    public String addRoom(@ModelAttribute("roomRequest") RoomRequest roomRequest,
+                          Model model) {
+        try {
+            roomService.addRoom(roomRequest);
+            return "redirect:/manage-room";
+        } catch (EntityNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("floors", floorService.findAll());
+            return "add_room";
+        }
+    }
+
 }

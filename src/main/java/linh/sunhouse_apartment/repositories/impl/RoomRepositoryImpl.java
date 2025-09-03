@@ -102,6 +102,26 @@ public class RoomRepositoryImpl implements RoomRepository {
         return null;
     }
 
+    @Override
+    public Room addRoom(Room room) {
+        sessionFactory.getCurrentSession().persist(room);
+        return room;
+    }
+
+    @Override
+    public Room findRoomWithRoomNumber(String roomNumber) {
+        if (roomNumber != null) {
+            Session session = sessionFactory.getCurrentSession();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
+            Root<Room> root = cq.from(Room.class);
+            cq.select(root).where(cb.equal(root.get("roomNumber"), roomNumber));
+            List<Room> results = session.createQuery(cq).getResultList();
+            return results.isEmpty() ? null : results.get(0);
+        }
+        return null;
+    }
+
     private RoomResponse mapToRoomResponse(Session session, CriteriaBuilder cb, Room room) {
         RoomResponse dto = new RoomResponse();
         dto.setId(room.getId());

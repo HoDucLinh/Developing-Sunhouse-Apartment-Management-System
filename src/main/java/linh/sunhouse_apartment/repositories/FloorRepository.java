@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface FloorRepository {
     List<Floor> findAll();
+    Floor findFloorById(Integer id);
 }

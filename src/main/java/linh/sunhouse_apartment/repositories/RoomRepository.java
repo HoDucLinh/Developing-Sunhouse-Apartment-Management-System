@@ -14,4 +14,6 @@ public interface RoomRepository {
     void updateRoomHead(Integer roomId, Integer newHeadId);
     List<User> getUsersByRoomId(Room room);
     Room update (Room room);
+    Room addRoom(Room room);
+    Room findRoomWithRoomNumber(String roomNumber);
 }

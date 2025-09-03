@@ -13,4 +13,5 @@ public interface RoomService {
     RoomResponse getRoomWithUsers(Integer roomId);
     void changeRoomHead(Integer roomId, Integer newHeadId);
     Room updateRoom (Integer roomId, RoomRequest dto);
+    Room addRoom (RoomRequest dto);
 }
