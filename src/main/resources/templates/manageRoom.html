@@ -30,6 +30,7 @@
                         <th>Còn trống</th>
                         <th>Diện tích</th>
                         <th>Mô tả</th>
+                        <th>Giá</th>
                         <th>Hành động</th>
                     </tr>
                     </thead>
@@ -42,6 +43,7 @@
                         <td th:text="${room.availableSlots}" class="text-center"></td>
                         <td th:text="${room.area}" class="text-center"></td>
                         <td th:text="${room.description}"></td>
+                        <td th:text="${room.rent_price}"></td>
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-primary"
                                th:href="@{/{id}/members(id=${room.id})}">

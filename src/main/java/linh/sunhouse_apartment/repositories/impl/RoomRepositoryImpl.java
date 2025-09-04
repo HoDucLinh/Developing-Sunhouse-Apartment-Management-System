@@ -130,6 +130,7 @@ public class RoomRepositoryImpl implements RoomRepository {
         dto.setMaxPeople(room.getMaxPeople());
         dto.setArea(room.getArea());
         dto.setDescription(room.getDescription());
+        dto.setRent_price(room.getRentPrice());
 
         CriteriaQuery<User> userQuery = cb.createQuery(User.class);
         Root<User> userRoot = userQuery.from(User.class);

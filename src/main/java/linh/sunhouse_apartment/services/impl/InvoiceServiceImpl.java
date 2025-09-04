@@ -224,7 +224,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setUserId(u);
             invoice.setPaymentMethod(Invoice.PAYMENT_METHOD.TRANSFER);   // mặc định CASH
             invoice.setPaymentProof(null);      // chưa có minh chứng
-            invoice.setTotalAmount(BigDecimal.valueOf(fee.getPrice()));
+            invoice.setTotalAmount(u.getRoomId().getRentPrice().add(BigDecimal.valueOf(fee.getPrice())));
             invoice.setAccept(false);
             invoice.setActive(true);
             invoice.setStatus(Invoice.Status.UNPAID);

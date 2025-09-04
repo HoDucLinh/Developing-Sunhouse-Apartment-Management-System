@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -38,5 +40,8 @@ public class Room {
     @Lob
     @Column(name = "description")
     private String description;
+
+    @Column(name = "rent_price", precision = 12, scale = 2)
+    private BigDecimal rentPrice;
 
 }

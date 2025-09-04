@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.dtos.response;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -17,4 +18,5 @@ public class RoomResponse {
     private Integer availableSlots;
     private List<UserResponse> users;
     private Integer roomHeadId;
+    private BigDecimal rent_price;
 }
