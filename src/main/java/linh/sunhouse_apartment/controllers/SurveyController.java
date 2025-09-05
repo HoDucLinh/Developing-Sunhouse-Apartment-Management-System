@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class SurveyController {
@@ -33,11 +34,11 @@ public class SurveyController {
     private HttpSession session;
 
     @GetMapping("/manage-survey")
-    public String manageSurvey(@RequestParam(value = "title", required = false) String title,
+    public String manageSurvey(@RequestParam Map<String, String> params,
                                Model model) {
-        List<Survey> surveys = surveyService.findAllSurvey(title);
+        List<Survey> surveys = surveyService.findAllSurvey(params);
         model.addAttribute("surveys", surveys);
-        model.addAttribute("title", title);
+        model.addAttribute("params", params);
         return "manageSurvey";
     }
 

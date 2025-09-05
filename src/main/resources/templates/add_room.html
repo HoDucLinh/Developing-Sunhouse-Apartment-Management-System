@@ -41,6 +41,11 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label">Giá tiền</label>
+                            <input type="number" th:field="*{rent_price}" class="form-control shadow-sm" placeholder="Ví dụ: 70" step="0.1" required />
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Mô tả</label>
                             <textarea th:field="*{description}" class="form-control shadow-sm" rows="3" placeholder="Mô tả chi tiết căn hộ..."></textarea>
                         </div>

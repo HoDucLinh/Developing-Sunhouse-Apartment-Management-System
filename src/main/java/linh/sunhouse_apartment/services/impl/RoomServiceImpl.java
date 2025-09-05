@@ -11,6 +11,7 @@ import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,9 @@ public class RoomServiceImpl implements RoomService {
             Floor floor = new Floor();
             floor.setId(dto.getFloorId());
             existingRoom.setFloor(floor);
+        }
+        if(dto.getRent_price() != null) {
+            existingRoom.setRentPrice(dto.getRent_price());
         }
 
         return roomRepository.update(existingRoom);

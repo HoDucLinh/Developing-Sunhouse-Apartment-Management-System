@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SurveyServiceImpl implements SurveyService {
@@ -36,8 +37,8 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public List<Survey> findAllSurvey(String title) {
-        return surveyRepository.findAll(title);
+    public List<Survey> findAllSurvey(Map<String, String> params) {
+        return surveyRepository.findAll(params);
     }
 
     @Override

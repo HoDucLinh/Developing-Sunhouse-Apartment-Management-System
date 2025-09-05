@@ -10,7 +10,12 @@
 
             <form method="get" th:action="@{/manage-survey}" class="mb-3 d-flex">
                 <input type="text" name="title" class="form-control me-2"
-                       placeholder="Tìm theo tiêu đề..." th:value="${title}">
+                       placeholder="Tìm theo tiêu đề..." th:value="${params['titile']}">
+                <select id="status" name="status" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    <option value="MULTIPLE_CHOICE" th:selected="${params['status'] == 'MULTIPLE_CHOICE'}">MULTIPLE_CHOICE</option>
+                    <option value="SHORT_ANSWER" th:selected="${params['status'] == 'SHORT_ANSWER'}">SHORT_ANSWER</option>
+                </select>
                 <button type="submit" class="btn btn-primary">Tìm kiếm</button>
             </form>
 

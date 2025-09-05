@@ -30,7 +30,12 @@
                                    th:value="${room.area}" required>
                         </div>
 
-                        <!-- Tầng -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Giá tiền</label>
+                            <input type="number" step="0.1" class="form-control shadow-sm" name="rent_price"
+                                   th:value="${room.rentPrice}" required>
+                        </div>
+                         Tầng
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Tầng</label>
                             <input type="number" class="form-control shadow-sm" name="floorId"

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @Transactional
@@ -47,14 +48,28 @@ public class SurveyRepositoryImpl implements SurveyRepository {
 
 
     @Override
-    public List<Survey> findAll(String title) {
+    public List<Survey> findAll(Map<String, String> params) {
         CriteriaBuilder cb = getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
         Root<Survey> root = cq.from(Survey.class);
+        cq.select(root);
+        List<Predicate> predicates = new ArrayList<>();
 
         // Nếu có điều kiện tìm kiếm theo title
-        if (title != null && !title.trim().isEmpty()) {
-            cq.where(cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
+        if (params != null && !params.isEmpty()) {
+            String title = params.get("title");
+            if (title != null && !title.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
+            }
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                Survey.SurveyType surveyType = Survey.SurveyType.valueOf(status.toUpperCase());
+                predicates.add(cb.equal(root.get("type"), surveyType));
+            }
+            if (!predicates.isEmpty()) {
+                cq.where(predicates.toArray(Predicate[]::new));
+            }
+
         }
 
         return getCurrentSession().createQuery(cq).getResultList();
