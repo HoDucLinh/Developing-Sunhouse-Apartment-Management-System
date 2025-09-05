@@ -31,22 +31,13 @@ public class AppointmentController {
 
     @GetMapping("/manage-appointment")
     public String manageAppointment(
-            @RequestParam(required = false) String kw,
-            @RequestParam(required = false) String email,
+            @RequestParam Map<String, String> params,
             Model model
     ) {
-        Map<String, String> params = new HashMap<>();
-        if (kw != null && !kw.isEmpty()) {
-            params.put("kw", kw);
-        }
-        if (email != null && !email.isEmpty()) {
-            params.put("email", email);
-        }
 
         List<Appointment> appointments = appointmentService.getAppointments(params);
         model.addAttribute("appointments", appointments);
-        model.addAttribute("kw", kw);
-        model.addAttribute("email", email);
+        model.addAttribute("params", params);
 
         return "manageAppointment";
     }

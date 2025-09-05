@@ -55,6 +55,11 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             if (email != null && !email.isEmpty()) {
                 predicates.add(b.like(root.get("email"), String.format("%%%s%%", email)));
             }
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                Appointment.AppointmentStatus appointmentStatus = Appointment.AppointmentStatus.valueOf(status.toUpperCase());
+                predicates.add(b.equal(root.get("status"), appointmentStatus));
+            }
             q.where(predicates.toArray(Predicate[]::new));
 
         }

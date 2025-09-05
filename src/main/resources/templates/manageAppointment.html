@@ -7,6 +7,12 @@
                            th:value="${kw}" />
                     <input type="text" name="email" class="form-control" placeholder="Tìm theo email"
                            th:value="${email}" />
+                    <select id="status" name="status" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="PENDING" th:selected="${params['status'] == 'PENDING'}">PENDING</option>
+                        <option value="APPROVED" th:selected="${params['status'] == 'APPROVED'}">APPROVED</option>
+                        <option value="REJECTED" th:selected="${params['status'] == 'REJECTED'}">REJECTED</option>
+                    </select>
                     <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                     <a th:href="@{/manage-appointment}" class="btn btn-secondary">Reset</a>
                 </form>
