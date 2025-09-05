@@ -56,6 +56,7 @@
                     <tr>
                         <th>ID</th>
                         <th><i class="bi bi-person"></i> Người gửi</th>
+                        <th><i class="bi bi-person"></i> Người xử lý</th>
                         <th><i class="bi bi-chat-left-dots"></i> Nội dung</th>
                         <th><i class="bi bi-calendar-event"></i> Ngày tạo</th>
                         <th><i class="bi bi-info-circle"></i> Trạng thái</th>
@@ -65,6 +66,7 @@
                     <tr th:each="f : ${feedbackList}">
                         <td th:text="${f.id}"></td>
                         <td th:text="${f.userId.fullName}"></td>
+                        <td th:text="${f.handlerId != null ? f.handlerId.fullName : '-'}"></td>
                         <td th:text="${f.content}"></td>
                         <td>
                             <span th:text="${#dates.format(f.createdAt, 'dd/MM/yyyy')}"></span>
@@ -119,6 +121,8 @@
                     });
 
                     if (!response.ok) throw new Error("Lỗi server");
+
+                    location.reload();
 
                     // cập nhật trực tiếp UI
                     const select = this.querySelector("select");

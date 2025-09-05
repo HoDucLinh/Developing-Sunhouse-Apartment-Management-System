@@ -64,11 +64,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public void updateStatus(int feedbackId, Feedback.FeedbackStatus status) {
+    public void updateStatus(int feedbackId, Feedback.FeedbackStatus status, User handler) {
         Feedback feedback = feedBackRepository.findFeedbackById(feedbackId);
         if (feedback != null) {
-            feedback.setStatus(status); // Cập nhật status mới từ người dùng
-            feedBackRepository.updateStatus(feedbackId, status);
+            feedback.setStatus(status);// Cập nhật status mới từ người dùng
+            feedback.setHandlerId(handler);
+            feedBackRepository.update(feedback);
         }
     }
 }

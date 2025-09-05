@@ -52,4 +52,8 @@ public class Feedback implements Serializable {
     @ManyToOne
     @JsonIgnore
     private User userId;
+    @JoinColumn(name = "handler_id", referencedColumnName = "id")
+    @ManyToOne
+    @JsonIgnore
+    private User handlerId;
 }
