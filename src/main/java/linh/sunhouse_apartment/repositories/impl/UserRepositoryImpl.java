@@ -71,6 +71,11 @@ public class UserRepositoryImpl implements UserRepository {
             if (roomNumber != null && !roomNumber.isEmpty()) {
                 predicates.add(b.like(root.get("roomId").get("roomNumber"), String.format("%%%s%%", roomNumber)));
             }
+            String role = params.get("role");
+            if (role != null && !role.isEmpty()) {
+                User.Role r = User.Role.valueOf(role.toUpperCase());
+                predicates.add(b.equal(root.get("role"), r));
+            }
             q.where(predicates.toArray(Predicate[]::new));
 
         }

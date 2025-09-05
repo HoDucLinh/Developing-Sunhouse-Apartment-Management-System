@@ -10,13 +10,21 @@
 
             <!-- Search form -->
             <form class="row g-3 mb-4" method="get" th:action="@{/manage-user}">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="text" name="kw" th:value="${params['kw']}" class="form-control" placeholder="Search by fullName...">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="text" name="room_number" th:value="${params['room_number']}" class="form-control" placeholder="Search by room number...">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <select id="role" name="role" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="ADMIN" th:selected="${params['role'] == 'ADMIN'}">ADMIN</option>
+                        <option value="BOD" th:selected="${params['role'] == 'BOD'}">BOD</option>
+                        <option value="RESIDENT" th:selected="${params['role'] == 'RESIDENT'}">RESIDENT</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-search"></i> Search
                     </button>
