@@ -1,14 +1,18 @@
-// InvoicePDF.js
 import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 
 // Đăng ký font Times New Roman
 Font.register({
-  family: "Times-Roman",
-  src: "https://fonts.cdnfonts.com/s/14682/times-new-roman.woff",
+  family: "NotoSans",
+  fonts: [
+    { src: "/fonts/NotoSans-Regular.ttf", fontWeight: "normal" },
+    { src: "/fonts/NotoSans-Bold.ttf", fontWeight: "bold" },
+    { src: "/fonts/NotoSans-Italic.ttf", fontStyle: "italic" },
+    { src: "/fonts/NotoSans-BoldItalic.ttf", fontWeight: "bold", fontStyle: "italic" },
+  ],
 });
 
 const styles = StyleSheet.create({
-  page: { padding: 30, fontSize: 12, fontFamily: "Times-Roman" },
+  page: { padding: 30, fontSize: 12, fontFamily: "NotoSans" },
   header: { fontSize: 18, marginBottom: 20, textAlign: "center", fontWeight: "bold" },
   section: { marginBottom: 15 },
   label: { fontWeight: "bold", marginBottom: 5 },
@@ -44,7 +48,16 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  // Footer
+  // Cho bảng detail (4 cột)
+  tableCol4: {
+    width: "25%", // 100% / 4 cột
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    padding: 5,
+  },
+
   footer: {
     position: "absolute",
     bottom: 30,
@@ -106,6 +119,29 @@ const InvoicePDF = ({ invoice, user }) => {
               <Text style={styles.tableCol6}>{invoice.dueDate}</Text>
               <Text style={styles.tableCol6}>{invoice.status}</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Invoice Details */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Invoice Details</Text>
+          <View style={styles.table}>
+            {/* Header */}
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCol4}>Fee ID</Text>
+              <Text style={styles.tableCol4}>Fee Name</Text>
+              <Text style={styles.tableCol4}>Amount</Text>
+              <Text style={styles.tableCol4}>Note</Text>
+            </View>
+            {/* Data */}
+            {invoice.details?.map((d, idx) => (
+              <View style={styles.tableRow} key={idx}>
+                <Text style={styles.tableCol4}>{d.feeId}</Text>
+                <Text style={styles.tableCol4}>{d.feeName}</Text>
+                <Text style={styles.tableCol4}>{d.amount} VND</Text>
+                <Text style={styles.tableCol4}>{d.note}</Text>
+              </View>
+            ))}
           </View>
         </View>
 

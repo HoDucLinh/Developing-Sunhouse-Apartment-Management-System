@@ -26,8 +26,11 @@ export const endpoints = {
   getUtilitiesOfUser : (userId) => `fee/get-utilities-of-user?userId=${userId}`,
   createCard : 'card/create-card',
   getCardByUserId : (userId) => `card/get-cards/${userId}`,
-  paymentInvoice : 'payment/zalopay',
-  getInvoice : (invoiceId) => `invoice/get-invoice/${invoiceId}`
+  getInvoice : (invoiceId) => `invoice/get-invoice/${invoiceId}`,
+  getStatus :'payment/status',
+  paymentVNPay: 'payment/vnpay',
+  paymentVNPayReturn: 'payment/vnpay-payment-return' 
+
 };
 
 // Axios không có token (dùng cho login, register,...)

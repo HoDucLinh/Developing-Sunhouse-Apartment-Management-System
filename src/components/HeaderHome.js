@@ -17,9 +17,9 @@ const HeaderHome = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto gap-4 align-items-center">
-            <Nav.Link onClick={() => navigate("/home")}>HOME</Nav.Link>
-            <Nav.Link onClick={() => navigate("/about")}>ABOUT</Nav.Link>
-            <Nav.Link onClick={() => navigate("/contact")}>CONTACT</Nav.Link>
+            <Nav.Link onClick={() => navigate("/home")}>Trang chủ</Nav.Link>
+            <Nav.Link onClick={() => navigate("/about")}>Chúng tôi</Nav.Link>
+            <Nav.Link onClick={() => navigate("/contact")}>Liên hệ</Nav.Link>
             <Button variant="outline-primary" onClick={() => navigate("/login")}>
               LOGIN
             </Button>

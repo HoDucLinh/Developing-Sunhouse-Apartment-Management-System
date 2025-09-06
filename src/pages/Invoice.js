@@ -20,6 +20,10 @@ const Invoice = () => {
 
     const [uploading, setUploading] = useState(false);
 
+    const [showDetail, setShowDetail] = useState(false);
+    const [detailInvoice, setDetailInvoice] = useState(null);
+
+
     const statusBadge = (status) => {
         switch (status) {
         case 'Đã thanh toán':
@@ -33,26 +37,29 @@ const Invoice = () => {
         }
     };
 
-    const handlePayZalo = async (invoice) => {
+    const handlePayVNPay = async (invoice) => {
         try {
             let token = cookie.load("token");
-            let res = await authApis(token).post(endpoints.paymentInvoice, {
-            userId: user.id,
-            amount: invoice.totalAmount,
+            let res = await authApis(token).post(endpoints.paymentVNPay, {
             invoiceId: invoice.id,
+            amount: invoice.totalAmount
             });
 
-            // backend trả về json trong đó có "order_url"
-            const data = res.data;
-            if (data.order_url) {
-            window.location.href = data.order_url; // redirect sang ZaloPay
+            const payUrl = res.data; // backend trả về link thanh toán
+            if (payUrl) {
+            window.location.href = payUrl; // redirect sang VNPay
             } else {
-            alert("Không tạo được đơn hàng.");
+            alert("Không tạo được đơn hàng VNPay.");
             }
         } catch (err) {
-            console.error(err);
-            alert("Thanh toán thất bại!");
+            console.error("VNPay error:", err);
+            alert("Thanh toán VNPay thất bại!");
         }
+    };
+
+    const handleShowDetail = (invoice) => {
+        setDetailInvoice(invoice);
+        setShowDetail(true);
     };
 
     const handleShowPDF = async (invoice) => {
@@ -157,21 +164,21 @@ const Invoice = () => {
                         size="sm"
                         onClick={() => handleShowPDF(inv)}
                         >
-                        Xem / In
+                        In
                         </Button>
                         <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => alert("Vui lòng liên hệ ban quản lý để được hỗ trợ xoá hoá đơn.")}
+                        onClick={() => handleShowDetail(inv)}
                         >
-                        Xóa
+                        Xem
                         </Button>
                         <Button
                         variant="outline-primary"
                         size="sm"
-                        onClick={() => handlePayZalo(inv)}
+                        onClick={() => handlePayVNPay(inv)}
                         >
-                        Thanh toán ZaloPay
+                        Thanh toán VNPay
                         </Button>
                     </td>
                     </tr>
@@ -179,6 +186,73 @@ const Invoice = () => {
                 </tbody>
             </Table>
             )}
+
+            {/* Modal Chi tiết hóa đơn */}
+            <Modal show={showDetail} onHide={() => setShowDetail(false)} size="lg" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Chi tiết hóa đơn #{detailInvoice?.id}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {detailInvoice ? (
+                <>
+                    <h6>Thông tin chung</h6>
+                    <Table bordered size="sm">
+                    <tbody>
+                        <tr>
+                        <th>Khách hàng</th>
+                        <td>{detailInvoice.fullName}</td>
+                        </tr>
+                        <tr>
+                        <th>Ngày lập</th>
+                        <td>{detailInvoice.issuedDate}</td>
+                        </tr>
+                        <tr>
+                        <th>Hạn thanh toán</th>
+                        <td>{detailInvoice.dueDate}</td>
+                        </tr>
+                        <tr>
+                        <th>Phương thức</th>
+                        <td>{detailInvoice.paymentMethod}</td>
+                        </tr>
+                        <tr>
+                        <th>Thành tiền</th>
+                        <td>{detailInvoice.totalAmount} VND</td>
+                        </tr>
+                        <tr>
+                        <th>Trạng thái</th>
+                        <td>{statusBadge(detailInvoice.status)}</td>
+                        </tr>
+                    </tbody>
+                    </Table>
+
+                    <h6>Chi tiết dịch vụ</h6>
+                    <Table striped bordered hover responsive size="sm">
+                    <thead>
+                        <tr>
+                        <th>Fee ID</th>
+                        <th>Tên dịch vụ</th>
+                        <th>Số tiền</th>
+                        <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {detailInvoice.details?.map((d, idx) => (
+                        <tr key={idx}>
+                            <td>{d.feeId}</td>
+                            <td>{d.feeName}</td>
+                            <td>{d.amount} VND</td>
+                            <td>{d.note}</td>
+                        </tr>
+                        ))}
+                    </tbody>
+                    </Table>
+                </>
+                ) : (
+                <Alert variant="info">Không có dữ liệu hóa đơn</Alert>
+                )}
+            </Modal.Body>
+            </Modal>
+
 
             {/* Modal PDF */}
             <Modal show={showPDF} onHide={() => setShowPDF(false)} fullscreen>

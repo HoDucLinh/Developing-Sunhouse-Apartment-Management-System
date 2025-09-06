@@ -33,6 +33,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/home" element={<Home />} />
         <Route path="/apartment" element={<ApartmentPage />} />
+        <Route path="/payment/result" element={<PaymentResult />} />
 
         {/* Các route cần đăng nhập (dùng PrivateRoute bao bọc) */}
         <Route element={<PrivateRoute />}>
@@ -47,7 +48,6 @@ function App() {
           <Route path="/relative" element={<Relative />} />
           <Route path="/invoices" element={<Invoice />} />
           <Route path="/chat" element={<ChatRoom />} />
-          <Route path="/payment/result" element={<PaymentResult />} />
         </Route>
       </Routes>
     </UserProvider>

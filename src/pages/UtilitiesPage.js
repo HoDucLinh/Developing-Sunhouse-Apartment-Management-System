@@ -172,8 +172,8 @@ const UtilitiesPage = () => {
                     value={paymentMethod} 
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   >
-                    <option value="CASH">Tiền mặt</option>
-                    <option value="TRANSFER">MOMO</option>
+                    <option value="CASH">CASH</option>
+                    <option value="TRANSFER">TRANSFER</option>
                   </Form.Select>
                 </Form.Group>
 
