@@ -6,6 +6,10 @@ package linh.sunhouse_apartment.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,6 +17,9 @@ import java.util.Date;
  *
  * @author ADMIN
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "package")
 @NamedQueries({
@@ -49,93 +56,17 @@ public class Package implements Serializable {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Column(name = "received_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date receivedAt;
     @JoinColumn(name = "locker_id", referencedColumnName = "id")
     @ManyToOne
     private Locker lockerId;
+    @JoinColumn(name = "sender_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private User senderId;
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private User receiverId;
 
-    public Package() {
-    }
-
-    public Package(Integer id) {
-        this.id = id;
-    }
-
-    public Package(Integer id, String image) {
-        this.id = id;
-        this.image = image;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Locker getLockerId() {
-        return lockerId;
-    }
-
-    public void setLockerId(Locker lockerId) {
-        this.lockerId = lockerId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Package)) {
-            return false;
-        }
-        Package other = (Package) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.apartment_management.pojo.Package[ id=" + id + " ]";
-    }
-    
 }

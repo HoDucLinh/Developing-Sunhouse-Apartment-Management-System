@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface PackageRepository {
     Package addPackage(Package p);
-    int changeStatusPackage(int packageID, Package.Status newStatus);
+    Integer update (Package pk);
     int deletePackage(int packageID);
     List<Package> findAllPackagesById(Locker l, String kw);
+    Package findPackageById(int packageID);
 }

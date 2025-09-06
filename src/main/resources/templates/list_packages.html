@@ -42,6 +42,10 @@
                         <th>Tên</th>
                         <th>Trạng thái</th>
                         <th>Hình ảnh</th>
+                        <th>Người gửi</th>
+                        <th>Người nhận</th>
+                        <th>Thời gian tạo</th>
+                        <th>Thời gian nhận</th>
                         <th>Hành động</th>
                     </tr>
                     </thead>
@@ -70,6 +74,10 @@
                                  class="img-thumbnail rounded shadow-sm"
                                  style="width: 80px; height: 80px; object-fit: cover;" />
                         </td>
+                        <td th:text="${package.getSenderId() != null ? package.getSenderId().getFullName() : '-' }"></td>
+                        <td th:text="${package.getReceiverId() != null ? package.getReceiverId().getFullName() : '-' }"></td>
+                        <td th:text="${package.getCreatedAt()}"></td>
+                        <td th:text="${package.getReceivedAt() != null ? package.getReceivedAt() : '-'}"></td>
                         <td>
                             <a class="btn btn-sm btn-outline-danger"
                                th:href="@{'/delete-package/' + ${package.id} + '?lockerId=' + ${lockerId}}"

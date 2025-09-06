@@ -1,8 +1,10 @@
 package linh.sunhouse_apartment.services.impl;
 
 import com.cloudinary.Cloudinary;
+import linh.sunhouse_apartment.dtos.request.PackageRequest;
 import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
+import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.LockerRepository;
 import linh.sunhouse_apartment.repositories.PackageRepository;
 import linh.sunhouse_apartment.services.PackageService;
@@ -28,33 +30,42 @@ public class PackageServiceImpl implements PackageService {
     private LockerRepository lockerRepository;
 
     @Override
-    public Package addPackage(String name,  MultipartFile file, int lockerId) {
-        Locker locker = lockerRepository.getLockerByID(lockerId);
+    public Package addPackage(PackageRequest packageRequest, User sender) {
+        Locker locker = lockerRepository.getLockerByID(packageRequest.getLockerId());
         if (locker == null) {
             throw new RuntimeException("Locker không tồn tại");
         }
 
         Package newPackage = new Package();
-        newPackage.setName(name);
+        newPackage.setName(packageRequest.getName());
         newPackage.setStatus(Package.Status.PENDING);
         newPackage.setCreatedAt(new Date());
         newPackage.setLockerId(locker);
 
-        if (file != null && !file.isEmpty()) {
+        if (packageRequest.getFile() != null && !packageRequest.getFile().isEmpty()) {
             try {
-                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
+                Map uploadResult = cloudinary.uploader().upload(packageRequest.getFile().getBytes(), Map.of());
                 newPackage.setImage(uploadResult.get("secure_url").toString());
             } catch (IOException e) {
                 throw new RuntimeException("Upload image failed", e);
             }
         }
+        newPackage.setSenderId(sender);
 
         return packageRepository.addPackage(newPackage);
     }
 
     @Override
-    public int changeStatusPackage(int packageID, Package.Status newStatus) {
-        return packageRepository.changeStatusPackage(packageID, newStatus);
+    public int changeStatusPackage(int packageID, Package.Status newStatus, User user) {
+        Package pk = packageRepository.findPackageById(packageID);
+        if (pk == null) {
+            throw new RuntimeException("Package not found");
+        }
+        pk.setStatus(newStatus);
+        pk.setReceiverId(user);
+        pk.setReceivedAt(new Date());
+        packageRepository.update(pk);
+        return 1;
     }
 
     @Override

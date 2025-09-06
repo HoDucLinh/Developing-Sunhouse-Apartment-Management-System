@@ -8,6 +8,7 @@ import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
 import linh.sunhouse_apartment.repositories.PackageRepository;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -21,36 +22,34 @@ import java.util.List;
 public class PackageRepositoryImpl implements PackageRepository {
 
     @Autowired
-    private LocalSessionFactoryBean factory;
-
-    private Session getCurrentSession() {
-        return factory.getObject().getCurrentSession();
-    }
+    private SessionFactory factory;
 
     @Override
     public Package addPackage(Package p) {
+        Session session = factory.getCurrentSession();
         if(p != null){
-            getCurrentSession().persist(p);
+            session.persist(p);
         }
         return p;
     }
 
     @Override
-    public int changeStatusPackage(int packageID, Package.Status newStatus) {
-        Package pkg = getCurrentSession().get(Package.class, packageID);
-        if(pkg != null){
-            pkg.setStatus(newStatus);
-            getCurrentSession().merge(pkg);
+    public Integer update (Package pk) {
+        Session session = factory.getCurrentSession();
+        if(pk != null){
+            session.update(pk);
             return 1;
         }
         return 0;
     }
 
+
+
     @Override
     public int deletePackage(int packageID) {
-        Package pkg = getCurrentSession().get(Package.class, packageID);
+        Package pkg = factory.getCurrentSession().get(Package.class, packageID);
         if(pkg != null){
-            getCurrentSession().remove(pkg);
+            factory.getCurrentSession().remove(pkg);
             return 1;
         }
         return 0;
@@ -58,7 +57,7 @@ public class PackageRepositoryImpl implements PackageRepository {
 
     @Override
     public List<Package> findAllPackagesById(Locker l, String kw) {
-        CriteriaBuilder cb = getCurrentSession().getCriteriaBuilder();
+        CriteriaBuilder cb = factory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Package> cq = cb.createQuery(Package.class);
         Root<Package> root = cq.from(Package.class);
 
@@ -75,7 +74,19 @@ public class PackageRepositoryImpl implements PackageRepository {
 
         cq.select(root).where(cb.and(predicates.toArray(new Predicate[0])));
 
-        return getCurrentSession().createQuery(cq).getResultList();
+        return factory.getCurrentSession().createQuery(cq).getResultList();
+    }
+
+    @Override
+    public Package findPackageById(int packageID) {
+        CriteriaBuilder cb = factory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Package> cq = cb.createQuery(Package.class);
+        Root<Package> root = cq.from(Package.class);
+
+        cq.select(root).where(cb.equal(root.get("id"), packageID));
+
+        List<Package> results = factory.getCurrentSession().createQuery(cq).getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
 }

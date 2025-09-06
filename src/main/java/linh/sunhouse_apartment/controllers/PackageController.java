@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.controllers;
 
+import linh.sunhouse_apartment.dtos.request.PackageRequest;
 import linh.sunhouse_apartment.entity.Locker;
 import linh.sunhouse_apartment.entity.Package;
 import linh.sunhouse_apartment.entity.User;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -52,24 +54,23 @@ public class PackageController {
 
     // Submit tạo mới package
     @PostMapping("/create-package")
-    public String addPackage(
-            @RequestParam("lockerId") int lockerId,
-            @RequestParam("name") String name,
-            @RequestParam("file") MultipartFile file
-    ) {
-        Package newPackage = packageService.addPackage(name, file, lockerId);
-        newPackage.setLockerId(lockerService.getLockerById(lockerId));// gán locker cho package
-        User user = userService.getUserById(lockerId);
-        if(user != null && user.getEmail() != null) {
+    public String addPackage(@ModelAttribute PackageRequest packageRequest, Principal principal) {
+        User sender = userService.getUserByUsername(principal.getName());
+        if(sender == null){
+            throw new RuntimeException("Username not found");
+        }
+        Package newPackage = packageService.addPackage(packageRequest, sender);
+        User user = userService.getUserById(packageRequest.getLockerId());
+        if(sender != null && sender.getEmail() != null) {
             try {
-                emailService.sendNewPackageNotification(user.getEmail(), name, newPackage.getCreatedAt());
+                emailService.sendNewPackageNotification(user.getEmail(), packageRequest.getName(), newPackage.getCreatedAt());
             } catch (jakarta.mail.MessagingException e) {
                 e.printStackTrace(); // log lỗi
                 return "Lỗi khi gửi thông báo";
             }
         }
 
-        return "redirect:/packages/" + lockerId;
+        return "redirect:/packages/" + packageRequest.getLockerId();
     }
 
     // Xoá package
@@ -83,9 +84,14 @@ public class PackageController {
     public String changePackageStatus(
             @RequestParam("packageId") int packageId,
             @RequestParam("newStatus") Package.Status newStatus,
-            @RequestParam("lockerId") int lockerId
+            @RequestParam("lockerId") int lockerId,
+            Principal principal
     ) {
-        packageService.changeStatusPackage(packageId, newStatus);
+        User receiver = userService.getUserByUsername(principal.getName());
+        if(receiver == null){
+            throw new RuntimeException("Username not found");
+        }
+        packageService.changeStatusPackage(packageId, newStatus, receiver);
         return "redirect:/packages/" + lockerId;
     }
 }
