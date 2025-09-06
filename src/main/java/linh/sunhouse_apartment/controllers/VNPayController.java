@@ -1,6 +1,7 @@
 package linh.sunhouse_apartment.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import linh.sunhouse_apartment.dtos.request.PaymentRequest;
 import linh.sunhouse_apartment.services.InvoiceService;
 import linh.sunhouse_apartment.services.VNPayService;
@@ -8,50 +9,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin
-@RequestMapping("/api/payment/vnpay")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/payment")
 public class VNPayController {
     @Autowired
     private VNPayService vnpayService;
 
-    @PostMapping("/vnpay")
-    public ResponseEntity<?> createPayment(HttpServletRequest request, @RequestBody PaymentRequest paymentRequest) {
-        String returnUrl = "http://localhost:8081";
-        Map<String, Object> paymentMap = new HashMap<>();
-        paymentMap.put("invoiceId", paymentRequest.getInvoiceId());
-        paymentMap.put("amount", paymentRequest.getAmount());
+    @Autowired
+    private InvoiceService invoiceService;
 
-        String response = vnpayService.createOrder(request, paymentMap, "Thanh toan don hang", returnUrl);
+    @PostMapping("/vnpay")
+    public ResponseEntity<?> createPayment(HttpServletRequest request, @RequestBody Map<String, Object> paymentRequest) {
+        String returnUrl = "http://localhost:8081/api/payment/vnpay-payment-return";
+        String response = vnpayService.createOrder(request, paymentRequest, "Thanh toan don hang", returnUrl);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/vnpay-payment-return")
-    public String returnPayment(HttpServletRequest request) {
+    public void returnPayment(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int result = vnpayService.orderReturn(request);
         String orderId = request.getParameter("vnp_TxnRef");
         String responseCode = request.getParameter("vnp_ResponseCode");
+        String transactionStatus = request.getParameter("vnp_TransactionStatus");
+        String transactionNo = request.getParameter("vnp_TransactionNo");
+        String bankCode = request.getParameter("vnp_BankCode");
+        String amount = request.getParameter("vnp_Amount");
+        String payDate = request.getParameter("vnp_PayDate");
 
-        System.out.println("result: " + result);
-        System.out.println("orderId: " + orderId);
+        String finalCode = (responseCode != null) ? responseCode : transactionStatus;
 
-        request.getParameterMap().forEach((k, v) -> System.out.println(k + ": " + Arrays.toString(v)));
+        String redirectUrl = "http://localhost:3000/payment/result"
+                + "?invoiceId=" + orderId
+                + "&vnp_ResponseCode=" + finalCode;
 
-        if ("00".equals(responseCode)) {
-            try {
-                return "redirect:http://localhost:3000/payment/result?status=success";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "redirect:http://localhost:3000/payment/result?error=invalid_invoice_id";
-            }
-        } else if ("24".equals(responseCode)) {
-            return "redirect:http://localhost:3000/payment/result?status=cancel";
-        } else {
-            return "redirect:http://localhost:3000/payment/result?status=fail";
+        if ("00".equals(transactionStatus)) {
+            redirectUrl += "&vnp_TransactionNo=" + transactionNo
+                    + "&vnp_BankCode=" + bankCode
+                    + "&vnp_Amount=" + amount
+                    + "&vnp_PayDate=" + payDate;
         }
+
+        response.sendRedirect(redirectUrl);
     }
+
+
 }

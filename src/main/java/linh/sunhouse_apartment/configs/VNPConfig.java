@@ -1,77 +1,65 @@
 package linh.sunhouse_apartment.configs;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 
-@Configuration
 public class VNPConfig {
 
-    @Autowired
-    private Environment env;
-
-    public static String hashAllFields(Map<String, String> fields) {
-        List<String> fieldNames = new ArrayList<>(fields.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (String fieldName : fieldNames) {
-            String fieldValue = fields.get(fieldName);
-            if (fieldValue != null && fieldValue.length() > 0) {
-                if (!first) {
-                    sb.append("&");
-                }
-                sb.append(fieldName).append("=").append(fieldValue);
-                first = false;
-            }
-        }
-        return hmacSHA512("GCX5BZG5ZV7RYHNDGYZAMSEWYLYMUP2A", sb.toString());
-    }
-
-    public static String hmacSHA512(final String key, final String data) {
+    /**
+     * Tính HMAC-SHA512, trả về chuỗi hex (lowercase).
+     */
+    public static String hmacSHA512(String key, String data) {
         try {
-            if (key == null || data == null) {
-                throw new NullPointerException();
-            }
+            if (key == null || data == null) return "";
             Mac hmac512 = Mac.getInstance("HmacSHA512");
-            byte[] hmacKeyBytes = key.getBytes();
-            SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
             hmac512.init(secretKey);
-            byte[] result = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
-
-            StringBuilder sb = new StringBuilder(2 * result.length);
-            for (byte b : result) {
+            byte[] bytes = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(2 * bytes.length);
+            for (byte b : bytes) {
                 sb.append(String.format("%02x", b & 0xff));
             }
-
             return sb.toString();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return "";
         }
     }
 
+    /**
+     * Lấy IP client (giúp lấy đúng IP khi chạy local/proxy)
+     */
     public static String getIpAddress(HttpServletRequest request) {
         try {
-            String ipAddress = request.getHeader("X-FORWARDED-FOR");
-            return (ipAddress != null) ? ipAddress : request.getLocalAddr();
+            String ip = request.getHeader("X-Forwarded-For");
+            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("Proxy-Client-IP");
+            }
+            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("WL-Proxy-Client-IP");
+            }
+            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+            }
+            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getRemoteAddr();
+                if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)) {
+                    try {
+                        InetAddress inet = InetAddress.getLocalHost();
+                        ip = inet.getHostAddress();
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return ip;
         } catch (Exception e) {
-            return "Invalid IP:" + e.getMessage();
+            return "127.0.0.1";
         }
-    }
-
-    public static String getRandomNumber(int len) {
-        Random rnd = new Random();
-        String chars = "0123456789";
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
-        }
-        return sb.toString();
     }
 }
