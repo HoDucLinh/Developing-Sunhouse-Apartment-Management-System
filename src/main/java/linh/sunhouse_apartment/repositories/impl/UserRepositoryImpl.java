@@ -85,7 +85,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User editProfile(User user) {
+    public User update(User user) {
         Session session = sessionFactory.getCurrentSession();
         if (user != null) {
             session.merge(user);

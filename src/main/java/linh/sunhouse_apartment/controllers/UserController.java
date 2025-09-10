@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,5 +147,26 @@ public class UserController {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi khóa người dùng: " + e.getMessage());
         }
         return "redirect:/manage-user";
+    }
+    @PostMapping("/change-role/{id}")
+    public String changeRole(
+            @PathVariable("id") Integer id,
+            @RequestParam("role") String role,
+            Principal principal) {
+
+        // Lấy user đang login
+        User currentUser = userService.getUserByUsername(principal.getName());
+
+        if(currentUser.getRole() != User.Role.ADMIN) {
+            throw new RuntimeException("Access denied");
+        }
+
+        try {
+            User.Role newRole = User.Role.valueOf(role.toUpperCase());
+            userService.changeUserRole(id, newRole);
+            return "redirect:/manage-user";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }

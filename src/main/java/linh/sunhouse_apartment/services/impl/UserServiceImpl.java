@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         }
 
-        return userRepository.editProfile(user);
+        return userRepository.update(user);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
         // Cập nhật mật khẩu mới
         user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.editProfile(user);
+        userRepository.update(user);
         return true;
     }
     @Override
@@ -239,7 +239,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             }
         }
 
-        return userRepository.editProfile(user);
+        return userRepository.update(user);
     }
 
     @Override
@@ -260,5 +260,15 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             stats.put((Integer) row[0], (Long) row[1]);
         }
         return stats;
+    }
+
+    @Override
+    public User changeUserRole(Integer userId, User.Role role) {
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        user.setRole(role);
+        return userRepository.update(user);
     }
 }

@@ -11,7 +11,7 @@ public interface UserRepository {
     User getUserById(Integer id);
     User saveUser(User user);
     List<User> getAllUsers(Map<String, String> params);
-    User editProfile(User user);
+    User update(User user);
     int blockUser(int id);
     List<User> getAllRoomHead();
     List<Object[]> getResidentStatistics(int year, String period);

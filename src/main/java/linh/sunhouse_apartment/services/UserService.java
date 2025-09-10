@@ -26,5 +26,5 @@ public interface UserService  {
     User getUserByUsername(String username);
     List<User> getAllRoomHead();
     Map<Integer, Long> getResidentStatistics(int year, String period);
-
+    User changeUserRole(Integer userId, User.Role role);
 }
