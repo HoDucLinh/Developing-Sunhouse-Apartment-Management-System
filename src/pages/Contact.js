@@ -10,6 +10,7 @@ import {
   FiMapPin,
 } from "react-icons/fi";
 import { FaCalendarCheck, FaBuilding } from "react-icons/fa";
+import { SiZalo } from "react-icons/si";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -168,6 +169,29 @@ const Contact = () => {
           </Col>
         </Row>
       </Container>
+      <a
+        href="https://zalo.me/0379086077"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          left: "20px",
+          backgroundColor: "#0068ff",
+          color: "white",
+          borderRadius: "50%",
+          width: "55px",
+          height: "55px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+          zIndex: 9999,
+          cursor: "pointer",
+        }}
+      >
+        <SiZalo size={30} />
+      </a>
     </div>
   );
 };
