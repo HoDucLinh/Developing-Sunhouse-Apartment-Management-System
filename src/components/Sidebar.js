@@ -19,9 +19,6 @@ const Sidebar = () => {
         <FiHome size={30} color="#0d6efd" />
         <div className="fw-bold mt-2">Chung cư</div>
       </div>
-      <NavLink to="/payment/result" className="nav-link d-flex align-items-center gap-2">
-        <FiHome /> <span>Payment</span>
-      </NavLink>
       <NavLink to="/dashboard" className="nav-link d-flex align-items-center gap-2">
         <FiHome /> <span>Trang chủ</span>
       </NavLink>
