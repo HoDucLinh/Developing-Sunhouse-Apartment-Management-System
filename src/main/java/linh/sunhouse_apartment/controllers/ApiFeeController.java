@@ -1,6 +1,7 @@
 package linh.sunhouse_apartment.controllers;
 
 import linh.sunhouse_apartment.dtos.response.FeeResponse;
+import linh.sunhouse_apartment.dtos.response.UtilityResponse;
 import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.services.FeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class ApiFeeController {
     @GetMapping("/get-utilities-of-user")
     public ResponseEntity<?> getUtilitiesOfUser(@RequestParam Integer userId) {
         try {
-            List<FeeResponse> utilities = feeService.getUtilitiesOfUser(userId);
+            List<UtilityResponse> utilities = feeService.getUtilitiesOfUser(userId);
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "Lấy danh sách tiện ích của user thành công",

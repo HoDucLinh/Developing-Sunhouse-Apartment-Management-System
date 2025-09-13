@@ -1,6 +1,7 @@
 package linh.sunhouse_apartment.services;
 
 import linh.sunhouse_apartment.dtos.response.FeeResponse;
+import linh.sunhouse_apartment.dtos.response.UtilityResponse;
 import linh.sunhouse_apartment.entity.Fee;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,5 +16,5 @@ public interface FeeService {
     Fee getFeeById(int id);
     List<Fee> getUtilities(Map<String,String> params);
     List<Fee> getFeeOfFee();
-    List<FeeResponse> getUtilitiesOfUser(Integer userId);
+    List<UtilityResponse> getUtilitiesOfUser(Integer userId);
 }

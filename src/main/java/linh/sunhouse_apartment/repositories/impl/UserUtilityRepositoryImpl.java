@@ -28,7 +28,7 @@ public class UserUtilityRepositoryImpl implements UserUtilityRepository {
         CriteriaBuilder cb = s.getCriteriaBuilder();
         CriteriaQuery<UserUtility> cq = cb.createQuery(UserUtility.class);
         Root<UserUtility> root = cq.from(UserUtility.class);
-
+        root.fetch("fee", jakarta.persistence.criteria.JoinType.LEFT);
         cq.select(root).where(cb.equal(root.get("user").get("id"), userId));
 
         return s.createQuery(cq).getResultList();
