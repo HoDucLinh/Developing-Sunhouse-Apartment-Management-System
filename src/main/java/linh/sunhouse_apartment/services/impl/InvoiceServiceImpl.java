@@ -6,14 +6,8 @@ import linh.sunhouse_apartment.dtos.request.DetailInvoiveRequest;
 import linh.sunhouse_apartment.dtos.request.InvoiceRequest;
 import linh.sunhouse_apartment.dtos.response.DetailInvoiceResponse;
 import linh.sunhouse_apartment.dtos.response.InvoiceResponse;
-import linh.sunhouse_apartment.entity.DetailInvoice;
-import linh.sunhouse_apartment.entity.Fee;
-import linh.sunhouse_apartment.entity.Invoice;
-import linh.sunhouse_apartment.entity.User;
-import linh.sunhouse_apartment.repositories.DetailInvoiceRepository;
-import linh.sunhouse_apartment.repositories.FeeRepository;
-import linh.sunhouse_apartment.repositories.InvoiceRepository;
-import linh.sunhouse_apartment.repositories.UserRepository;
+import linh.sunhouse_apartment.entity.*;
+import linh.sunhouse_apartment.repositories.*;
 import linh.sunhouse_apartment.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +38,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Autowired
+    private UserUtilityRepository userUtilityRepository;
+
     @Override
     public InvoiceResponse saveInvoice(InvoiceRequest invoiceRequest) {
         if (invoiceRequest == null) {
@@ -55,7 +52,26 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (u == null) {
             throw new RuntimeException("User not found with id: " + invoiceRequest.getUserId());
         }
-
+        //lấy các feed trong detailInvoice
+        Set<Integer> requestedFeeIds = new HashSet<>();
+        if (invoiceRequest.getDetails() != null) {
+            for (DetailInvoiveRequest d : invoiceRequest.getDetails()) {
+                if (d != null && d.getFeeId() != null) {
+                    requestedFeeIds.add(d.getFeeId());
+                }
+            }
+        }
+        //danh sách utilities của user
+        List<UserUtility> userUtilities = userUtilityRepository.getUserUtilityOfUser(u.getId());
+        for (UserUtility userUtility : userUtilities) {
+            if (requestedFeeIds.contains(userUtility.getFee().getId())
+                    && userUtility.getEndDate().after(new Date())
+                    && "ACTIVE".equals(userUtility.getStatus().name())) {
+                throw new RuntimeException(
+                        "Utility already registered and still valid for feeId: " + userUtility.getFee().getId()
+                );
+            }
+        }
         // Tạo invoice
         Invoice invoice = new Invoice();
         invoice.setUserId(u);
@@ -78,7 +94,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Lưu invoice
         Invoice savedInvoice = invoiceRepository.saveInvoice(invoice);
-
+        //lấy danh sách detail invoice
         List<DetailInvoiceResponse> detailResponses = new ArrayList<>();
 
         // Lưu chi tiết hóa đơn nếu có
@@ -88,13 +104,24 @@ public class InvoiceServiceImpl implements InvoiceService {
                 if (fee == null) {
                     throw new RuntimeException("Fee not found with id: " + d.getFeeId());
                 }
-
+                //lưu detail invoice
                 DetailInvoice detail = new DetailInvoice();
                 detail.setInvoiceId(savedInvoice);
                 detail.setFeeId(fee);
                 detail.setAmount(d.getAmount());
                 detail.setNote(d.getNote());
                 detailInvoiceRepository.saveDetailInvoice(detail);
+                //lưu user_utility
+                UserUtility userUtility = new UserUtility();
+                userUtility.setUser(u);
+                userUtility.setFee(fee);
+                userUtility.setStatus(UserUtility.Status.ACTIVE);
+                userUtility.setStartDate(new Date());
+                Calendar cal2 = Calendar.getInstance();
+                cal2.setTime(new Date());
+                cal2.add(Calendar.MONTH, 1); // cộng thêm 1 tháng
+                userUtility.setEndDate(cal.getTime());
+                userUtilityRepository.addUserUtility(userUtility);
 
                 detailResponses.add(new DetailInvoiceResponse(
                         fee.getId(),
@@ -104,6 +131,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 ));
             }
         }
+
 
         return new InvoiceResponse(
                 savedInvoice.getId(),
