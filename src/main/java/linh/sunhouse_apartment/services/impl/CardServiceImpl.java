@@ -32,6 +32,12 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardResponse addCard(CardRequest cardRequest) {
         User u = userRepo.getUserById(cardRequest.getUserId());
+        List<Card> cards = cardRepo.getCardsByUserId(u.getId());
+        for  (Card card : cards) {
+            if(card.getRelativeId().getId() == cardRequest.getRelativeId() && card.getExpirationDate().after(new Date())) {
+                throw new RuntimeException("Card already exists");
+            }
+        }
         if (u != null ) {
             Card card = new Card();
             card.setUserId(u);

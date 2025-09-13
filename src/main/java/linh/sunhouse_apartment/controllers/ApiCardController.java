@@ -39,9 +39,16 @@ public class ApiCardController {
             if (card == null)
                 return ResponseEntity.badRequest().body("Bad request!!!");
             return  ResponseEntity.ok(card);
+        } catch (RuntimeException e) {
+            if ("Card already exists".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Collections.singletonMap("error", e.getMessage()));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", e.getMessage()));
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
         }
     }
 }
