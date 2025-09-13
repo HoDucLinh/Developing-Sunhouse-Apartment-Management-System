@@ -58,7 +58,15 @@ const UtilitiesPage = () => {
       await loadUserUtilities();
     } catch (ex) {
       console.error("Lỗi đăng ký tiện ích:", ex);
-      alert("Đăng ký tiện ích thất bại!");
+      if (ex.response && ex.response.data) {
+        let errMsg = typeof ex.response.data === "string"
+          ? ex.response.data
+          : (ex.response.data.error || JSON.stringify(ex.response.data));
+
+        alert(errMsg);
+      } else {
+        alert("Đăng ký tiện ích thất bại!");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -155,15 +163,7 @@ const UtilitiesPage = () => {
             {selectedUtility && (
               <>
                 <p><strong>{selectedUtility.name}</strong></p>
-                <Form.Group className="mb-3">
-                  <Form.Label>Số tháng đăng ký</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    min="1" 
-                    value={months} 
-                    onChange={(e) => setMonths(e.target.value)} 
-                  />
-                </Form.Group>
+                <p><strong>Thời gian: </strong> 1 tháng</p>
 
                 {/* Chọn phương thức thanh toán */}
                 <Form.Group className="mb-3">
@@ -177,7 +177,7 @@ const UtilitiesPage = () => {
                   </Form.Select>
                 </Form.Group>
 
-                <p><strong>Tổng tiền: </strong> {selectedUtility.price * months} VND</p>
+                <p><strong>Tổng tiền: </strong> {selectedUtility.price} VND</p>
               </>
             )}
           </Modal.Body>
