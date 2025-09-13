@@ -200,6 +200,7 @@ const UtilitiesPage = () => {
               <th>Phí hàng tháng</th>
               <th>Trạng thái</th>
               <th>Ngày đăng kí</th>
+              <th>Ngày hết hạn</th>
             </tr>
           </thead>
           <tbody>
@@ -210,12 +211,24 @@ const UtilitiesPage = () => {
             ) : (
               userUtilities.map((u, idx) => (
                 <tr key={idx}>
-                  <td>{u.name}</td>
-                  <td>{u.price} VND</td>
-                  <td><Badge bg="success">Đang sử dụng</Badge></td>
+                  <td>{u.feeName}</td>
+                  <td>{u.feeAmount} VND</td>
+                  <td>
+                    {new Date(u.endDate) >= new Date() ? (
+                      <Badge bg="success">Đang sử dụng</Badge>
+                    ) : (
+                      <Badge bg="danger">Hết hạn</Badge>
+                    )}
+                  </td>
                   <td>
                     {(() => {
-                      const [year, month, day] = u.createdDate.split("-");
+                      const [year, month, day] = u.startDate.split("-");
+                      return new Date(year, month - 1, day).toLocaleDateString("vi-VN");
+                    })()}
+                  </td>
+                  <td>
+                    {(() => {
+                      const [year, month, day] = u.endDate.split("-");
                       return new Date(year, month - 1, day).toLocaleDateString("vi-VN");
                     })()}
                   </td>
