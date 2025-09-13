@@ -58,6 +58,11 @@ const CardsPage = () => {
       setShowModal(false);
     } catch (err) {
       console.error("Lỗi khi tạo card:", err);
+      if (err.response && err.response.data && err.response.data.error) {
+        alert(err.response.data.error);
+      } else {
+        alert("Có lỗi xảy ra khi tạo thẻ!");
+      }
     }
   };
 

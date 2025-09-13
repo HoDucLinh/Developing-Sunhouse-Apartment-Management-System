@@ -108,7 +108,7 @@ const Relative = () => {
                     onChange={(e) => setForm({ ...form, relationship: e.target.value })}
                   >
                     <option value="OWNER">Chủ hộ</option>
-                    <option value="PARENT">Cha/Mẹ</option>
+                    <option value="PARENT">Người thân</option>
                   </Form.Select>
                 </Form.Group>
 
