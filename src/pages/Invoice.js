@@ -117,9 +117,8 @@ const Invoice = () => {
 
     return (
         <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
-        <Sidebar />
         <Container fluid className="main-content bg-light-purple px-5 py-4" style={{ marginLeft: '220px'}}>
-            
+            <Sidebar />
             <h5 className="mb-3">Hoá đơn - Dịch vụ</h5>
             {loadingInvoices ? (
             <Spinner animation="border" />

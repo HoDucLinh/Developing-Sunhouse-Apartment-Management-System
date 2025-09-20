@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import { Container, Row, Col, Card, Form } from 'react-bootstrap';
 import '../styles/sidebar.css';
 import { useUser } from '../contexts/UserContext';
+import '../styles/dashboard.css';
 
 const Dashboard = () => {
 
@@ -42,26 +43,9 @@ const Dashboard = () => {
             />
           </Card.Body>
         </Card>
-
-        {/* Tổng quan */}
-        <h5 className="mb-3">Tổng quan</h5>
-        <Row className="g-4">
-          {[
-            { title: 'Hoá đơn chưa thanh toán', count: 2 },
-            { title: 'Đơn hàng chờ nhận', count: 4 },
-            { title: 'Phản ánh chưa xử lý', count: 0 },
-            { title: 'Khảo sát chưa hoàn thành', count: 1 },
-          ].map((item, idx) => (
-            <Col key={idx} xs={12} sm={6} md={3}>
-              <Card className="info-card text-center h-100">
-                <Card.Body>
-                  <Card.Title className="mb-2">{item.title}</Card.Title>
-                  <h2 className="text-primary">{item.count}</h2>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+        <div className="welcome-text">
+          <h1>Chào mừng bạn đến với chung cư Sunhouse Apartment</h1>
+        </div>
       </Container>
     </div>
   );

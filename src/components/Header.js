@@ -2,7 +2,7 @@ import { Row, Col, Form } from 'react-bootstrap';
 
 const Header = ({ user }) => (
   <Row className="align-items-center mb-4 px-3">
-    {/* Ô tìm kiếm */}
+    {/* Ô tìm kiếm
     <Col md={6}>
       <Form.Control
         type="text"
@@ -10,7 +10,7 @@ const Header = ({ user }) => (
         className="rounded-pill px-4 shadow-sm"
         style={{ maxWidth: '100%' }}
       />
-    </Col>
+    </Col> */}
 
     {/* Tên và avatar bên phải */}
     <Col className="d-flex justify-content-end align-items-center gap-3">
