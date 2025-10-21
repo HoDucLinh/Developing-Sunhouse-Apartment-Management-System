@@ -1,12 +1,12 @@
 <!-- register.html -->
-<div th:replace="~{fragments/base :: layout}">
+<div th:replace="~{fragments/base :: layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
     <div th:fragment="content">
         <main class="p-3">
             <form th:action="@{/register}" method="post" th:object="${user}">
                 <!-- Role -->
                 <div class="mb-3">
-                    <label class="form-label">Tạo Người Dùng Với Role:</label>
-                    <div th:each="role : ${roles}" class="form-check form-check-inline">
+                    <div th:each="role : ${roles}" class="form-check form-check-inline" sec:authorize="hasRole('ADMIN')">
+                        <label class="form-label">Tạo Người Dùng Với Role:</label>
                         <input class="form-check-input"
                                type="radio"
                                th:field="*{role}"
@@ -17,13 +17,38 @@
                                th:for="'role-' + ${role}"
                                th:text="${role}"></label>
                     </div>
+                    <div id="floorRoomFields" style="display: none;" >
+                        <div class="mb-3">
+                            <label>Floor:</label>
+                            <select name="floorId" id="floorSelect" class="form-select">
+                                <option value="">-- Chọn tầng --</option>
+                                <option th:each="floor : ${floors}"
+                                        th:value="${floor.id}"
+                                        th:text="'Tầng ' + ${floor.floorNumber}"
+                                        th:selected="${floor.id} == ${selectedFloorId}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Room:</label>
+                            <select name="roomIdParam" id="roomSelect" class="form-select">
+                                <option value="">-- Chọn phòng --</option>
+                                <option th:each="room : ${rooms}"
+                                        th:value="${room.id}"
+                                        th:text="${room.roomNumber}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Floor & Room -->
-                <div id="floorRoomFields" style="display: none;">
+                <div sec:authorize="hasRole('BOD')" >
+                    <input type="hidden" name="role" value="RESIDENT">
                     <div class="mb-3">
                         <label>Floor:</label>
-                        <select name="floorId" id="floorSelect" class="form-select" required>
+                        <select name="floorId" id="bodFloorSelect" class="form-select">
                             <option value="">-- Chọn tầng --</option>
                             <option th:each="floor : ${floors}"
                                     th:value="${floor.id}"
@@ -35,7 +60,7 @@
 
                     <div class="mb-3">
                         <label>Room:</label>
-                        <select name="roomIdParam" id="roomSelect" class="form-select" required>
+                        <select name="roomIdParam" id="bodRoomSelect" class="form-select">
                             <option value="">-- Chọn phòng --</option>
                             <option th:each="room : ${rooms}"
                                     th:value="${room.id}"
@@ -70,7 +95,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="email" th:field="*{email}" required />
+                    <input type="email" class="form-control" id="email" th:field="*{email}" required />
                     <div class="text-danger" th:if="${#fields.hasErrors('email')}"
                          th:errors="*{email}">Email Error</div>
                 </div>
@@ -104,6 +129,19 @@
                         fetchRooms(floorId);
                     } else {
                         document.getElementById("roomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
+                    }
+                });
+                document.getElementById("bodFloorSelect")?.addEventListener("change", function () {
+                    const floorId = this.value;
+                    if (floorId) {
+                        fetch(`/register/rooms?floorId=${floorId}`)
+                            .then(response => response.text())
+                            .then(html => {
+                                document.getElementById("bodRoomSelect").innerHTML = html;
+                            })
+                            .catch(error => console.error('Lỗi lấy phòng:', error));
+                    } else {
+                        document.getElementById("bodRoomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
                     }
                 });
 

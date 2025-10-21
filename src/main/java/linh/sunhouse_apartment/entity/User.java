@@ -78,8 +78,7 @@ public class User implements Serializable {
     public enum Role {
         ADMIN,
         BOD,
-        RESIDENT,
-        CLIENT
+        RESIDENT
     }
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

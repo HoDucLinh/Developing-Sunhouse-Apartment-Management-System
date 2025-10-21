@@ -32,40 +32,53 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardResponse addCard(CardRequest cardRequest) {
         User u = userRepo.getUserById(cardRequest.getUserId());
+        if (u == null)
+            throw new RuntimeException("User not found");
+
+        // ✅ Bắt buộc phải chọn người thân
+        if (!cardRequest.isUseRelative() || cardRequest.getRelativeId() == null)
+            throw new RuntimeException("Relative not found");
+
+        Relative relative = relativeService.getRelativeById(cardRequest.getRelativeId());
+        if (relative == null)
+            throw new RuntimeException("Relative not found");
+
         List<Card> cards = cardRepo.getCardsByUserId(u.getId());
-        for  (Card card : cards) {
-            if(card.getRelativeId().getId() == cardRequest.getRelativeId() && card.getExpirationDate().after(new Date())) {
+        for (Card card : cards) {
+            // ✅ Kiểm tra null trước khi getId()
+            if (card.getRelativeId() != null &&
+                    card.getRelativeId().getId() == cardRequest.getRelativeId() &&
+                    card.getExpirationDate().after(new Date())) {
                 throw new RuntimeException("Card already exists");
             }
         }
-        if (u != null ) {
-            Card card = new Card();
-            card.setUserId(u);
 
-            if (cardRequest.isUseRelative() && cardRequest.getRelativeId() != null) {
-                Relative relative = relativeService.getRelativeById(cardRequest.getRelativeId());
-                card.setRelativeId(relative);
-            }
-            card.setStatus("active");
-            card.setIssueDate(new Date());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(card.getIssueDate());
-            cal.add(Calendar.MONTH, 3);
-            card.setExpirationDate(cal.getTime());
-            Card savedCard = cardRepo.addCard(card);
-            return new CardResponse(
-                    savedCard.getId(),
-                    savedCard.getIssueDate(),
-                    savedCard.getExpirationDate(),
-                    savedCard.getStatus(),
-                    savedCard.getUserId() != null ? savedCard.getUserId().getId() : null,
-                    savedCard.getRelativeId() != null ? savedCard.getRelativeId().getId() : null,
-                    card.getRelativeId().getFullName() != null ? card.getRelativeId().getFullName() : null,
-                    card.getRelativeId().getRelationship() != null ? card.getRelativeId().getRelationship() : null
-            );
-        }
-        return null;
+        // ✅ Tạo thẻ mới
+        Card card = new Card();
+        card.setUserId(u);
+        card.setRelativeId(relative);
+        card.setStatus("active");
+        card.setIssueDate(new Date());
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(card.getIssueDate());
+        cal.add(Calendar.MONTH, 3);
+        card.setExpirationDate(cal.getTime());
+
+        Card savedCard = cardRepo.addCard(card);
+
+        return new CardResponse(
+                savedCard.getId(),
+                savedCard.getIssueDate(),
+                savedCard.getExpirationDate(),
+                savedCard.getStatus(),
+                savedCard.getUserId() != null ? savedCard.getUserId().getId() : null,
+                savedCard.getRelativeId() != null ? savedCard.getRelativeId().getId() : null,
+                savedCard.getRelativeId() != null ? savedCard.getRelativeId().getFullName() : null,
+                savedCard.getRelativeId() != null ? savedCard.getRelativeId().getRelationship() : null
+        );
     }
+
 
     @Override
     public List<CardResponse> getCardsByUserId(int userId) {

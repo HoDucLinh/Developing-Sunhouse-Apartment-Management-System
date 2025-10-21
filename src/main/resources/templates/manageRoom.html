@@ -27,7 +27,7 @@
                         <th>Mã căn hộ</th>
                         <th>Tầng</th>
                         <th>Số người tối đa</th>
-                        <th>Còn trống</th>
+                        <th>Số người được thuê</th>
                         <th>Diện tích</th>
                         <th>Mô tả</th>
                         <th>Giá</th>
@@ -43,7 +43,7 @@
                         <td th:text="${room.availableSlots}" class="text-center"></td>
                         <td th:text="${room.area}" class="text-center"></td>
                         <td th:text="${room.description}"></td>
-                        <td th:text="${room.rent_price}"></td>
+                        <td th:text="${#numbers.formatDecimal(room.rent_price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-primary"
                                th:href="@{/{id}/members(id=${room.id})}">

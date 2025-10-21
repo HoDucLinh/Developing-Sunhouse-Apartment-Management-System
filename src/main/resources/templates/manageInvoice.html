@@ -61,7 +61,7 @@
                             <span th:if="${invoice.paymentProof == null}">-</span>
                         </td>
                         <td>
-                            <span class="fw-bold text-danger" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')}"></span> đ
+                            <span class="fw-bold text-danger" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
                         </td>
                         <td>
                                 <span th:if="${invoice.status == T(linh.sunhouse_apartment.entity.Invoice.Status).PAID}" class="badge bg-success">

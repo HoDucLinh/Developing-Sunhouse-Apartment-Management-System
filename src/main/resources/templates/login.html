@@ -40,6 +40,9 @@
                 <h3 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Admin Login</h3>
             </div>
             <div class="card-body p-4">
+                <div th:if="${param.error}" class="alert alert-danger text-center">
+                    Sai tên đăng nhập hoặc mật khẩu!
+                </div>
                 <form th:action="@{/login}" method="post">
                     <!-- Username -->
                     <div class="mb-3 position-relative">

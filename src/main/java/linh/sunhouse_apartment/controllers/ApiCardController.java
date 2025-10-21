@@ -44,6 +44,10 @@ public class ApiCardController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Collections.singletonMap("error", e.getMessage()));
             }
+            if ("Relative not found".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Collections.singletonMap("error", e.getMessage()));
+            }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Collections.singletonMap("error", e.getMessage()));
         }catch (Exception e) {

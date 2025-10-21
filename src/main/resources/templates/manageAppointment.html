@@ -5,7 +5,7 @@
                 <form th:action="@{/manage-appointment}" method="get" class="d-flex gap-2">
                     <input type="text" name="kw" class="form-control" placeholder="Tìm theo tên"
                            th:value="${kw}" />
-                    <input type="text" name="email" class="form-control" placeholder="Tìm theo email"
+                    <input type="email" name="email" class="form-control" placeholder="Tìm theo email"
                            th:value="${email}" />
                     <select id="status" name="status" class="form-select">
                         <option value="">-- Tất cả --</option>
@@ -46,7 +46,7 @@
                         <td th:text="${appointment.fullName}"></td>
                         <td th:text="${appointment.email}"></td>
                         <td th:text="${appointment.phone}"></td>
-                        <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy')}"></td>
                         <td>
                             <span class="badge"
                                   th:switch="${appointment.status.name()}">

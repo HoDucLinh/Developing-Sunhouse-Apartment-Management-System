@@ -54,7 +54,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
-                // ⛔ Token invalid OR user not found
+                // Token invalid OR user not found
                 if (uri.startsWith("/api/")) {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -63,7 +63,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } else if (username == null) {
-            // ⛔ Không trích xuất được username từ token
+            // Không trích xuất được username từ token
             if (uri.startsWith("/api/")) {
                 response.setContentType("application/json");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
