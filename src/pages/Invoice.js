@@ -12,7 +12,7 @@ const Invoice = () => {
     const { user } = useUser(); 
     const [invoices, setInvoices] = useState([]);
     const [loadingInvoices, setLoadingInvoices] = useState(true);
-    const [errInvoices, setErrInvoices] = useState(null);
+    const [setErrInvoices] = useState(null);
 
     const [showPDF, setShowPDF] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);

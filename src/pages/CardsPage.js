@@ -10,9 +10,6 @@ const CardsPage = () => {
   const { user } = useUser();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [relatives, setRelatives] = useState([]);
-  const [selectedRelative, setSelectedRelative] = useState(null);
 
   // 1️⃣ Lấy danh sách card
   useEffect(() => {
@@ -31,48 +28,13 @@ const CardsPage = () => {
     fetchCards();
   }, [user]);
 
-  // 2️⃣ Mở modal tạo card → load relatives
-  const openCreateCardModal = async () => {
-    if (!user) return;
-    try {
-      const res = await authApis().get(endpoints.getRelatives(user.id));
-      setRelatives(Array.isArray(res.data) ? res.data : []);
-      setSelectedRelative(null);
-      setShowModal(true);
-    } catch (err) {
-      console.error("Lỗi khi load relatives:", err);
-    }
-  };
-
-  // 3️⃣ Tạo card
-  const handleCreateCard = async () => {
-    if (!user) return;
-    try {
-      const payload = {
-        userId: user.id,
-        useRelative: !!selectedRelative,
-        relativeId: selectedRelative || null,
-      };
-      const res = await authApis().post(endpoints.createCard, payload);
-      setCards(prev => [...prev, res.data]);
-      setShowModal(false);
-    } catch (err) {
-      console.error("Lỗi khi tạo card:", err);
-      if (err.response && err.response.data && err.response.data.error) {
-        alert(err.response.data.error);
-      } else {
-        alert("Có lỗi xảy ra khi tạo thẻ!");
-      }
-    }
-  };
-
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
       <Sidebar />
       <div className="content p-4" style={{ marginLeft: '250px', flex: 1 }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h3>Danh sách thẻ ra vào</h3>
-          <Button onClick={openCreateCardModal}>Tạo thẻ mới</Button>
+          <Button onClick={() => alert("Vui lòng liên hệ ban quản trị để được tạo thẻ mới !!!")}>Tạo thẻ mới</Button>
         </div>
 
         <Row xs={1} sm={2} md={3} lg={4} className="g-4">
@@ -98,6 +60,9 @@ const CardsPage = () => {
                     <Card.Title className="mt-2 fw-bold text-primary">
                       {card.relativeName ? card.relativeName : user.fullName}
                     </Card.Title>
+                    <Card.Title className="mt-2 fw-bold text-primary">
+                      {card.cardId}
+                    </Card.Title>
 
                     {/* Hiển thị badge trạng thái */}
                     <div className="mb-2">
@@ -112,7 +77,7 @@ const CardsPage = () => {
                       </span>
                       <span>
                         <span className="badge bg-info text-dark">
-                          {card.relationship || "Chủ hộ"}
+                          {card.relationship || "Owner"}
                         </span>
                       </span>
                     </div>
@@ -129,33 +94,6 @@ const CardsPage = () => {
             <p>Chưa có thẻ nào</p>
           )}
         </Row>
-
-        {/* Modal tạo card mới */}
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Tạo thẻ mới</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group>
-              <Form.Label>Chọn người thân (nếu có)</Form.Label>
-              <Form.Select
-                value={selectedRelative || ""}
-                onChange={(e) => setSelectedRelative(e.target.value || null)}
-              >
-                <option value="">Không chọn</option>
-                {relatives.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.fullName} ({r.relationship})
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</Button>
-            <Button variant="primary" onClick={handleCreateCard}>Tạo thẻ</Button>
-          </Modal.Footer>
-        </Modal>
       </div>
     </div>
   );
