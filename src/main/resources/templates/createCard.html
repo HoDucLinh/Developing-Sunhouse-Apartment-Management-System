@@ -4,6 +4,7 @@
             <h2>Create New Card</h2>
 
             <form th:action="@{/create-new-card}" method="post">
+                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
                 <!-- User dropdown -->
                 <div class="mb-3">
                     <label class="form-label">User</label>

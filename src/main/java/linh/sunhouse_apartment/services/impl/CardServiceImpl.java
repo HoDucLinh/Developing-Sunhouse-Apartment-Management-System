@@ -12,10 +12,7 @@ import linh.sunhouse_apartment.services.RelativeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -34,14 +31,17 @@ public class CardServiceImpl implements CardService {
         User u = userRepo.getUserById(cardRequest.getUserId());
         if (u == null)
             throw new RuntimeException("User not found");
-
-        // ✅ Bắt buộc phải chọn người thân
-        if (!cardRequest.isUseRelative() || cardRequest.getRelativeId() == null)
-            throw new RuntimeException("Relative not found");
-
-        Relative relative = relativeService.getRelativeById(cardRequest.getRelativeId());
-        if (relative == null)
-            throw new RuntimeException("Relative not found");
+        int expiration_month = 12;
+        Relative relative = null;
+        if (cardRequest.isUseRelative()){
+            if(cardRequest.getRelativeId() == null)
+                throw new RuntimeException("Relative Id is null");
+            relative = relativeService.getRelativeById(cardRequest.getRelativeId());
+            if(relative == null)
+                throw new RuntimeException("Relative not found");
+            expiration_month = 3;
+        }
+        //kiểm tra xem card đã tồn tại chưa
 
         List<Card> cards = cardRepo.getCardsByUserId(u.getId());
         for (Card card : cards) {
@@ -51,6 +51,8 @@ public class CardServiceImpl implements CardService {
                     card.getExpirationDate().after(new Date())) {
                 throw new RuntimeException("Card already exists");
             }
+            if(card.getUserId().getId() == cardRequest.getUserId())
+                throw new RuntimeException("Card already exists");
         }
 
         // ✅ Tạo thẻ mới
@@ -62,8 +64,9 @@ public class CardServiceImpl implements CardService {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(card.getIssueDate());
-        cal.add(Calendar.MONTH, 3);
+        cal.add(Calendar.MONTH, expiration_month);
         card.setExpirationDate(cal.getTime());
+        card.setCardId(String.format("%08d",new Random().nextInt(100000000)));
 
         Card savedCard = cardRepo.addCard(card);
 
@@ -75,7 +78,8 @@ public class CardServiceImpl implements CardService {
                 savedCard.getUserId() != null ? savedCard.getUserId().getId() : null,
                 savedCard.getRelativeId() != null ? savedCard.getRelativeId().getId() : null,
                 savedCard.getRelativeId() != null ? savedCard.getRelativeId().getFullName() : null,
-                savedCard.getRelativeId() != null ? savedCard.getRelativeId().getRelationship() : null
+                savedCard.getRelativeId() != null ? savedCard.getRelativeId().getRelationship() : null,
+                savedCard.getCardId() != null ? savedCard.getCardId() : null
         );
     }
 
@@ -86,14 +90,25 @@ public class CardServiceImpl implements CardService {
             List<Card> cards = cardRepo.getCardsByUserId(userId);
             List<CardResponse> cardResponses = new ArrayList<>();
             for (Card card : cards) {
+                Integer relativeId = null;
+                String relativeName = null;
+                Relative.EnumRelationship relationship = null;
+
+                if (card.getRelativeId() != null) {
+                    relativeId = card.getRelativeId().getId();
+                    relativeName = card.getRelativeId().getFullName();
+                    relationship = card.getRelativeId().getRelationship();
+                }
+
                 CardResponse cardResponse = new CardResponse(card.getId(),
                         card.getIssueDate(),
                         card.getExpirationDate(),
                         card.getStatus(),
                         card.getUserId() != null ? card.getUserId().getId() : null,
-                        card.getRelativeId() != null ? card.getRelativeId().getId() : null,
-                        card.getRelativeId().getFullName() != null ? card.getRelativeId().getFullName() : null,
-                        card.getRelativeId().getRelationship() != null ? card.getRelativeId().getRelationship() : null
+                        relativeId,
+                        relativeName,
+                        relationship,
+                        card.getCardId() != null ? card.getCardId() : null
                 );
                 cardResponses.add(cardResponse);
             }

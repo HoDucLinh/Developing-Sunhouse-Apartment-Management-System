@@ -49,9 +49,18 @@ public class CardController {
     }
 
     @PostMapping("/create-new-card")
-    public String createCard(CardRequest cardRequest) {
-        cardService.addCard(cardRequest);
-        return "redirect:/manage-card";
+    public String createCard(CardRequest cardRequest, Model model) {
+        try {
+            cardService.addCard(cardRequest);
+            return "redirect:/manage-card";
+        } catch (RuntimeException e) {
+            List<User> users = userService.getUsers(null);
+            model.addAttribute("users", users);
+            model.addAttribute("card", new Card());
+            model.addAttribute("error", e.getMessage());
+            return "createCard";
+        }
+
     }
 
 

@@ -19,4 +19,5 @@ public class CardResponse {
     private Integer relativeId;
     private String relativeName;
     private Relative.EnumRelationship relationship;
+    private String cardId;
 }
