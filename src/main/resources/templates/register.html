@@ -4,9 +4,9 @@
         <main class="p-3">
             <form th:action="@{/register}" method="post" th:object="${user}">
                 <!-- Role -->
-                <div class="mb-3">
-                    <div th:each="role : ${roles}" class="form-check form-check-inline" sec:authorize="hasRole('ADMIN')">
-                        <label class="form-label">Tạo Người Dùng Với Role:</label>
+                <div class="mb-3" sec:authorize="hasRole('ADMIN')">
+                    <label class="form-label">Tạo Người Dùng Với Role:</label>
+                    <div th:each="role : ${roles}" class="form-check form-check-inline">
                         <input class="form-check-input"
                                type="radio"
                                th:field="*{role}"
@@ -45,6 +45,7 @@
 
                 <!-- Floor & Room -->
                 <div sec:authorize="hasRole('BOD')" >
+                    <h1 style="text-align: center">TẠO CƯ DÂN MỚI</h1>
                     <input type="hidden" name="role" value="RESIDENT">
                     <div class="mb-3">
                         <label>Floor:</label>
@@ -114,36 +115,40 @@
                     }
                 }
 
-                function fetchRooms(floorId) {
+                function fetchRooms(floorId, roomSelectId) {
                     fetch(`/register/rooms?floorId=${floorId}`)
                         .then(response => response.text())
                         .then(html => {
-                            document.getElementById('roomSelect').innerHTML = html;
+                            document.getElementById(roomSelectId).innerHTML = html;
                         })
                         .catch(error => console.error('Lỗi lấy phòng:', error));
                 }
 
-                document.getElementById("floorSelect").addEventListener("change", function () {
-                    const floorId = this.value;
-                    if (floorId) {
-                        fetchRooms(floorId);
-                    } else {
-                        document.getElementById("roomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
-                    }
-                });
-                document.getElementById("bodFloorSelect")?.addEventListener("change", function () {
-                    const floorId = this.value;
-                    if (floorId) {
-                        fetch(`/register/rooms?floorId=${floorId}`)
-                            .then(response => response.text())
-                            .then(html => {
-                                document.getElementById("bodRoomSelect").innerHTML = html;
-                            })
-                            .catch(error => console.error('Lỗi lấy phòng:', error));
-                    } else {
-                        document.getElementById("bodRoomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
-                    }
-                });
+                // Cho ADMIN
+                const floorSelect = document.getElementById("floorSelect");
+                if (floorSelect) {
+                    floorSelect.addEventListener("change", function () {
+                        const floorId = this.value;
+                        if (floorId) {
+                            fetchRooms(floorId, "roomSelect");
+                        } else {
+                            document.getElementById("roomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
+                        }
+                    });
+                }
+
+                // Cho BOD
+                const bodFloorSelect = document.getElementById("bodFloorSelect");
+                if (bodFloorSelect) {
+                    bodFloorSelect.addEventListener("change", function () {
+                        const floorId = this.value;
+                        if (floorId) {
+                            fetchRooms(floorId, "bodRoomSelect");
+                        } else {
+                            document.getElementById("bodRoomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
+                        }
+                    });
+                }
 
                 document.querySelectorAll('input[name="role"]').forEach(radio => {
                     radio.addEventListener('change', toggleFields);
