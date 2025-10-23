@@ -10,4 +10,5 @@ public interface SurveyRepository {
     Survey findById(int id);
     List<Survey> findAll(Map<String, String> params);
     List<Survey> getSurveysNotCompletedByUser(int userId, String title);
+    boolean deleteSurvey(Survey survey);
 }

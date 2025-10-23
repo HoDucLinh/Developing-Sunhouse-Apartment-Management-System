@@ -51,7 +51,7 @@
                         <td th:text="${user.fullName}"></td>
                         <td th:text="${user.email}"></td>
                         <td th:text="${user.phone}"></td>
-                        <td th:text="${user.roomId != null ? user.roomId.roomNumber : 'N/A'}"></td>
+                        <td th:text="${user.roomId != null ? user.roomId.roomNumber : '-'}"></td>
                         <td>
                             <!-- Chỉ ADMIN mới thấy form chỉnh role -->
                             <div sec:authorize="hasRole('ADMIN')">

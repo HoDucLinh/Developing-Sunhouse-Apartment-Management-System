@@ -106,4 +106,11 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         return getCurrentSession().createQuery(cq).getResultList();
     }
 
+    @Override
+    public boolean deleteSurvey(Survey survey) {
+        Session session = getCurrentSession();
+        session.remove(survey);
+        return true;
+    }
+
 }

@@ -48,14 +48,14 @@ public class CardRepositoryImpl implements CardRepository {
     }
     @Override
     public List<Card> getAllCards(String keyword) {
-        Session session = factory.getObject().getCurrentSession();  // ✅ dùng session hiện tại
+        Session session = factory.getObject().getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Card> query = builder.createQuery(Card.class);
         Root<Card> root = query.from(Card.class);
         Join<Card, User> userJoin = root.join("userId");
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            Predicate predicate = builder.like(builder.lower(userJoin.get("fullName")), "%" + keyword.toLowerCase() + "%");
+            Predicate predicate = builder.like(builder.lower(userJoin.get("fullName")), "%" + keyword + "%");
             query.select(root).where(predicate);
         } else {
             query.select(root);
