@@ -1,0 +1,29 @@
+.welcome-text {
+  text-align: center;
+  margin-top: 200px; /* đẩy xuống dưới, chỉnh số theo ý bạn */
+}
+
+.welcome-text h1 {
+  font-size: 2.5rem; /* chữ lớn */
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif; /* font hiện đại */
+  color: #333; /* màu chữ đậm, sang */
+  letter-spacing: 1.5px;
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid #333; /* hiệu ứng gõ chữ */
+  animation: typing 6s steps(40, end) infinite, blink 0.8s step-end infinite;
+}
+
+/* Hiệu ứng typing */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: #333 }
+}

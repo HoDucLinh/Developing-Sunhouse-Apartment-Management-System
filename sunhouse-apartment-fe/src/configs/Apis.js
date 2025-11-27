@@ -1,0 +1,53 @@
+import axios from "axios";
+import cookie from 'react-cookies';
+
+const BASE_URL = 'http://localhost:8081/api/';
+
+export const endpoints = {
+  login: 'user/login',
+  profile: 'user/secure/profile',
+  changePassword: (userId) => `user/change-password/${userId}`,
+  editProfile: (userId) => `user/update-profile/${userId}`,
+  createAppointment : 'appointment/create-appointment',
+  addRelative: 'relative/add-relative',
+  getRelatives: (userId) => `relative/get-relatives/${userId}`,
+  getfeedbacks: (userId) => `feedback/get-feedback/${userId}`,
+  createFeedback :'feedback/create-feedback',
+  deleteFeedback :(userId) => `feedback/delete-feedback/${userId}`,
+  updateFeedback : (userId) => `feedback/update-feedback/${userId}`,
+  getPackages : (userId) => `package/get-packages/${userId}`,
+  getSurveys : 'survey/get-surveys',
+  getQuestions : (surveyId) => `survey/${surveyId}/questions`,
+  submitSurvey : 'survey/submit',
+  getUtilities : (kw) => kw ? `fee/utilities?kw=${kw}` : 'fee/utilities' ,
+  registerUtility:'invoice/addInvoice',
+  getInvoices: (userId) => `invoice/get-invoices/${userId}`,
+  uploadProof :'invoice/upload-proof',
+  getUtilitiesOfUser : (userId) => `fee/get-utilities-of-user?userId=${userId}`,
+  createCard : 'card/create-card',
+  getCardByUserId : (userId) => `card/get-cards/${userId}`,
+  getInvoice : (invoiceId) => `invoice/get-invoice/${invoiceId}`,
+  getStatus :'payment/status',
+  paymentVNPay: 'payment/vnpay',
+  paymentVNPayReturn: 'payment/vnpay-payment-return' 
+
+};
+
+// Axios không có token (dùng cho login, register,...)
+export const publicApi = axios.create({
+  baseURL: BASE_URL
+});
+
+// Axios có token (dùng sau login)
+export const authApis = (token = null) => {
+  if (!token) {
+    token = cookie.load('token');
+  }
+
+  return axios.create({
+    baseURL: BASE_URL,
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+};
