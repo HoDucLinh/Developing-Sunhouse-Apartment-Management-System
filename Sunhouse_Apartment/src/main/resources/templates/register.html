@@ -1,0 +1,161 @@
+<!-- register.html -->
+<div th:replace="~{fragments/base :: layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div th:fragment="content">
+        <main class="p-3">
+            <form th:action="@{/register}" method="post" th:object="${user}">
+                <!-- Role -->
+                <div class="mb-3" sec:authorize="hasRole('ADMIN')">
+                    <label class="form-label">Tạo Người Dùng Với Role:</label>
+                    <div th:each="role : ${roles}" class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               type="radio"
+                               th:field="*{role}"
+                               th:value="${role}"
+                               th:id="'role-' + ${role}"
+                                required/>
+                        <label class="form-check-label"
+                               th:for="'role-' + ${role}"
+                               th:text="${role}"></label>
+                    </div>
+                    <div id="floorRoomFields" style="display: none;" >
+                        <div class="mb-3">
+                            <label>Floor:</label>
+                            <select name="floorId" id="floorSelect" class="form-select">
+                                <option value="">-- Chọn tầng --</option>
+                                <option th:each="floor : ${floors}"
+                                        th:value="${floor.id}"
+                                        th:text="'Tầng ' + ${floor.floorNumber}"
+                                        th:selected="${floor.id} == ${selectedFloorId}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Room:</label>
+                            <select name="roomIdParam" id="roomSelect" class="form-select">
+                                <option value="">-- Chọn phòng --</option>
+                                <option th:each="room : ${rooms}"
+                                        th:value="${room.id}"
+                                        th:text="${room.roomNumber}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floor & Room -->
+                <div sec:authorize="hasRole('BOD')" >
+                    <h1 style="text-align: center">TẠO CƯ DÂN MỚI</h1>
+                    <input type="hidden" name="role" value="RESIDENT">
+                    <div class="mb-3">
+                        <label>Floor:</label>
+                        <select name="floorId" id="bodFloorSelect" class="form-select">
+                            <option value="">-- Chọn tầng --</option>
+                            <option th:each="floor : ${floors}"
+                                    th:value="${floor.id}"
+                                    th:text="'Tầng ' + ${floor.floorNumber}"
+                                    th:selected="${floor.id} == ${selectedFloorId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Room:</label>
+                        <select name="roomIdParam" id="bodRoomSelect" class="form-select">
+                            <option value="">-- Chọn phòng --</option>
+                            <option th:each="room : ${rooms}"
+                                    th:value="${room.id}"
+                                    th:text="${room.roomNumber}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Other fields -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">User name</label>
+                    <input type="text" class="form-control" id="username" th:field="*{username}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('username')}"
+                         th:errors="*{username}">Username Error</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="pwd" th:field="*{password}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('password')}"
+                         th:errors="*{password}">Password Error</div>
+                </div>
+                <div class="mb-3">
+                    <label for="fullname" class="form-label">Full name</label>
+                    <input type="text" class="form-control" id="fullname" th:field="*{fullName}" required />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" th:field="*{phone}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
+                         th:errors="*{phone}">Phone Error</div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}" required />
+                    <div class="text-danger" th:if="${#fields.hasErrors('email')}"
+                         th:errors="*{email}">Email Error</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add user</button>
+            </form>
+
+            <script>
+                function toggleFields() {
+                    const selectedRole = document.querySelector('input[name="role"]:checked');
+                    const floorRoomFields = document.getElementById('floorRoomFields');
+                    if (selectedRole && selectedRole.value === 'RESIDENT') {
+                        floorRoomFields.style.display = 'block';
+                    } else {
+                        floorRoomFields.style.display = 'none';
+                    }
+                }
+
+                function fetchRooms(floorId, roomSelectId) {
+                    fetch(`/register/rooms?floorId=${floorId}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById(roomSelectId).innerHTML = html;
+                        })
+                        .catch(error => console.error('Lỗi lấy phòng:', error));
+                }
+
+                // Cho ADMIN
+                const floorSelect = document.getElementById("floorSelect");
+                if (floorSelect) {
+                    floorSelect.addEventListener("change", function () {
+                        const floorId = this.value;
+                        if (floorId) {
+                            fetchRooms(floorId, "roomSelect");
+                        } else {
+                            document.getElementById("roomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
+                        }
+                    });
+                }
+
+                // Cho BOD
+                const bodFloorSelect = document.getElementById("bodFloorSelect");
+                if (bodFloorSelect) {
+                    bodFloorSelect.addEventListener("change", function () {
+                        const floorId = this.value;
+                        if (floorId) {
+                            fetchRooms(floorId, "bodRoomSelect");
+                        } else {
+                            document.getElementById("bodRoomSelect").innerHTML = '<option value="">-- Chọn phòng --</option>';
+                        }
+                    });
+                }
+
+                document.querySelectorAll('input[name="role"]').forEach(radio => {
+                    radio.addEventListener('change', toggleFields);
+                });
+
+                document.addEventListener('DOMContentLoaded', toggleFields);
+            </script>
+        </main>
+    </div>
+</div>

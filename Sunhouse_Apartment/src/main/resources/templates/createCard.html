@@ -1,0 +1,76 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="container my-4">
+            <h2>Create New Card</h2>
+
+            <form th:action="@{/create-new-card}" method="post">
+                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                <!-- User dropdown -->
+                <div class="mb-3">
+                    <label class="form-label">User</label>
+                    <select id="user-select" name="userId" class="form-select" required>
+                        <option value="" disabled selected>Select User</option>
+                        <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName}"></option>
+                    </select>
+                </div>
+
+                <!-- Checkbox: Create card for relative -->
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" id="useRelativeCheckbox" name="useRelative">
+                    <label class="form-check-label" for="useRelativeCheckbox">Create card for Relative</label>
+                </div>
+
+                <!-- Relative dropdown (only shown when checkbox is checked) -->
+                <div class="mb-3" id="relative-container" style="display:none;">
+                    <label class="form-label">Select Relative</label>
+                    <select id="relative-select" name="relativeId" class="form-select">
+                        <option value="" disabled selected>Choose Relative</option>
+                    </select>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- JavaScript to load relatives dynamically -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const userSelect = document.getElementById("user-select");
+        const relativeSelect = document.getElementById("relative-select");
+        const useRelativeCheckbox = document.getElementById("useRelativeCheckbox");
+        const relativeContainer = document.getElementById("relative-container");
+
+        useRelativeCheckbox.addEventListener("change", function () {
+            if (this.checked && userSelect.value) {
+                relativeContainer.style.display = "block";
+                fetchRelatives(userSelect.value);
+            } else {
+                relativeContainer.style.display = "none";
+                relativeSelect.innerHTML = "";
+            }
+        });
+
+        userSelect.addEventListener("change", function () {
+            if (useRelativeCheckbox.checked) {
+                fetchRelatives(this.value);
+            }
+        });
+
+        function fetchRelatives(userId) {
+            fetch(`/get-relatives?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    relativeSelect.innerHTML = `<option value="" disabled selected>Choose Relative</option>`;
+                    data.forEach(rel => {
+                        const option = document.createElement("option");
+                        option.value = rel.id;
+                        option.text = rel.fullName;
+                        relativeSelect.appendChild(option);
+                    });
+                });
+        }
+    });
+</script>

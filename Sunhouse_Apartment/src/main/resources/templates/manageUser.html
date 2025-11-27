@@ -1,0 +1,90 @@
+<div th:replace="~{fragments/base :: layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="m-0">List Users</h2>
+                <a class="btn btn-success" th:href="@{/register}">
+                    <i class="bi bi-person-plus"></i> New
+                </a>
+            </div>
+
+            <!-- Search form -->
+            <form class="row g-3 mb-4" method="get" th:action="@{/manage-user}">
+                <div class="col-md-3">
+                    <input type="text" name="kw" th:value="${params['kw']}" class="form-control" placeholder="Search by fullName...">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="room_number" th:value="${params['room_number']}" class="form-control" placeholder="Search by room number...">
+                </div>
+                <div class="col-md-3">
+                    <select id="role" name="role" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="ADMIN" th:selected="${params['role'] == 'ADMIN'}">ADMIN</option>
+                        <option value="BOD" th:selected="${params['role'] == 'BOD'}">BOD</option>
+                        <option value="RESIDENT" th:selected="${params['role'] == 'RESIDENT'}">RESIDENT</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+
+            <!-- User table -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Room</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.roomId != null ? user.roomId.roomNumber : '-'}"></td>
+                        <td>
+                            <!-- Chỉ ADMIN mới thấy form chỉnh role -->
+                            <div sec:authorize="hasRole('ADMIN')">
+                                <form th:action="@{'/change-role/' + ${user.id}}" method="post" class="d-inline">
+                                    <select name="role" class="form-select form-select-sm d-inline w-auto">
+                                        <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">ADMIN</option>
+                                        <option value="BOD" th:selected="${user.role.name() == 'BOD'}">BOD</option>
+                                        <option value="RESIDENT" th:selected="${user.role.name() == 'RESIDENT'}">RESIDENT</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-shield-lock"></i> Update
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Nếu không phải ADMIN thì chỉ hiển thị role -->
+                            <div sec:authorize="!hasRole('ADMIN')">
+                                <span th:text="${user.role}"></span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <a th:href="@{'/block-user/' + ${user.id}}" class="btn btn-sm btn-danger" title="Block user">
+                                <i class="bi bi-person-x"></i> Block
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="7" class="text-center">No users found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

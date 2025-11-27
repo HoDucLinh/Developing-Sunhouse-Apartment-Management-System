@@ -1,0 +1,94 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4 bg-light rounded shadow-sm">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary mb-0">
+                    <i class="bi bi-box-seam"></i> Danh sách Package
+                </h2>
+                <a class="btn btn-success shadow-sm" th:href="@{/create-package(lockerId=${lockerId})}">
+                    <i class="bi bi-plus-lg"></i> Tạo mới package
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <form class="mb-4 row g-2 align-items-center bg-white p-3 rounded shadow-sm"
+                  method="get"
+                  th:action="@{/packages/{id}(id=${lockerId})}">
+                <input type="hidden" name="lockerId" th:value="${lockerId}" />
+                <div class="col-md-4">
+                    <input type="text" name="kw" class="form-control" placeholder="🔍 Tìm theo tên"
+                           th:value="${param.kw}" />
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+
+            <!-- Empty Message -->
+            <div th:if="${#lists.isEmpty(packages)}" class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> Chưa có sản phẩm nào
+            </div>
+
+            <!-- Table -->
+            <div th:unless="${#lists.isEmpty(packages)}" class="table-responsive bg-white rounded shadow-sm">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>ID Package</th>
+                        <th>Tên</th>
+                        <th>Trạng thái</th>
+                        <th>Hình ảnh</th>
+                        <th>Người gửi</th>
+                        <th>Người nhận</th>
+                        <th>Thời gian tạo</th>
+                        <th>Thời gian nhận</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="package, stat : ${packages}" class="text-center">
+                        <td th:text="${stat.count}"></td>
+                        <td class="fw-bold text-secondary" th:text="${package.id}"></td>
+                        <td th:text="${package.name}"></td>
+                        <td>
+                            <form th:action="@{/change-package-status}" method="post" class="m-0">
+                                <input type="hidden" name="packageId" th:value="${package.id}" />
+                                <input type="hidden" name="lockerId" th:value="${lockerId}" />
+                                <select name="newStatus"
+                                        class="form-select form-select-sm w-auto mx-auto fw-bold text-center border-0"
+                                        th:classappend="${package.status.name() == 'PENDING'} ? 'bg-warning text-dark' :
+                        (${package.status.name() == 'APPROVED'} ? 'bg-success text-white' : 'bg-danger text-white')"
+                                        onchange="this.form.submit()">
+                                    <option th:selected="${package.status.name() == 'PENDING'}" value="PENDING">PENDING</option>
+                                    <option th:selected="${package.status.name() == 'APPROVED'}" value="APPROVED">APPROVED</option>
+                                    <option th:selected="${package.status.name() == 'REJECTED'}" value="REJECTED">REJECTED</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <img th:src="${package.image}" alt="image"
+                                 class="img-thumbnail rounded shadow-sm"
+                                 style="width: 80px; height: 80px; object-fit: cover;" />
+                        </td>
+                        <td th:text="${package.getSenderId() != null ? package.getSenderId().getFullName() : '-' }"></td>
+                        <td th:text="${package.getReceiverId() != null ? package.getReceiverId().getFullName() : '-' }"></td>
+                        <td th:text="${package.getCreatedAt()}"></td>
+                        <td th:text="${package.getReceivedAt() != null ? package.getReceivedAt() : '-'}"></td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-danger"
+                               th:href="@{'/delete-package/' + ${package.id} + '?lockerId=' + ${lockerId}}"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <i class="bi bi-trash3"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<div th:fragment="sidebar" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <style>
+        .list-group-item.active {
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); /* xanh nhạt -> tím nhạt */
+            color: #fff !important;
+            font-weight: bold;
+            border: none;
+        }
+        .list-group-item.active i {
+            color: #fff !important; /* icon cũng đổi thành trắng */
+        }
+    </style>
+    <div class="list-group list-group-flush">
+        <a th:href="@{/statistics}"
+           class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('ADMIN')">
+            <i class="bi bi-speedometer2 me-2"></i> Thống kê
+        </a>
+        <a th:href="@{/manage-room}" class="list-group-item list-group-item-action">
+            <i class="bi bi-house-door me-2"></i> Quản lý căn hộ
+        </a>
+        <a th:href="@{/manage-appointment}" class="list-group-item list-group-item-action">
+            <i class="bi bi-calendar-event me-2"></i> Quản lý cuộc hẹn
+        </a>
+        <a th:href="@{/manage-user}" class="list-group-item list-group-item-action">
+            <i class="bi bi-people me-2"></i> Quản lý người dùng
+        </a>
+        <a th:href="@{/manage-invoice}" class="list-group-item list-group-item-action">
+            <i class="bi bi-file-earmark-text me-2"></i> Quản lý hóa đơn
+        </a>
+        <a th:href="@{/manage-card}" class="list-group-item list-group-item-action">
+            <i class="bi bi-credit-card me-2"></i> Quản lý thẻ ra vào
+        </a>
+        <a th:href="@{/manage-locker}" class="list-group-item list-group-item-action">
+            <i class="bi bi-box-seam me-2"></i> Quản lý tủ đồ
+        </a>
+        <a th:href="@{/manage-survey}" class="list-group-item list-group-item-action">
+            <i class="bi bi-bar-chart-line me-2"></i> Quản lý khảo sát
+        </a>
+        <a th:href="@{/manage-feedback}" class="list-group-item list-group-item-action">
+            <i class="bi bi-chat-dots me-2"></i> Quản lý phản ánh
+        </a>
+        <a th:href="@{/manage-fee}" class="list-group-item list-group-item-action">
+            <i class="bi bi-cash-stack me-2"></i> Quản lý phí
+        </a>
+        <a th:href="@{/chat}" class="list-group-item list-group-item-action">
+            <i class="bi bi-cash-stack me-2"></i> ChatRoom
+        </a>
+        <a th:href="@{/edit-profile}" class="list-group-item list-group-item-action">
+            <i class="bi bi-gear me-2"></i> Cài đặt
+        </a>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.pathname;
+            document.querySelectorAll(".list-group a").forEach(link => {
+                const linkUrl = link.getAttribute("href");
+                if (currentUrl === linkUrl) { // chỉ active khi URL trùng hoàn toàn
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+</div>

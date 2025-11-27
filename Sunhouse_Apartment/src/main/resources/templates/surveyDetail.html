@@ -1,0 +1,144 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4 position-relative">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="text-primary">
+                    <i class="bi bi-file-earmark-text"></i>
+                    Khảo sát: <span th:text="${survey.title}">Tiêu đề khảo sát</span>
+                </h2>
+
+                <!-- Nút thêm câu hỏi -->
+                <button class="btn btn-primary" onclick="toggleQuestionForm()">
+                    <i class="bi bi-plus-circle"></i> Thêm câu hỏi
+                </button>
+            </div>
+
+            <p><strong>Mô tả:</strong> <span th:text="${survey.description}">Mô tả khảo sát</span></p>
+            <p><strong>Loại khảo sát:</strong> <span th:text="${survey.type}">MULTIPLE_CHOICE</span></p>
+
+            <hr/>
+            <!-- Hiển thị thông báo -->
+            <div class="alert alert-success mt-3" th:if="${message}" th:text="${message}"></div>
+            <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+            <!-- Form thêm câu hỏi (ẩn mặc định) -->
+            <div id="question-form" class="card border-primary p-3 mb-4" style="display: none;">
+                <h4 class="text-primary mb-3">Thêm câu hỏi mới</h4>
+
+                <form th:action="@{/surveys/add-question}" th:object="${question}" method="post">
+                    <input type="hidden" name="surveyIdValue" th:value="${survey.id}" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung câu hỏi</label>
+                        <textarea th:field="*{content}" class="form-control" required></textarea>
+                    </div>
+
+                    <!-- Nếu là MULTIPLE_CHOICE thì hiển thị ô nhập lựa chọn -->
+                    <div th:if="${survey.type.name() == 'MULTIPLE_CHOICE'}" class="mb-3">
+                        <label class="form-label">Các lựa chọn</label>
+                        <div id="options-container" class="d-flex flex-column gap-2">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
+                                <input type="text" name="options[]" class="form-control" placeholder="Lựa chọn 1" />
+                                <button type="button" class="btn btn-outline-danger" onclick="removeOption(this)">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
+                                <input type="text" name="options[]" class="form-control" placeholder="Lựa chọn 2" />
+                                <button type="button" class="btn btn-outline-danger" onclick="removeOption(this)">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addOption()">
+                            <i class="bi bi-plus-circle"></i> Thêm lựa chọn
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-3">
+                        <i class="bi bi-check-circle"></i> Xác nhận thêm
+                    </button>
+                </form>
+            </div>
+
+            <!-- Danh sách câu hỏi -->
+            <h4 class="mt-4">Danh sách câu hỏi</h4>
+            <div class="row row-cols-1 g-3 mb-4">
+                <div th:each="q, iterStat : ${questions}" class="col">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary mb-2">
+                                <i class="bi bi-question-circle"></i>
+                                Câu <span th:text="${iterStat.index + 1}">1</span>
+                            </h5>
+                            <p class="card-text" th:text="${q.content}">Nội dung câu hỏi</p>
+
+                            <!-- Nếu là câu hỏi trắc nghiệm -->
+                            <ul th:if="${survey.type.name() == 'MULTIPLE_CHOICE'}" class="list-group list-group-flush mt-2">
+                                <li th:each="opt : ${q.questionOptionSet}" class="list-group-item">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    <span th:text="${opt.content}">Lựa chọn</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nếu không có câu hỏi -->
+                <div th:if="${#lists.isEmpty(questions)}" class="col text-muted">
+                    <div class="alert alert-secondary">
+                        <i class="bi bi-info-circle"></i> Chưa có câu hỏi nào trong khảo sát này.
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function toggleQuestionForm() {
+        const form = document.getElementById('question-form');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addOption() {
+        const container = document.getElementById('options-container');
+
+        const group = document.createElement('div');
+        group.className = 'input-group';
+
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'input-group-text';
+        iconSpan.innerHTML = '<i class="bi bi-list-ul"></i>';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'options[]';
+        input.placeholder = 'Lựa chọn thêm';
+        input.className = 'form-control';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-outline-danger';
+        removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
+        removeBtn.onclick = function () {
+            removeOption(removeBtn);
+        };
+
+        group.appendChild(iconSpan);
+        group.appendChild(input);
+        group.appendChild(removeBtn);
+
+        container.appendChild(group);
+    }
+
+    function removeOption(button) {
+        const group = button.closest('.input-group');
+        if (group) {
+            group.remove();
+        }
+    }
+</script>

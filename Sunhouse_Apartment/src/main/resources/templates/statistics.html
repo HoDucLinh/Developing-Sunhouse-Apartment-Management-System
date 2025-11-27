@@ -1,0 +1,195 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4 bg-light min-vh-100">
+            <div class="container">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold text-primary">
+                        <i class="bi bi-graph-up-arrow me-2"></i> Statistics Dashboard
+                    </h2>
+                    <span class="badge bg-success fs-6 p-2 shadow-sm">
+            <i class="bi bi-calendar-event me-1"></i> [[${year}]]
+          </span>
+                </div>
+
+                <!-- Filter Card -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <form class="row g-3" method="get" th:action="@{/statistics}">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Year</label>
+                                <input type="number" name="year" th:value="${year}" class="form-control shadow-sm">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Period</label>
+                                <select name="period" class="form-select shadow-sm">
+                                    <option value="month" th:selected="${period == 'month'}">By Month</option>
+                                    <option value="quarter" th:selected="${period == 'quarter'}">By Quarter</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                                    <i class="bi bi-search"></i> View
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Residents Statistics -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-primary text-white fw-semibold">
+                        <i class="bi bi-people-fill me-2"></i> Residents Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center">
+                                <thead class="table-light">
+                                <tr>
+                                    <th th:text="${period == 'quarter' ? 'Quarter' : 'Month'}"></th>
+                                    <th>Residents Count</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="entry : ${residentStats}">
+                                    <td>
+                                        <span class="badge bg-info fs-6">[[${entry.key}]]</span>
+                                    </td>
+                                    <td class="fw-bold text-primary">[[${entry.value}]]</td>
+                                </tr>
+                                <tr th:if="${#maps.isEmpty(residentStats)}">
+                                    <td colspan="2" class="text-center text-muted">No data found</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Statistics -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-success text-white fw-semibold">
+                        <i class="bi bi-cash-coin me-2"></i> Revenue Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center">
+                                <thead class="table-light">
+                                <tr>
+                                    <th th:text="${period == 'quarter' ? 'Quarter' : 'Month'}"></th>
+                                    <th>Total Revenue</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="entry : ${revenueStats}">
+                                    <td>
+                                        <span class="badge bg-warning text-dark fs-6">[[${entry.key}]]</span>
+                                    </td>
+                                    <td class="fw-bold text-success">
+                                        [[${#numbers.formatDecimal(entry.value, 0, 'COMMA', 2, 'POINT')}]]
+                                    </td>
+                                </tr>
+                                <tr th:if="${#maps.isEmpty(revenueStats)}">
+                                    <td colspan="2" class="text-center text-muted">No data found</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card shadow-lg border-0 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3 text-primary fw-semibold">
+                                    <i class="bi bi-pie-chart-fill me-2"></i> Resident Growth Chart
+                                </h5>
+                                <canvas id="residentsChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-lg border-0 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3 text-success fw-semibold">
+                                    <i class="bi bi-bar-chart-fill me-2"></i> Revenue Chart
+                                </h5>
+                                <canvas id="revenueChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const residentLabels = /*[[${residentLabels}]]*/ [];
+    const residentValues = /*[[${residentValues}]]*/ [];
+
+    const revenueLabels = /*[[${revenueLabels}]]*/ [];
+    const revenueValues = /*[[${revenueValues}]]*/ [];
+    const period = /*[[${period}]]*/ "";
+
+    // Residents Chart (Doughnut)
+    new Chart(document.getElementById('residentsChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: residentLabels,
+            datasets: [{
+                label: 'Residents Count',
+                data: residentValues,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                    '#9966FF', '#FF9F40', '#66FF66', '#FF6666',
+                    '#66FFFF', '#CCCC00', '#FF99CC', '#0099CC'
+                ],
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                title: {
+                    display: true,
+                    text: 'Resident Statistics by ' + period
+                }
+            }
+        }
+    });
+
+    // Revenue Chart (Bar)
+    new Chart(document.getElementById('revenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: revenueLabels,
+            datasets: [{
+                label: 'Revenue',
+                data: revenueValues,
+                backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                borderColor: '#198754',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Revenue Statistics by ' + period
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+    /*]]>*/
+</script>

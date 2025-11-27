@@ -1,0 +1,54 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Danh sách khảo sát</h2>
+                <a th:href="@{/create-survey}" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-1"></i> Tạo khảo sát
+                </a>
+            </div>
+
+            <form method="get" th:action="@{/manage-survey}" class="mb-3 d-flex">
+                <input type="text" name="title" class="form-control me-2"
+                       placeholder="Tìm theo tiêu đề..." th:value="${params['titile']}">
+                <select id="status" name="status" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    <option value="MULTIPLE_CHOICE" th:selected="${params['status'] == 'MULTIPLE_CHOICE'}">MULTIPLE_CHOICE</option>
+                    <option value="SHORT_ANSWER" th:selected="${params['status'] == 'SHORT_ANSWER'}">SHORT_ANSWER</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Admin</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${surveys}">
+                        <td th:text="${s.id}">1</td>
+                        <td th:text="${s.adminId != null ? s.adminId.fullName : '---'}">Nguyen Van A</td>
+                        <td th:text="${s.title}">Tiêu đề</td>
+                        <td th:text="${s.description}">Nội dung</td>
+                        <td th:text="${s.type}">MULTIPLE_CHOICE</td>
+                        <td>
+                            <a th:href="@{'/surveys/view?id=' + ${s.id}}" class="btn btn-sm btn-info">Xem</a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(surveys)}">
+                        <td colspan="6" class="text-center text-muted">Không có khảo sát nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

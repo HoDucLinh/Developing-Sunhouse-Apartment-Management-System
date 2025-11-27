@@ -1,0 +1,57 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4">
+            <a class="btn btn-secondary mb-3" th:href="@{/manage-room}">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+            <h2 class="mb-4" th:text="'Thành viên trong phòng: ' + ${room.roomNumber}"></h2>
+
+            <!-- Form đổi trưởng phòng -->
+            <form th:action="@{|/${room.id}/change-head|}" method="post" class="mb-4 d-flex align-items-center gap-2">
+                <label for="newHeadId" class="fw-bold mb-0">Đổi trưởng phòng:</label>
+                <select id="newHeadId" name="newHeadId" class="form-select w-auto">
+                    <option th:each="u : ${room.users}" th:value="${u.id}"
+                            th:text="${u.fullName}"
+                            th:selected="${u.id == room.roomHeadId}">
+                    </option>
+                </select>
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="bi bi-check-circle"></i> Lưu
+                </button>
+            </form>
+
+            <!-- Bảng thành viên -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover shadow-sm align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Vai trò</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${room.users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td>
+                                <span th:if="${user.id == room.roomHeadId}" class="badge bg-primary">
+                                    <i class="bi bi-star-fill"></i> Trưởng phòng
+                                </span>
+                            <span th:if="${user.id != room.roomHeadId}" class="badge bg-secondary">
+                                    <i class="bi bi-person"></i> Thành viên
+                                </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

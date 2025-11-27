@@ -1,0 +1,110 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="p-4">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-chat-dots"></i> Chat Room Realtime
+            </h2>
+
+            <!-- Khung chat -->
+            <div class="card shadow-sm rounded">
+                <div class="card-body" style="height: 400px; overflow-y: auto;" id="chat-box">
+                    <!-- Tin nhắn sẽ được load bằng Firebase -->
+                </div>
+            </div>
+
+            <!-- Input chat -->
+            <form class="d-flex mt-3" onsubmit="event.preventDefault(); sendMessage();">
+                <input type="text" id="chat-input" class="form-control me-2 shadow-sm rounded"
+                       placeholder="Nhập tin nhắn...">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send"></i> Gửi
+                </button>
+            </form>
+        </main>
+
+        <!-- Firebase Script -->
+        <script type="module" th:inline="javascript">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+            import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyCnCMyrG62rLul-2ZLM0d7_UrUijfCsCuE",
+                authDomain: "sunhouse-b77af.firebaseapp.com",
+                databaseURL: "https://sunhouse-b77af-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "sunhouse-b77af",
+                storageBucket: "sunhouse-b77af.firebasestorage.app",
+                messagingSenderId: "349732198159",
+                appId: "1:349732198159:web:320aedea61661a72bbd07a"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+
+            const roomId = "room1";
+            const messagesRef = ref(db, `chatrooms/${roomId}/messages`);
+
+            const fullNameUser = /*[[${#authentication.principal.fullName}]]*/ "Ẩn danh";
+            const avatarUser   = /*[[${#authentication.principal.avatarUrl}]]*/ "/images/default-avatar.png";
+
+            // Load tin nhắn realtime
+            onValue(messagesRef, (snapshot) => {
+                const chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML = "";
+
+                if (!snapshot.exists()) {
+                    chatBox.innerHTML = "<i class='text-muted'>Chưa có tin nhắn</i>";
+                    return;
+                }
+
+                snapshot.forEach((child) => {
+                    const msg = child.val();
+                    const div = document.createElement("div");
+                    div.classList.add("mb-2", "d-flex", msg.sender === fullNameUser ? "justify-content-end" : "justify-content-start");
+
+                    if (msg.sender === fullNameUser) {
+                        div.innerHTML = `
+                    <div class="text-end">
+                        <span class="badge bg-primary fs-6">${msg.text}</span>
+                    </div>
+                `;
+                    } else {
+                        div.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <img src="${msg.avatar || '/images/default-avatar.png'}"
+                             class="rounded-circle me-2" width="32" height="32"/>
+                        <div>
+                            <b>${msg.sender}</b><br>
+                            <span class="badge bg-secondary fs-6">${msg.text}</span>
+                        </div>
+                    </div>
+                `;
+                    }
+
+                    chatBox.appendChild(div);
+                });
+            }); // ✅ đã đóng onValue
+
+            // Gửi tin nhắn
+            function sendMessage() {
+                const input = document.getElementById("chat-input");
+                const text = input.value.trim();
+                if (!text) return;
+
+                push(messagesRef, {
+                    sender: fullNameUser,
+                    avatar: avatarUser,
+                    text: text,
+                    timestamp: Date.now()
+                }).then(() => {
+                    console.log("✅ Tin nhắn đã gửi:", text);
+                }).catch(err => {
+                    console.error("❌ Lỗi gửi:", err);
+                });
+
+                input.value = "";
+            }
+
+            window.sendMessage = sendMessage;
+        </script>
+    </div>
+</div>
