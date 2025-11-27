@@ -49,9 +49,9 @@ public class CardServiceImpl implements CardService {
             if (card.getRelativeId() != null &&
                     card.getRelativeId().getId() == cardRequest.getRelativeId() &&
                     card.getExpirationDate().after(new Date())) {
-                throw new RuntimeException("Card already exists");
+                throw new RuntimeException("Card with relative already exists");
             }
-            if(card.getUserId().getId() == cardRequest.getUserId())
+            if(cardRequest.getRelativeId() == null)
                 throw new RuntimeException("Card already exists");
         }
 
