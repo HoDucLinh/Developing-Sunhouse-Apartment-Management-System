@@ -13,7 +13,7 @@ The architecture is illustrated below:
 
 # 🎯 Main Features
 
-* 👨‍💼 1. Account & User Management
+👨‍💼 1. Account & User Management
 
 - The management board creates new resident accounts.
 
@@ -23,7 +23,7 @@ The architecture is illustrated below:
 
 - Admins can add, edit, search, lock, or unlock resident accounts in cases of transfer or leaving the apartment.
 
-* 🏠 2. Room Management
+🏠 2. Room Management
   
 - Admin and BOD can view room details
   
@@ -33,29 +33,29 @@ The architecture is illustrated below:
 
 - Change room head or responsible resident
 
-* 🏊 3. Utilities Registration (Pool, Gym, etc.)
+🏊 3. Utilities Registration (Pool, Gym, etc.)
 
 - Residents can register for available utilities.
 
 - After registering, residents must complete payment. The management board verifies and approves utility usage.
 
-* 💳 4. Fee Payment System
+💳 4. Fee Payment System
 
 - Residents can pay fees through two methods: Cash or Online payment (VNPAY) integrated into the system, then upload transfer receipt screenshots.
 
 - Management board verifies and updates payment statuses.
 
-* 🧾 5. Invoice & Payment History
+🧾 5. Invoice & Payment History
 
 Residents can view and export their invoices directly from the system.
 
 Provides transparency and easy financial tracking.
 
-* 🚗 6. Access card
+🚗 6. Access card
 
 Residents can register relatives or guests who require to BOD create the new card.
 
-* 📦 7. Smart Locker / Package Management
+📦 7. Smart Locker / Package Management
 
 - Each resident has a personal digital locker.
 
@@ -65,23 +65,23 @@ Residents can register relatives or guests who require to BOD create the new car
 
 - Admin updates package status accordingly.
 
-* 📝 8. Feedback / Complaint System
+📝 8. Feedback / Complaint System
 
 - Residents can submit feedback.
 
 - Management board reviews and handles feedback.
 
-* 📊 9. Survey System
+📊 9. Survey System
 
 - The management board can create surveys, which have 2 type : short answer or multiple choice.
 
 - Residents participate to provide collective feedback.
 
-*📈 10. Admin Dashboard & Reports
+📈 10. Admin Dashboard & Reports
 
 Admins can view statistics about resident and revenue by month, quater, year.
 
-* 💬 11. Real-time Chat
+💬 11. Real-time Chat
 
 A real-time chat.
 
@@ -181,4 +181,5 @@ Administrator	All permissions + user management + statistical reports
 
 If you need help with deployment, architecture, or database design, feel free to ask!
 Email : hoduclinh080204@gmail.com
+
 
