@@ -1,1 +1,235 @@
+# 🏢 Sunhouse Apartment Management System
+***
+A full-stack web system that supports residents and administrators in managing apartment operations, amenities, fees, surveys, packages, and real-time communication.
+
+# 📌 Overview
+***
+The Sunhouse Apartment Management System is a comprehensive platform designed to streamline communication and operations between residents and the apartment management board.
+The system includes two main portals:
+
+Client Portal (Residents) – Built with ReactJS, connected to Firebase, VNPAY, and backend APIs via Axios.
+
+Admin Portal (Management Board) – Built with Spring Boot + Thymeleaf, communicating with Firebase, VNPAY, Chart.js, and MySQL through Hibernate.
+
+The architecture is illustrated below:
+
+# 🎯 Main Features
+***
+* 👨‍💼 1. Account & User Management
+
+The management board creates new resident accounts.
+
+Login system with roles: Admin, Management Staff, and Residents.
+
+Residents can update their personal profiles.
+
+Admins can add, edit, search, lock, or unlock resident accounts in cases of transfer or leaving the apartment.
+
+* 🏠 2. Room Management
+
+Residents can view room details:
+
+Room area
+
+Maximum number of occupants
+
+Current number of occupants
+
+Floor number
+
+Room facilities & furniture
+
+Residents can request a room viewing appointment, which is reviewed and confirmed by administrators.
+
+Admins manage all rooms:
+
+Edit room details
+
+Update number of occupants
+
+Manage furniture
+
+Change room head or responsible resident
+
+* 🏊 3. Utilities Registration (Pool, Gym, etc.)
+
+Residents can register for available utilities.
+
+After registering, residents must complete payment.
+
+The management board verifies and approves utility usage.
+
+* 💳 4. Fee Payment System
+
+Residents can pay fees through two methods:
+
+Bank transfer to a fixed MoMo account, then upload transfer receipt screenshots.
+
+Online payment (VNPAY) integrated into the system.
+
+Management board verifies and updates payment statuses.
+
+* 🧾 5. Invoice & Payment History
+
+Residents can view and export their invoices directly from the system.
+
+Provides transparency and easy financial tracking.
+
+* 🚗 6. Vehicle Access & Parking Registration
+
+Residents can register relatives or guests who require:
+
+Access cards
+
+Parking permissions
+
+Gate entry approval
+
+* 📦 7. Smart Locker / Package Management
+
+Each resident has a personal digital locker.
+
+When packages arrive, the management board receives them on behalf of residents.
+
+The system notifies residents via email (Firebase integration).
+
+Residents check their locker and mark packages as received.
+
+Admin updates package status accordingly.
+
+* 📝 8. Feedback / Complaint System
+
+Residents can submit feedback regarding:
+
+Behavior issues
+
+Environmental concerns
+
+Facility maintenance
+
+Management board reviews and handles feedback.
+
+* 📊 9. Survey System
+
+The management board can create surveys regarding:
+
+Environment cleanliness
+
+Facility quality
+
+Service satisfaction
+
+Residents participate to provide collective feedback.
+
+*📈 10. Admin Dashboard & Reports
+
+Admins can view statistics via Chart.js:
+
+Payments
+
+Utility usage
+
+Resident activity
+
+Feedback overview
+
+Admins can generate and export structured reports.
+
+* 💬 11. Real-time Chat
+
+A real-time chat module allows:
+
+Residents ↔ Management staff
+
+Supports fast communication for problem resolution
+
+Built using Firebase Realtime Database
+
+# 🏗 System Architecture
+* 🔹 Frontend (Residents Portal – ReactJS)
+
+ReactJS
+
+Axios
+
+Firebase Authentication & Realtime Database
+
+VNPAY integration
+
+Email notifications
+
+Consume REST APIs from Spring Boot
+
+* 🔹 Backend (Admin Portal – Spring Boot)
+
+Spring Boot REST APIs
+
+Thymeleaf for admin UI
+
+Hibernate (not JPA) with MySQL
+
+Firebase services
+
+VNPAY payment integration
+
+Chart.js for statistics visualization
+
+🔹 Database Layer
+
+MySQL for core data
+
+Firebase for:
+
+Authentication
+
+Real-time notifications
+
+Chat messages
+
+📦 Technologies Used
+Frontend
+
+ReactJS
+
+Firebase
+
+Axios
+
+VNPAY SDK
+
+HTML/CSS/JS
+
+Backend
+
+Spring Boot
+
+Hibernate
+
+Thymeleaf
+
+MySQL
+
+Chart.js
+
+Firebase Admin SDK
+
+# 🚀 How to Run the Project
+***
+Frontend (ReactJS)
+```bash
+npm install
+npm start
+```
+
+Backend (Spring Boot)
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
+# 👥 Roles
+Role	Permissions
+Resident	View rooms, register utilities, pay fees, view invoices, manage lockers, send feedback, join surveys, chat
+Management Staff	Approve registrations, manage rooms, handle packages, process payments
+Administrator	All permissions + user management + statistical reports
 
