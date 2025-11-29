@@ -87,7 +87,7 @@ The architecture is illustrated below:
 
 # 🏗 System Architecture
 
-![Architecture] (https://res.cloudinary.com/dzwsdpjgi/image/upload/v1764426752/Ki%E1%BA%BFn_tr%C3%BAc_h%E1%BB%87_th%E1%BB%91ng_bl12am.png)
+![Architecture](https://res.cloudinary.com/dzwsdpjgi/image/upload/v1764426752/Ki%E1%BA%BFn_tr%C3%BAc_h%E1%BB%87_th%E1%BB%91ng_bl12am.png)
 
 - Front End : ReactJS with Axios, Firebase realtime, VNPay
 - Back End : Spring boot with session and JWT, thymeleaf, hibernate, firebase, VNPay, ChartJS
@@ -95,7 +95,7 @@ The architecture is illustrated below:
 
 # Database Schema
 
-![ERD] (https://res.cloudinary.com/dzwsdpjgi/image/upload/v1764428324/ERD_vn4oks.png)
+![ERD](https://res.cloudinary.com/dzwsdpjgi/image/upload/v1764428324/ERD_vn4oks.png)
 
 # 📁 Project Structure
 
@@ -153,6 +153,7 @@ mvn spring-boot:run
 If you need help with deployment, architecture, or database design, feel free to ask!
 
 Email : hoduclinh080204@gmail.com
+
 
 
 
