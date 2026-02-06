@@ -236,7 +236,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     @Override
-    public void createInvoicesForAllRoomHeads(Integer feeId) {
+    public Integer createInvoicesForAllRoomHeads(Integer feeId) {
+        Integer counter = 0;
         // Lấy danh sách trưởng phòng
         List<User> roomHeads = userRepository.getAllRoomHead();
 
@@ -247,10 +248,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         for (User u : roomHeads) {
+            if(invoiceRepository.isExistInvoice(u.getId(),fee.getId()) == 1)
+                continue;
             // Khởi tạo Invoice mới hoàn toàn
             Invoice invoice = new Invoice();
             invoice.setUserId(u);
-            invoice.setPaymentMethod(Invoice.PAYMENT_METHOD.TRANSFER);   // mặc định CASH
+            invoice.setPaymentMethod(Invoice.PAYMENT_METHOD.TRANSFER);
             invoice.setPaymentProof(null);      // chưa có minh chứng
             invoice.setTotalAmount(u.getRoomId().getRentPrice().add(BigDecimal.valueOf(fee.getPrice())));
             invoice.setAccept(false);
@@ -278,7 +281,9 @@ public class InvoiceServiceImpl implements InvoiceService {
             detail.setNote("Hóa đơn tiền nhà " + u.getRoomId().getRoomNumber());
 
             detailInvoiceRepository.saveDetailInvoice(detail);
+            counter++;
         }
+        return counter;
     }
 
     @Override

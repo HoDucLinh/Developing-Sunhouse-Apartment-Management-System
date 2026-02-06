@@ -1,6 +1,17 @@
 <div th:replace="~{fragments/base :: layout}">
     <div th:fragment="content">
         <main class="p-3">
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${warningMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i>
+                <span th:text="${warningMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
             <!-- Thanh công cụ -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="mb-0">
@@ -33,6 +44,7 @@
                     <tr>
                         <th><i class="bi bi-hash"></i> ID</th>
                         <th><i class="bi bi-person"></i> Người dùng</th>
+                        <th><i class="bi bi-house"></i> Căn hộ</th>
                         <th><i class="bi bi-calendar-event"></i> Ngày hết hạn</th>
                         <th><i class="bi bi-credit-card"></i> Phương thức</th>
                         <th><i class="bi bi-file-earmark-text"></i> Minh chứng</th>
@@ -45,6 +57,7 @@
                     <tr th:each="invoice : ${invoices}">
                         <td th:text="${invoice.id}"></td>
                         <td th:text="${invoice.userId.fullName}"></td>
+                        <td th:text="${invoice.userId.roomId != null ? invoice.userId.roomId.roomNumber : '-'}"></td>
                         <td th:text="${#dates.format(invoice.dueDate, 'dd/MM/yyyy')}"></td>
                         <td>
                                 <span th:if="${invoice.paymentMethod == T(linh.sunhouse_apartment.entity.Invoice.PAYMENT_METHOD).CASH}">

@@ -3,6 +3,7 @@ package linh.sunhouse_apartment.repositories.impl;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.*;
+import linh.sunhouse_apartment.entity.DetailInvoice;
 import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.repositories.InvoiceRepository;
 import org.hibernate.Session;
@@ -12,10 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Transactional
@@ -71,6 +69,8 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
                 );
         return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
     }
+
+
 
     @Override
     public Integer updateInvoice(Invoice invoice) {
@@ -141,5 +141,22 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
         }
 
         return revenueStats;
+    }
+
+    @Override
+    public Integer isExistInvoice(int userId, int feeId) {
+        Calendar calendar = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        List<Invoice> invoices = findAllInvoicesByUserId(userId);
+        for(Invoice i : invoices){
+            Set<DetailInvoice> detailInvoiceSet = i.getDetailInvoiceSet();
+            calendar.setTime(i.getIssuedDate());
+            for(DetailInvoice d : detailInvoiceSet){
+                if(d.getFeeId().getId() == feeId && calendar.get(Calendar.MONTH) == now.get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR) ){
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 }

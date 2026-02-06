@@ -13,4 +13,5 @@ public interface InvoiceRepository {
     Integer updateInvoice(Invoice invoice);
     Invoice findInvoiceById(Integer id);
     Map<Integer, BigDecimal> getRevenueStatistics(int year, String period);
+    Integer isExistInvoice(int userId, int feeId);
 }

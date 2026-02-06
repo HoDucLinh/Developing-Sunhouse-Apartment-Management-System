@@ -16,7 +16,7 @@ public interface InvoiceService {
     void cancelInvoice(Integer invoiceId);
     List<Invoice> getAllInvoices(Map<String,String> params);
     InvoiceResponse getInvoiceDetail(Integer invoiceId);
-    void createInvoicesForAllRoomHeads(Integer feeId);
+    Integer createInvoicesForAllRoomHeads(Integer feeId);
     void changeAccept(Integer invoiceId);
     void uploadProof(Integer invoiceId, MultipartFile file);
     Map<Integer, BigDecimal> getRevenueStatistics(int year, String period);
