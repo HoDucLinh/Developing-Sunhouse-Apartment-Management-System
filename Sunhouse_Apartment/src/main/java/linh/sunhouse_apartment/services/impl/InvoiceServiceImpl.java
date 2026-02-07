@@ -234,6 +234,22 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
     }
 
+    @Override
+    public Integer isExistInvoice(int userId, int feeId) {
+        Calendar calendar = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        List<Invoice> invoices = invoiceRepository.findAllInvoicesByUserId(userId);
+        for(Invoice i : invoices){
+            Set<DetailInvoice> detailInvoiceSet = i.getDetailInvoiceSet();
+            calendar.setTime(i.getIssuedDate());
+            for(DetailInvoice d : detailInvoiceSet){
+                if(d.getFeeId().getId() == feeId && calendar.get(Calendar.MONTH) == now.get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR) ){
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
 
     @Override
     public Integer createInvoicesForAllRoomHeads(Integer feeId) {
@@ -248,7 +264,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         for (User u : roomHeads) {
-            if(invoiceRepository.isExistInvoice(u.getId(),fee.getId()) == 1)
+            if(isExistInvoice(u.getId(),fee.getId()) == 1)
                 continue;
             // Khởi tạo Invoice mới hoàn toàn
             Invoice invoice = new Invoice();

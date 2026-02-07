@@ -3,14 +3,19 @@ package linh.sunhouse_apartment.controllers;
 import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
+import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.services.FeeService;
 import linh.sunhouse_apartment.services.FloorService;
+import linh.sunhouse_apartment.services.InvoiceService;
 import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -22,10 +27,14 @@ public class RoomController {
     @Autowired
     FloorService floorService;
 
+    @Autowired
+    FeeService feeService;
+
     @GetMapping("/manage-room")
     public String manageRoom(@RequestParam(value = "kw", required = false) String keyword, Model model) {
         List<RoomResponse> rooms = roomService.findAll(keyword);
         model.addAttribute("rooms", rooms);
+        model.addAttribute("fees", feeService.getFeeOfFee());
         return "manageRoom";
     }
 

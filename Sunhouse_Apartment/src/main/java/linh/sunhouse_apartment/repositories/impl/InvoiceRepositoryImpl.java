@@ -4,6 +4,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.DetailInvoice;
+import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.repositories.InvoiceRepository;
 import org.hibernate.Session;
@@ -85,7 +86,7 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     @Override
     public Invoice findInvoiceById(Integer id) {
         Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Invoice> cq = cb.createQuery(Invoice.class);
         Root<Invoice> root = cq.from(Invoice.class);
         cq.select(root);
@@ -144,19 +145,19 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     }
 
     @Override
-    public Integer isExistInvoice(int userId, int feeId) {
-        Calendar calendar = Calendar.getInstance();
-        Calendar now = Calendar.getInstance();
-        List<Invoice> invoices = findAllInvoicesByUserId(userId);
-        for(Invoice i : invoices){
-            Set<DetailInvoice> detailInvoiceSet = i.getDetailInvoiceSet();
-            calendar.setTime(i.getIssuedDate());
-            for(DetailInvoice d : detailInvoiceSet){
-                if(d.getFeeId().getId() == feeId && calendar.get(Calendar.MONTH) == now.get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR) ){
-                    return 1;
-                }
-            }
-        }
-        return 0;
+    public List<Invoice> findAllInvoiceUnpaid(Fee fee) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Invoice> cq = cb.createQuery(Invoice.class);
+        Root<Invoice> root = cq.from(Invoice.class);
+        Join<Invoice, DetailInvoice> detailJoin =
+                root.join("detailInvoiceSet", JoinType.INNER);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("status"), Invoice.Status.UNPAID));
+        predicates.add(cb.equal(detailJoin.get("feeId"), fee));
+        cq.select(root)
+                .where(predicates.toArray(new Predicate[0]))
+                .distinct(true);
+        return session.createQuery(cq).getResultList();
     }
 }

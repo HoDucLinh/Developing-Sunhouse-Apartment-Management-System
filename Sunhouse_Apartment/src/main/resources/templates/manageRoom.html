@@ -11,13 +11,37 @@
                 </a>
             </div>
 
-            <form th:action="@{/manage-room}" method="get" class="mb-4 d-flex" style="max-width: 500px;">
-                <input type="text" name="kw" class="form-control me-2 shadow-sm rounded"
-                       placeholder="Nhập mã căn hộ..." th:value="${kw}">
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i> Tìm kiếm
-                </button>
-            </form>
+            <div class="row g-2 align-items-center mb-4">
+
+                <div class="col-auto">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Nhập mã căn hộ..." name="kw">
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-auto">
+                    <div class="input-group">
+                        <select class="form-select" id="feeSelect">
+                            <option value="">-- Chọn loại phí --</option>
+                            <option th:each="fee : ${fees}" th:value="${fee.id}" th:text="${fee.name}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-auto">
+                    <div class="input-group">
+                        <button class="btn btn-success" onclick="loadUnpaidRooms()">
+                            <i class="bi bi-list-check me-1"></i>
+                            Căn hộ chưa thanh toán
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
 
             <div class="table-responsive shadow-sm rounded">
                 <table class="table table-hover table-bordered align-middle">
@@ -62,5 +86,83 @@
                 </table>
             </div>
         </main>
+        <div class="modal fade" id="unpaidModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title">
+                            Danh sách căn hộ chưa thanh toán
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Họ và tên</th>
+                                <th>Mã căn hộ</th>
+                                <th>Tầng</th>
+                                <th>Giá thuê</th>
+                                <th>Hành động</th>
+                            </tr>
+                            </thead>
+                            <tbody id="unpaidRoomBody">
+                            <!-- JS sẽ render vào đây -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <script>
+            function loadUnpaidRooms() {
+                const feeId = document.getElementById("feeSelect").value;
+                if (!feeId) return;
+
+                fetch(`/api/unpaid-rooms?feeId=${feeId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const tbody = document.querySelector("#unpaidModal tbody");
+                        tbody.innerHTML = "";
+
+                        if (data.length === 0) {
+                            tbody.innerHTML = `
+                  <tr>
+                    <td colspan="5" class="text-center text-muted">
+                      Tất cả căn hộ đã thanh toán
+                    </td>
+                  </tr>`;
+                        } else {
+                            data.forEach(r => {
+                                tbody.innerHTML += `
+                      <tr>
+                        <td>${r.fullName}</td>
+                        <td>${r.roomNumber}</td>
+                        <td>${r.floorNumber}</td>
+                        <td>${r.rentPrice.toLocaleString()} VNĐ</td>
+                        <td>
+                          <button class="btn btn-warning btn-sm">
+                            Nhắc nhở
+                          </button>
+                        </td>
+                      </tr>`;
+                            });
+                        }
+
+                        new bootstrap.Modal(
+                            document.getElementById("unpaidModal")
+                        ).show();
+                    });
+            }
+        </script>
     </div>
 </div>
+
+

@@ -3,19 +3,26 @@ package linh.sunhouse_apartment.services.impl;
 import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
+import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.entity.Floor;
+import linh.sunhouse_apartment.entity.Invoice;
 import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.repositories.FeeRepository;
 import linh.sunhouse_apartment.repositories.FloorRepository;
+import linh.sunhouse_apartment.repositories.InvoiceRepository;
 import linh.sunhouse_apartment.repositories.RoomRepository;
 import linh.sunhouse_apartment.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class RoomServiceImpl implements RoomService {
 
     @Autowired
@@ -23,6 +30,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private FloorRepository floorRepository;
+
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    private FeeRepository feeRepository;
 
     @Override
     public List<RoomResponse> findAll(String keyword) {
@@ -88,6 +101,20 @@ public class RoomServiceImpl implements RoomService {
         room.setFloor(floor);
         roomRepository.addRoom(room);
         return room;
+    }
+
+    @Override
+    public List<UnpaidRoomResponse> getUnpaidRooms(Integer feeId) {
+        Fee fee = feeRepository.getFeeById(feeId);
+        if(fee == null){
+            throw new RuntimeException("Fee không tồn tại");
+        }
+        List<Invoice> invoices = invoiceRepository.findAllInvoiceUnpaid(fee);
+        List<UnpaidRoomResponse> rooms = new ArrayList<>();
+        for(Invoice i : invoices){
+            rooms.add(new UnpaidRoomResponse(i.getUserId().getFullName(),i.getUserId().getRoomId().getId(),i.getUserId().getRoomId().getRoomNumber(),i.getUserId().getRoomId().getFloor().getFloorNumber(), i.getUserId().getRoomId().getRentPrice()));
+        }
+        return rooms;
     }
 
 

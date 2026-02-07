@@ -2,6 +2,8 @@ package linh.sunhouse_apartment.services;
 
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
+import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
+import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.entity.Room;
 
 import java.util.List;
@@ -14,4 +16,5 @@ public interface RoomService {
     void changeRoomHead(Integer roomId, Integer newHeadId);
     Room updateRoom (Integer roomId, RoomRequest dto);
     Room addRoom (RoomRequest dto);
+    List<UnpaidRoomResponse> getUnpaidRooms(Integer feeId);
 }

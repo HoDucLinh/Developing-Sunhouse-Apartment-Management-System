@@ -1,5 +1,6 @@
 package linh.sunhouse_apartment.repositories;
 
+import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.entity.Invoice;
 
 import java.math.BigDecimal;
@@ -13,5 +14,5 @@ public interface InvoiceRepository {
     Integer updateInvoice(Invoice invoice);
     Invoice findInvoiceById(Integer id);
     Map<Integer, BigDecimal> getRevenueStatistics(int year, String period);
-    Integer isExistInvoice(int userId, int feeId);
+    List<Invoice> findAllInvoiceUnpaid(Fee fee);
 }

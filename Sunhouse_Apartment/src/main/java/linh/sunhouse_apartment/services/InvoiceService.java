@@ -20,5 +20,6 @@ public interface InvoiceService {
     void changeAccept(Integer invoiceId);
     void uploadProof(Integer invoiceId, MultipartFile file);
     Map<Integer, BigDecimal> getRevenueStatistics(int year, String period);
+    Integer isExistInvoice(int userId, int feeId);
 
 }
