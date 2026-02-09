@@ -1,6 +1,23 @@
 <div th:replace="~{fragments/base :: layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
     <div th:fragment="content">
         <main class="p-3">
+            <!-- Alert messages -->
+            <div class="mb-3">
+                <div th:if="${message}" class="alert alert-success alert-dismissible fade show">
+                    <span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show">
+                    <span th:text="${warning}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="m-0">List Users</h2>
                 <a class="btn btn-success" th:href="@{/register}">
@@ -74,9 +91,13 @@
                         </td>
 
                         <td>
-                            <a th:href="@{'/block-user/' + ${user.id}}" class="btn btn-sm btn-danger" title="Block user">
-                                <i class="bi bi-person-x"></i> Block
-                            </a>
+                            <form th:action="@{'/block-user/' + ${user.id}}" method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Bạn có chắc muốn khóa người dùng này?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-person-x"></i> Block
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(users)}">

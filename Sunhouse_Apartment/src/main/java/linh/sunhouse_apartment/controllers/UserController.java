@@ -134,14 +134,30 @@ public class UserController {
         }
         return "redirect:/edit-profile";
     }
-    @GetMapping("/block-user/{id}")
-    public String blockUser(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/block-user/{id}")
+    public String blockUser(@PathVariable("id") Integer id, Authentication authentication, RedirectAttributes redirectAttributes) {
         try {
-            int affected = userService.blockUser(id);
-            if (affected > 0) {
-                redirectAttributes.addFlashAttribute("message", "Người dùng đã bị khóa thành công.");
-            } else {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy người dùng để khóa.");
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User user = userService.getUserById(id);
+            if(user.getRole() == User.Role.ADMIN) {
+                if (userDetails.getUsername().equals("superadmin")) {
+                    int affected = userService.blockUser(id);
+                    if (affected > 0) {
+                        redirectAttributes.addFlashAttribute("message", "Người dùng đã bị khóa thành công.");
+                    } else {
+                        redirectAttributes.addFlashAttribute("error", "Không thực hiện được!");
+                    }
+                } else {
+                    redirectAttributes.addFlashAttribute("warning", "Bạn không có quyền thực hiện hành động này!");
+                }
+            }
+            else{
+                int affected = userService.blockUser(id);
+                if (affected > 0) {
+                    redirectAttributes.addFlashAttribute("message", "Người dùng đã bị khóa thành công.");
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Không thực hiện được!");
+                }
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi khóa người dùng: " + e.getMessage());
