@@ -13,17 +13,19 @@
             </div>
 
             <!-- Input chat -->
+            <emoji-picker id="emojiPicker" style="display:none"></emoji-picker>
             <form class="d-flex mt-3" onsubmit="event.preventDefault(); sendMessage();">
                 <input type="text" id="chat-input" class="form-control me-2 shadow-sm rounded"
                        placeholder="Nhập tin nhắn...">
+                <button type="button" id="emojiBtn">😊</button>
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-send"></i> Gửi
                 </button>
             </form>
         </main>
-
         <!-- Firebase Script -->
         <script type="module" th:inline="javascript">
+            import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
             import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
@@ -45,6 +47,18 @@
 
             const fullNameUser = /*[[${#authentication.principal.fullName}]]*/ "Ẩn danh";
             const avatarUser   = /*[[${#authentication.principal.avatarUrl}]]*/ "/images/default-avatar.png";
+
+            const emojiBtn = document.getElementById("emojiBtn");
+            const picker = document.getElementById("emojiPicker");
+            const input = document.getElementById("chat-input");
+
+            emojiBtn.onclick = () => {
+                picker.style.display = picker.style.display === "none" ? "block" : "none";
+            };
+
+            picker.addEventListener("emoji-click", event => {
+                input.value += event.detail.unicode;
+            });
 
             // Load tin nhắn realtime
             onValue(messagesRef, (snapshot) => {
