@@ -5,6 +5,7 @@ import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.dtos.request.EditProfileRequest;
 import linh.sunhouse_apartment.entity.Room;
 import linh.sunhouse_apartment.entity.User;
+import linh.sunhouse_apartment.services.EmailService;
 import linh.sunhouse_apartment.services.FloorService;
 import linh.sunhouse_apartment.services.RoomService;
 import linh.sunhouse_apartment.services.UserService;
@@ -37,6 +38,9 @@ public class UserController {
     @Autowired
     FloorService floorService;
 
+    @Autowired
+    EmailService emailService;
+
     @GetMapping("/manage-user")
     public String manageUserView(@RequestParam Map<String, String> params, Model model) {
         List<User> users = userService.getUsers(params);
@@ -48,6 +52,26 @@ public class UserController {
     @GetMapping("/login")
     public String login(){
         return "login";
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword(){
+        return "forgotPassword";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam("username") String username, @RequestParam("email") String email, RedirectAttributes redirectAttributes ){
+        try {
+            userService.forgotPassword(username, email);
+            emailService.sendNewPasswordNotification(email, username);
+            return "redirect:/login";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/forgot-password";
+        } catch (jakarta.mail.MessagingException e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể gửi email. Vui lòng thử lại.");
+            return "redirect:/forgot-password";
+        }
     }
 
     @GetMapping("/register")

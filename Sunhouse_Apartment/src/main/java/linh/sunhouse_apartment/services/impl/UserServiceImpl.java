@@ -271,4 +271,22 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         user.setRole(role);
         return userRepository.update(user);
     }
+
+    @Override
+    public User forgotPassword(String username, String email) {
+        User u = userRepository.getUserByUserName(username);
+        if (u == null) {
+            throw new RuntimeException("User not found");
+        }
+        else{
+            if(u.getEmail().equals(email)){
+                u.setPassword(passwordEncoder.encode("123456789"));
+                userRepository.update(u);
+            }
+            else{
+                throw new RuntimeException("Invalid email");
+            }
+        }
+        return null;
+    }
 }

@@ -27,4 +27,5 @@ public interface UserService  {
     List<User> getAllRoomHead();
     Map<Integer, Long> getResidentStatistics(int year, String period);
     User changeUserRole(Integer userId, User.Role role);
+    User forgotPassword(String username, String email);
 }

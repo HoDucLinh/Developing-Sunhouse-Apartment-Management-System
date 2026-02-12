@@ -23,7 +23,7 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login","/forgot-password").permitAll()
                         .requestMatchers("/statistics/**","/change-role/**").hasRole(User.Role.ADMIN.toString())
                         .anyRequest().authenticated()
                 )
