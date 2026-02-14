@@ -6,6 +6,7 @@ import linh.sunhouse_apartment.dtos.request.UpdateProfileRequest;
 import linh.sunhouse_apartment.dtos.response.AuthenticationResponse;
 import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.User;
+import linh.sunhouse_apartment.services.EmailService;
 import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ import java.util.Collections;
 public class ApiUserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
@@ -76,6 +80,21 @@ public class ApiUserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Người dùng không tồn tại"));
             }
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi server: " + e.getMessage()));
+        }
+    }
+    @PutMapping(path = "/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "email") String email)
+    {
+        try {
+            userService.forgotPassword(username, email);
+            emailService.sendNewPasswordNotification(email, username);
+            return ResponseEntity.ok("Mật khẩu mới đã được gửi đến địa chỉ email " + email);
         }
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

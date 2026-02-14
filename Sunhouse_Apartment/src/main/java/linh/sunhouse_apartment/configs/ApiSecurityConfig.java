@@ -36,7 +36,7 @@ public class ApiSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/login","/api/payment/**", "/api/unpaid-rooms").permitAll()
+                        .requestMatchers("/api/user/login","/api/payment/**", "/api/unpaid-rooms","api/user/forgot-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, ex1) -> {
