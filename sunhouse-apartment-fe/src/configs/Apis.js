@@ -29,7 +29,8 @@ export const endpoints = {
   getInvoice : (invoiceId) => `invoice/get-invoice/${invoiceId}`,
   getStatus :'payment/status',
   paymentVNPay: 'payment/vnpay',
-  paymentVNPayReturn: 'payment/vnpay-payment-return' 
+  paymentVNPayReturn: 'payment/vnpay-payment-return',
+  forgotPassword: 'user/forgot-password'
 
 };
 

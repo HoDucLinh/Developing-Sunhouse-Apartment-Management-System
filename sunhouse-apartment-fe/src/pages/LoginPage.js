@@ -5,6 +5,7 @@ import { endpoints, publicApi, authApis } from '../configs/Apis';
 import cookie from 'react-cookies';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import { Modal } from 'react-bootstrap';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -12,6 +13,11 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const [showModal, setShowModal] = useState(false);
+  const [forgotUsername, setForgotUsername] = useState('');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotError, setForgotError] = useState(null);
+  const [forgotMessage, setForgotMessage] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,6 +44,22 @@ const LoginPage = () => {
       console.error('Login error:', err);
       const errorMsg = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại username hoặc mật khẩu!';
       setError(errorMsg);
+    }
+  };
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotMessage(null);
+    try {
+      const res = await publicApi.put(
+        `${endpoints.forgotPassword}?username=${encodeURIComponent(forgotUsername.trim())}&email=${encodeURIComponent(forgotEmail.trim())}`
+      );
+      setForgotMessage(res.data.error || 'Yêu cầu đã được gửi. Vui lòng kiểm tra email của bạn!');
+      setForgotUsername('');
+      setForgotEmail('');
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || "Thông tin không chính xác!";
+      setForgotError(errorMsg);
     }
   };
 
@@ -77,7 +99,17 @@ const LoginPage = () => {
               </Form.Group>
 
               <div className="text-end mb-3">
-                <a href="#" className="text-decoration-none text-secondary">Quên mật khẩu?</a>
+                <span
+                  role="button"
+                  className="text-decoration-none text-secondary"
+                  onClick={() => {
+                    setShowModal(true);
+                    setForgotError(null);
+                    setForgotMessage(null);
+                  }}
+                >
+                  Quên mật khẩu?
+                </span>
               </div>
 
               <Button type="submit" className="w-100 mb-3" style={{ backgroundColor: '#D9D9FF', color: '#000' }}>
@@ -96,6 +128,42 @@ const LoginPage = () => {
           </Col>
         </Row>
       </Card>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Quên mật khẩu</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        {forgotError && <Alert variant="danger">{forgotError}</Alert>}
+        {forgotMessage && <Alert variant="success">{forgotMessage}</Alert>}
+
+        <Form onSubmit={handleForgotPassword}>
+          <Form.Group className="mb-3">
+            <Form.Label>Tên đăng nhập</Form.Label>
+            <Form.Control
+              type="text"
+              value={forgotUsername}
+              onChange={(e) => setForgotUsername(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Button type="submit" className="w-100">
+            Gửi yêu cầu
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
     </Container>
   );
 };

@@ -126,6 +126,7 @@ const ChatRoom = ({ roomId = "room1" }) => {
                     onChange={(e) => setNewMsg(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                   />
+                  
                   <Button variant="primary" onClick={sendMessage}>
                     <FiSend />
                   </Button>
