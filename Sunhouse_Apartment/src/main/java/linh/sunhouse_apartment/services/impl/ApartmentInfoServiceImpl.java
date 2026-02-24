@@ -58,12 +58,31 @@ public class ApartmentInfoServiceImpl implements ApartmentInfoService {
         if (existing == null)
             throw new RuntimeException("Apartment not found");
 
-        // cập nhật field
-        existing.setName(updatedData.getName());
-        existing.setAddress(updatedData.getAddress());
-        existing.setHotline(updatedData.getHotline());
-        existing.setEmail(updatedData.getEmail());
-        existing.setDescription(updatedData.getDescription());
+        // chỉ cập nhật khi có thay đổi
+        if (updatedData.getName() != null &&
+                !updatedData.getName().equals(existing.getName())) {
+            existing.setName(updatedData.getName());
+        }
+
+        if (updatedData.getAddress() != null &&
+                !updatedData.getAddress().equals(existing.getAddress())) {
+            existing.setAddress(updatedData.getAddress());
+        }
+
+        if (updatedData.getHotline() != null &&
+                !updatedData.getHotline().equals(existing.getHotline())) {
+            existing.setHotline(updatedData.getHotline());
+        }
+
+        if (updatedData.getEmail() != null &&
+                !updatedData.getEmail().equals(existing.getEmail())) {
+            existing.setEmail(updatedData.getEmail());
+        }
+
+        if (updatedData.getDescription() != null &&
+                !updatedData.getDescription().equals(existing.getDescription())) {
+            existing.setDescription(updatedData.getDescription());
+        }
 
         return apartmentInfoRepository.updateApartmentInfo(existing);
     }

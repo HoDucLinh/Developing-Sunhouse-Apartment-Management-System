@@ -3,6 +3,7 @@ package linh.sunhouse_apartment.controllers;
 import linh.sunhouse_apartment.dtos.response.ApartmentImageResponse;
 import linh.sunhouse_apartment.dtos.response.ApartmentInfoResponse;
 import linh.sunhouse_apartment.entity.ApartmentImage;
+import linh.sunhouse_apartment.entity.ApartmentInfo;
 import linh.sunhouse_apartment.services.ApartmentImageService;
 import linh.sunhouse_apartment.services.ApartmentInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,24 @@ public class ApartmentInfoController {
         }
         else
             return "Không tìm thấy hình ảnh";
+    }
+    @PostMapping("/update-info")
+    public String updateApartmentInfo(
+            @RequestParam("name") String name,
+            @RequestParam("address") String address,
+            @RequestParam("hotline") String hotline,
+            @RequestParam("email") String email,
+            @RequestParam("description") String description) {
+
+        ApartmentInfo updatedData = new ApartmentInfo();
+        updatedData.setName(name);
+        updatedData.setAddress(address);
+        updatedData.setHotline(hotline);
+        updatedData.setEmail(email);
+        updatedData.setDescription(description);
+
+        apartmentInfoService.updateApartmentInfo(1, updatedData);
+
+        return "redirect:/setting";
     }
 }
