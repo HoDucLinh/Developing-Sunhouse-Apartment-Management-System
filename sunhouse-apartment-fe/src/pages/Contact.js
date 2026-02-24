@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import HeaderHome from "../components/HeaderHome";
 import { publicApi, endpoints } from "../configs/Apis";
@@ -13,6 +13,8 @@ import { FaCalendarCheck, FaBuilding } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
 
 const Contact = () => {
+  const [apartment, setApartment] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -20,6 +22,26 @@ const Contact = () => {
     note: "",
     appointmentTime: "",
   });
+
+  useEffect(() => {
+    const fetchApartment = async () => {
+      try {
+        const res = await publicApi.get(
+          endpoints.getApartmentInfo(1)
+        );
+
+        console.log("Apartment response:", res.data);
+        setApartment(res.data);
+
+      } catch (error) {
+        console.error("Error fetching apartment:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApartment();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,22 +83,33 @@ const Contact = () => {
                 <FaBuilding className="me-2" />
                 Thông tin người quản lý chung cư
               </h4>
-              <p>
-                <FiUser className="me-2" />
-                <strong>Nguyễn Văn A</strong> – Trưởng ban quản lý
-              </p>
-              <p>
-                <FiPhone className="me-2" />
-                <strong>Hotline:</strong> 0909 123 456
-              </p>
-              <p>
-                <FiMail className="me-2" />
-                <strong>Email:</strong> quanly@sunhouse.vn
-              </p>
-              <p>
-                <FiMapPin className="me-2" />
-                <strong>Địa chỉ:</strong> Tầng 1, Tòa nhà A, KDC Sunhouse, TP.HCM
-              </p>
+              {loading ? (
+              <p>Đang tải thông tin...</p>
+              ) : apartment ? (
+                <>
+                  <p>
+                    <FiUser className="me-2" />
+                    <strong>{apartment.name}</strong>
+                  </p>
+
+                  <p>
+                    <FiPhone className="me-2" />
+                    <strong>Hotline:</strong> {apartment.hotline}
+                  </p>
+
+                  <p>
+                    <FiMail className="me-2" />
+                    <strong>Email:</strong> {apartment.email}
+                  </p>
+
+                  <p>
+                    <FiMapPin className="me-2" />
+                    <strong>Địa chỉ:</strong> {apartment.address}
+                  </p>
+                </>
+              ) : (
+                <p>Không có dữ liệu quản lý</p>
+              )}
             </Card>
           </Col>
 

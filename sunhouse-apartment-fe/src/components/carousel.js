@@ -1,50 +1,50 @@
 import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import img1 from '../images/1.JPG';
-import img2 from '../images/2.jpg';
-import img3 from '../images/3.jpg';
+import { useEffect, useState } from 'react';
+import { endpoints, publicApi } from '../configs/Apis';
 
 const ImageSlider = () => {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await publicApi.get(endpoints.getApartmentInfo(1)); // Giả sử apartmentId là 1
+        if(res.data && res.data.images) {
+          setImages(res.data.images);
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-5">Loading images...</div>;
+  }
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="text-center py-5">
+        No images available
+      </div>
+    );
+  }
   return (
     <Carousel>
-      <Carousel.Item>
-        <img
-          style={{ height: '550px', objectFit: 'cover' }}
-          className="d-block w-100"
-          src={img1}
-          alt="First slide"
-        />
-        <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-
-      <Carousel.Item>
-        <img
-          style={{ height: '550px', objectFit: 'cover' }}
-          className="d-block w-100"
-          src={img2}
-          alt="Second slide"
-        />
-        <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-
-      <Carousel.Item>
-        <img
-          style={{ height: '550px', objectFit: 'cover' }}
-          className="d-block w-100"
-          src={img3}
-          alt="Third slide"
-        />
-        <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
+      {images.map((img, index) => (
+        <Carousel.Item key={img.id || index}>
+          <img
+            style={{ height: "550px", objectFit: "cover" }}
+            className="d-block w-100"
+            src={img.imageUrl}
+            alt={`Slide ${index + 1}`}
+          />
+        </Carousel.Item>
+      ))}
     </Carousel>
   );
 }

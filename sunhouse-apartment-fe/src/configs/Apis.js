@@ -30,8 +30,8 @@ export const endpoints = {
   getStatus :'payment/status',
   paymentVNPay: 'payment/vnpay',
   paymentVNPayReturn: 'payment/vnpay-payment-return',
-  forgotPassword: 'user/forgot-password'
-
+  forgotPassword: 'user/forgot-password',
+  getApartmentInfo: (apartmentId) => `apartment/${apartmentId}`,
 };
 
 // Axios không có token (dùng cho login, register,...)
