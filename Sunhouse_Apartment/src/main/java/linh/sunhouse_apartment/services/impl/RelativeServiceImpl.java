@@ -9,6 +9,7 @@ import linh.sunhouse_apartment.services.RelativeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +45,11 @@ public class RelativeServiceImpl implements RelativeService {
             }
             relative.setFullName(relativeRequest.getFullName());
             relative.setUserId(user);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(relative.getCreatedAt());
+            calendar.add(Calendar.MONTH,1);
+            relative.setExpiredAt(calendar.getTime());
+            relative.setIsActive(true);
             relative.setPhone(relativeRequest.getPhone());
             return relativeRepo.addRelative(relative);
         }

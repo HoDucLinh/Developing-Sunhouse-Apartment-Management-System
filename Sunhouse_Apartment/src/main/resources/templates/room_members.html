@@ -52,6 +52,28 @@
                     </tbody>
                 </table>
             </div>
+            <div class="table-responsive" th:if="${relatives}">
+                <table class="table table-bordered table-striped table-hover shadow-sm align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Họ tên người thân</th>
+                        <th>Họ tên cư dân</th>
+                        <th>SĐT người thân</th>
+                        <th>Ngày tạo</th>
+                        <th>Ngày hết hạn</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${relatives}">
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.userId.getFullName()}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${#dates.format(user.createdAt,'dd/MM/yyyy')}"></td>
+                        <td th:text="${#dates.format(user.expiredAt,'dd/MM/yyyy')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
 </div>

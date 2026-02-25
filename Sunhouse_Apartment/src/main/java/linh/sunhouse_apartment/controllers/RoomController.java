@@ -4,12 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
+import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.Invoice;
+import linh.sunhouse_apartment.entity.Relative;
 import linh.sunhouse_apartment.entity.Room;
-import linh.sunhouse_apartment.services.FeeService;
-import linh.sunhouse_apartment.services.FloorService;
-import linh.sunhouse_apartment.services.InvoiceService;
-import linh.sunhouse_apartment.services.RoomService;
+import linh.sunhouse_apartment.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +29,9 @@ public class RoomController {
     @Autowired
     FeeService feeService;
 
+    @Autowired
+    RelativeService relativeService;
+
     @GetMapping("/manage-room")
     public String manageRoom(@RequestParam(value = "kw", required = false) String keyword, Model model) {
         List<RoomResponse> rooms = roomService.findAll(keyword);
@@ -41,7 +43,12 @@ public class RoomController {
     @GetMapping("/{id}/members")
     public String viewMembers(@PathVariable Integer id, Model model) {
         RoomResponse room = roomService.getRoomWithUsers(id);
+        List<Relative> relatives = new ArrayList<>();
+        for(UserResponse user : room.getUsers()) {
+            relatives.addAll(relativeService.getRelativesByUserId(user.getId()));
+        }
         model.addAttribute("room", room);
+        model.addAttribute("relatives", relatives);
         return "room_members";
     }
 

@@ -49,7 +49,6 @@ public class Relative implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "full_name")
     private String fullName;
-    // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
     @Size(max = 15)
     @Column(name = "phone")
     private String phone;
@@ -59,6 +58,11 @@ public class Relative implements Serializable {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Column(name = "expired_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expiredAt;
+    @Column(name = "is_active")
+    private Boolean isActive;
     @OneToMany(mappedBy = "relativeId")
     @JsonIgnore
     private Set<Card> cardSet;
