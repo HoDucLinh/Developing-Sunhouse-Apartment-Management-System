@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            font-family: NotoSans;
+            font-size: 12px;
+            margin: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .sub-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            font-style: italic;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            text-align: right;
+            font-size: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div style="text-align:center;">
+    <div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
+    <div><strong>Độc lập – Tự do – Hạnh phúc</strong></div>
+    <div>------------------------------------</div>
+</div>
+
+<br />
+
+<!-- Tên chung cư -->
+<div style="text-align:center; margin-top:10px;">
+    <strong>SUNHOUSE APARTMENT</strong>
+</div>
+
+<br />
+<h2>STATISTICS REPORT</h2>
+<div class="sub-info">
+    Year: <strong th:text="${year}"></strong> |
+    Period: <strong th:text="${period}"></strong>
+</div>
+
+<!-- Residents -->
+<div class="section-title">1. Residents Statistics</div>
+<table>
+    <thead>
+    <tr>
+        <th th:text="${period == 'quarter' ? 'Quarter' : 'Month'}"></th>
+        <th>Residents Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${residentStats}">
+        <td th:text="${entry.key}"></td>
+        <td th:text="${entry.value}"></td>
+    </tr>
+
+    <tr th:if="${#maps.isEmpty(residentStats)}">
+        <td colspan="2" class="no-data">No data found</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Revenue -->
+<div class="section-title">2. Revenue Statistics</div>
+<table>
+    <thead>
+    <tr>
+        <th th:text="${period == 'quarter' ? 'Quarter' : 'Month'}"></th>
+        <th>Total Revenue (VNĐ)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${revenueStats}">
+        <td th:text="${entry.key}"></td>
+        <td th:text="${#numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')}"></td>
+    </tr>
+
+    <tr th:if="${#maps.isEmpty(revenueStats)}">
+        <td colspan="2" class="no-data">No data found</td>
+    </tr>
+    </tbody>
+</table>
+
+<br /><br />
+
+<div style="width:100%; margin-top:30px;">
+    <div style="text-align:right;">
+        Ngày
+        <span th:text="${#dates.format(#dates.createNow(),'dd')}"></span>
+        tháng
+        <span th:text="${#dates.format(#dates.createNow(),'MM')}"></span>
+        năm
+        <span th:text="${#dates.format(#dates.createNow(),'yyyy')}"></span>
+    </div>
+
+    <br /><br />
+
+    <div style="text-align:right;">
+        <strong>Người lập báo cáo</strong>
+    </div>
+
+    <br /><br /><br />
+
+    <div style="text-align:right;">
+        <strong th:text="${fullName}"></strong>
+    </div>
+</div>
+
+</body>
+</html>

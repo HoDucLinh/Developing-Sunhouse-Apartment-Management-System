@@ -1,8 +1,13 @@
 package linh.sunhouse_apartment.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
+import linh.sunhouse_apartment.auth.CustomUserDetail;
 import linh.sunhouse_apartment.services.InvoiceService;
+import linh.sunhouse_apartment.services.PdfService;
 import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +27,9 @@ public class StatisticsController {
 
     @Autowired
     InvoiceService invoiceService;
+
+    @Autowired
+    PdfService pdfService;
 
     @GetMapping("/statistics")
     public String getStatistics(
@@ -55,5 +64,30 @@ public class StatisticsController {
         model.addAttribute("revenueValues", revenueValues);
 
         return "statistics";
+    }
+    @GetMapping("/statistics/export-pdf")
+    public void exportPdf(
+            @RequestParam int year,
+            @RequestParam String period,
+            HttpServletResponse response) throws Exception {
+
+        Map<Integer, Long> residentStats =
+                userService.getResidentStatistics(year, period);
+
+        Map<Integer, BigDecimal> revenueStats =
+                invoiceService.getRevenueStatistics(year, period);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetail userDetails = (CustomUserDetail) auth.getPrincipal();
+
+        String fullName = userDetails.getFullName();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("year", year);
+        data.put("period", period);
+        data.put("residentStats", residentStats);
+        data.put("revenueStats", revenueStats);
+        data.put("fullName", fullName);
+
+        pdfService.exportStatisticsPdf(data, response);
     }
 }
