@@ -98,4 +98,10 @@ public class RoomController {
         }
     }
 
+    @GetMapping("/unpaid-rooms")
+    @ResponseBody
+    public List<UnpaidRoomResponse> getUnpaidRooms(@RequestParam Integer feeId) {
+        return roomService.getUnpaidRooms(feeId);
+    }
+
 }

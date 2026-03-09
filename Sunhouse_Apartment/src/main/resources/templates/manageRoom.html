@@ -126,7 +126,7 @@
                 const feeId = document.getElementById("feeSelect").value;
                 if (!feeId) return;
 
-                fetch(`/api/unpaid-rooms?feeId=${feeId}`)
+                fetch(`/unpaid-rooms?feeId=${feeId}`)
                     .then(res => res.json())
                     .then(data => {
                         const tbody = document.querySelector("#unpaidModal tbody");
