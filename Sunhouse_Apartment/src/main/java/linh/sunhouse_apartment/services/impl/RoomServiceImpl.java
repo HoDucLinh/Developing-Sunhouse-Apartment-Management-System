@@ -112,7 +112,7 @@ public class RoomServiceImpl implements RoomService {
         List<Invoice> invoices = invoiceRepository.findAllInvoiceUnpaid(fee);
         List<UnpaidRoomResponse> rooms = new ArrayList<>();
         for(Invoice i : invoices){
-            rooms.add(new UnpaidRoomResponse(i.getUserId().getFullName(),i.getUserId().getRoomId().getId(),i.getUserId().getRoomId().getRoomNumber(),i.getUserId().getRoomId().getFloor().getFloorNumber(), i.getUserId().getRoomId().getRentPrice()));
+            rooms.add(new UnpaidRoomResponse(i.getUserId().getFullName(),i.getUserId().getEmail(),i.getUserId().getRoomId().getId(),i.getUserId().getRoomId().getRoomNumber(),i.getUserId().getRoomId().getFloor().getFloorNumber(), i.getUserId().getRoomId().getRentPrice(), i.getDueDate(), fee.getName()));
         }
         return rooms;
     }

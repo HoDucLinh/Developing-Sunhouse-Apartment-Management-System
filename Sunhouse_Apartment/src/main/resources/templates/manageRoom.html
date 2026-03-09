@@ -105,6 +105,7 @@
                                 <th>Mã căn hộ</th>
                                 <th>Tầng</th>
                                 <th>Giá thuê</th>
+                                <th>Ngày hết hạn</th>
                                 <th>Hành động</th>
                             </tr>
                             </thead>
@@ -147,10 +148,18 @@
                         <td>${r.roomNumber}</td>
                         <td>${r.floorNumber}</td>
                         <td>${r.rentPrice.toLocaleString()} VNĐ</td>
+                        <td>${r.dueDate}</td>
                         <td>
-                          <button class="btn btn-warning btn-sm">
-                            Nhắc nhở
-                          </button>
+                          <button class="btn btn-warning btn-sm"
+                                onclick="sendReminder(
+                                    '${r.email}',
+                                    '${r.fullName}',
+                                    '${r.feeName}',
+                                    ${r.rentPrice},
+                                    '${r.dueDate}'
+                                )">
+                                Nhắc nhở
+                            </button>
                         </td>
                       </tr>`;
                             });
@@ -159,6 +168,30 @@
                         new bootstrap.Modal(
                             document.getElementById("unpaidModal")
                         ).show();
+                    });
+            }
+            function sendReminder(email, name, fee, amount, date) {
+
+                fetch("/send-payment-reminder", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name,
+                        fee: fee,
+                        amount: amount,
+                        date: date
+                    })
+                })
+                    .then(res => res.text())
+                    .then(msg => {
+                        alert("Đã gửi email nhắc nhở!");
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Gửi email thất bại!");
                     });
             }
         </script>

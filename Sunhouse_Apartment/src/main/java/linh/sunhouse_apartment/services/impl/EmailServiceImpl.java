@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Transport;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
@@ -87,6 +90,43 @@ public class EmailServiceImpl implements EmailService {
                 + "<li><strong>PASSWORD : </strong> " + 123456789 + "</li>"
                 + "</ul>"
                 + "<p>Bạn vui lòng thông báo lại với quản trị viên nếu như bạn không có hành động thay đổi mật khẩu này.</p>"
+                + "<p>Trân trọng,<br/>Ban quản lý chung cư</p>";
+
+        message.setContent(htmlContent, "text/html; charset=UTF-8");
+
+        Transport.send(message);
+    }
+    @Override
+    public void sendPaymentNotification(String recipientEmail, String name, String fee, BigDecimal amount, Date date) throws MessagingException {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", env.getProperty("mail.smtp.host"));
+        props.put("mail.smtp.port", env.getProperty("mail.smtp.port"));
+        props.put("mail.smtp.auth", env.getProperty("mail.smtp.auth"));
+        props.put("mail.smtp.starttls.enable", env.getProperty("mail.smtp.starttls.enable"));
+
+        String username = env.getProperty("mail.smtp.username");
+        String password = env.getProperty("mail.smtp.password");
+
+        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
+            @Override
+            protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new jakarta.mail.PasswordAuthentication(username, password);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(username));
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
+        message.setSubject("THÔNG BÁO : THANH TOÁN HÓA ĐƠN TRỄ HẠN", "UTF-8");
+
+        String htmlContent = "<h3>Xin chào," + name + "</h3>"
+                + "<p>Chúng tôi đã kiểm tra về căn hộ mà bạn đang ở, chúng tôi muốn thông báo rằng bạn đã quá hạn thanh toán hóa đơn : </p>"
+                + "<ul>"
+                + "<li><strong>PHÍ : </strong> " + fee + "</li>"
+                + "<li><strong>TỔNG TIỀN : </strong> " + new DecimalFormat("#,###").format(amount) + " VNĐ</li>"
+                + "<li><strong>THỜI GIAN : </strong> " + new SimpleDateFormat("dd/MM/yyyy").format(date) + "</li>"
+                + "</ul>"
+                + "<p>Bạn vui lòng thanh toán hóa đơn này trong thời gian sớm nhất và báo lại với ban quản trị.</p>"
                 + "<p>Trân trọng,<br/>Ban quản lý chung cư</p>";
 
         message.setContent(htmlContent, "text/html; charset=UTF-8");

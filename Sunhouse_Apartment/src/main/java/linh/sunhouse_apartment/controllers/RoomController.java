@@ -2,6 +2,7 @@ package linh.sunhouse_apartment.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
+import linh.sunhouse_apartment.dtos.request.UnpaidRoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
 import linh.sunhouse_apartment.dtos.response.UserResponse;
@@ -31,6 +32,9 @@ public class RoomController {
 
     @Autowired
     RelativeService relativeService;
+
+    @Autowired
+    EmailService emailService;
 
     @GetMapping("/manage-room")
     public String manageRoom(@RequestParam(value = "kw", required = false) String keyword, Model model) {
@@ -103,5 +107,26 @@ public class RoomController {
     public List<UnpaidRoomResponse> getUnpaidRooms(@RequestParam Integer feeId) {
         return roomService.getUnpaidRooms(feeId);
     }
+    @PostMapping("/send-payment-reminder")
+    @ResponseBody
+    public String sendPaymentReminder(@RequestBody UnpaidRoomRequest request) {
+
+        try {
+            emailService.sendPaymentNotification(
+                    request.getEmail(),
+                    request.getName(),
+                    request.getFee(),
+                    request.getAmount(),
+                    request.getDate()
+            );
+
+            return "SUCCESS";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR";
+        }
+    }
+
+
 
 }
