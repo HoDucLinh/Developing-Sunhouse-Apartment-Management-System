@@ -1,0 +1,85 @@
+<div th:replace="~{fragments/base :: layout}">
+    <div th:fragment="content">
+        <main class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Quản lý phản hồi khảo sát</h2>
+                    <h5 class="text-muted" th:text="${surveyTitle}"></h5>
+                </div>
+                <a th:href="@{/manage-survey}" class="btn btn-secondary">
+                    ← Quay lại danh sách khảo sát
+                </a>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-primary" th:text="${totalResponses}"></h4>
+                            <p class="mb-0">Tổng phản hồi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-success" th:text="${totalQuestions}"></h4>
+                            <p class="mb-0">Số câu hỏi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị theo từng câu hỏi -->
+            <div th:each="item : ${data}" class="mb-5">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0" th:text="${item.questionContent}"></h5>
+                        <small class="text-muted">
+                            Số lượng phản hồi:
+                            <strong th:text="${item.responses.size()}"></strong>
+                        </small>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Người trả lời</th>
+                                <th>Phản hồi</th>
+                                <th>Thời gian</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="response, i : ${item.responses}">
+                                <td th:text="${i.index + 1}"></td>
+
+                                <td>
+                                    <strong th:text="${response.userId.fullName}"></strong>
+                                    <small th:text="${response.userId.email}"></small>
+                                </td>
+
+                                <td>
+                        <span th:if="${response.optionId != null}"
+                              class="badge bg-primary"
+                              th:text="${response.optionId.content}"></span>
+
+                                    <span th:if="${response.optionId == null}"
+                                          th:text="${response.answer}"></span>
+                                </td>
+
+                                <td th:text="${#dates.format(response.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${totalResponses == 0}" class="alert alert-info text-center">
+                Chưa có phản hồi nào cho khảo sát này.
+            </div>
+        </main>
+    </div>
+</div>

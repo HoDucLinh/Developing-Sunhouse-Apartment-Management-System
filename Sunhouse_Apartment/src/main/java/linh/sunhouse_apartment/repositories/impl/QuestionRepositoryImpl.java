@@ -28,7 +28,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     }
 
     @Override
-    public List<Question> findQuestionsBySurveyId(int surveyId) {
+    public List<Question> getQuestionsBySurveyId(int surveyId) {
         CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Question> cq = cb.createQuery(Question.class);
         Root<Question> root = cq.from(Question.class);

@@ -41,6 +41,9 @@
                         <td>
                             <a th:href="@{'/surveys/view?id=' + ${s.id}}" class="btn btn-sm btn-info">Xem</a>
                         </td>
+                        <td>
+                            <a th:href="@{/get-responses/{surveyId}(surveyId=${s.id})}" class="btn btn-sm btn-info">Xem phản hồi</a>
+                        </td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(surveys)}">

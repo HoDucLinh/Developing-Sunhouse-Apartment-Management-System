@@ -50,6 +50,6 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getQuestionsBySurveyId(int surveyId) {
-        return questionRepository.findQuestionsBySurveyId(surveyId);
+        return questionRepository.getQuestionsBySurveyId(surveyId);
     }
 }

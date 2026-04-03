@@ -1,6 +1,7 @@
 package linh.sunhouse_apartment.services.impl;
 
 import linh.sunhouse_apartment.dtos.request.AnswerRequest;
+import linh.sunhouse_apartment.dtos.response.QuestionResponseResponse;
 import linh.sunhouse_apartment.entity.Question;
 import linh.sunhouse_apartment.entity.QuestionOption;
 import linh.sunhouse_apartment.entity.Response;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +49,7 @@ public class ResponseServiceImpl implements ResponseService {
         }
 
         // Lấy danh sách câu hỏi của survey
-        List<Question> questions = questionRepository.findQuestionsBySurveyId(surveyId);
+        List<Question> questions = questionRepository.getQuestionsBySurveyId(surveyId);
         if (questions.isEmpty()) {
             throw new IllegalArgumentException("Survey này chưa có câu hỏi");
         }
@@ -97,6 +96,40 @@ public class ResponseServiceImpl implements ResponseService {
             // Lưu response
             responseRepository.save(response);
         }
+    }
+
+    @Override
+    public List<Response> getResponses(Integer questionId) {
+        Question question = questionRepository.findById(questionId);
+        if(question == null) {
+            throw new RuntimeException("Not found question id " + questionId);
+        }
+        return responseRepository.getResponses(question);
+    }
+
+    @Override
+    public List<QuestionResponseResponse> getResponsesBySurveyId(Integer surveyId) {
+
+        Survey survey = surveyRepository.findById(surveyId);
+        if (survey == null) {
+            throw new IllegalArgumentException("Survey không tồn tại");
+        }
+
+        List<Question> questions = questionRepository.getQuestionsBySurveyId(surveyId);
+
+        List<QuestionResponseResponse> result = new ArrayList<>();
+
+        for (Question question : questions) {
+            List<Response> responses = responseRepository.getResponses(question);
+
+            result.add(new QuestionResponseResponse(
+                    question.getId(),
+                    question.getContent(),
+                    responses
+            ));
+        }
+
+        return result;
     }
 
 }

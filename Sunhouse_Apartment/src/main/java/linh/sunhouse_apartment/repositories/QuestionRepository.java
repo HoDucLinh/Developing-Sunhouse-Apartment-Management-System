@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface QuestionRepository {
     void save(Question question);
-    List<Question> findQuestionsBySurveyId(int surveyId);
+    List<Question> getQuestionsBySurveyId(int surveyId);
     Question findById(int id);
     QuestionOption findQuestionOptionById(Integer id);
 }
