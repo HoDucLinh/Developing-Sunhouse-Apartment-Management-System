@@ -6,6 +6,15 @@
                     <h2>Quản lý phản hồi khảo sát</h2>
                     <h5 class="text-muted" th:text="${surveyTitle}"></h5>
                 </div>
+                <div>
+                    <h2>Loại khảo sát</h2>
+                    <h5 class="text-muted" th:text="${surveyType}"></h5>
+                    <div th:if="${surveyType == 'Tự luận'}">
+                        <button class="btn btn-sm btn-info" onclick="analyzeSentiment()">
+                            Phân tích
+                        </button>
+                    </div>
+                </div>
                 <a th:href="@{/manage-survey}" class="btn btn-secondary">
                     ← Quay lại danh sách khảo sát
                 </a>
@@ -66,7 +75,8 @@
                               th:text="${response.optionId.content}"></span>
 
                                     <span th:if="${response.optionId == null}"
-                                          th:text="${response.answer}"></span>
+                                          th:text="${response.answer}"
+                                          data-answer></span>
                                 </td>
 
                                 <td th:text="${#dates.format(response.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
@@ -83,3 +93,108 @@
         </main>
     </div>
 </div>
+<div class="modal fade" id="sentimentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Kết quả phân tích sentiment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Câu trả lời</th>
+                        <th>Sentiment</th>
+                        <th>Confidence</th>
+                    </tr>
+                    </thead>
+                    <tbody id="sentimentTable"></tbody>
+                </table>
+                <div id="summary" class="mb-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function analyzeSentiment() {
+
+        let texts = [];
+
+        document.querySelectorAll("[data-answer]").forEach(el => {
+            texts.push(el.innerText.trim());
+        });
+
+        fetch("/sentiment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ texts: texts })
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                let table = document.getElementById("sentimentTable");
+                table.innerHTML = ""; // reset
+
+                let pos = 0, neg = 0, neu = 0;
+
+                data.results.forEach(r => {
+
+                    // 🔥 đếm
+                    if (r.sentiment === "POS") pos++;
+                    else if (r.sentiment === "NEG") neg++;
+                    else neu++;
+
+                    // 🔥 render từng dòng
+                    table.innerHTML += `
+                <tr>
+                    <td>${r.text}</td>
+                    <td>
+                        <span class="badge ${getColor(r.sentiment)}">
+                            ${r.sentiment}
+                        </span>
+                    </td>
+                    <td>${r.confidence}</td>
+                </tr>
+            `;
+                });
+
+                let total = data.results.length;
+
+                let posRate = ((pos / total) * 100).toFixed(1);
+                let negRate = ((neg / total) * 100).toFixed(1);
+                let neuRate = ((neu / total) * 100).toFixed(1);
+
+                // 🔥 summary
+                document.getElementById("summary").innerHTML = `
+            <div class="row text-center mb-3">
+                <div class="col">
+                    <h5 class="text-success">Hài lòng</h5>
+                    <h3>${posRate}%</h3>
+                </div>
+                <div class="col">
+                    <h5 class="text-danger">Không hài lòng</h5>
+                    <h3>${negRate}%</h3>
+                </div>
+                <div class="col">
+                    <h5 class="text-secondary">Bình thường</h5>
+                    <h3>${neuRate}%</h3>
+                </div>
+            </div>
+        `;
+
+                let modal = new bootstrap.Modal(document.getElementById("sentimentModal"));
+                modal.show();
+            });
+    }
+
+    // 🎨 màu badge
+    function getColor(sentiment) {
+        if (sentiment === "POS") return "bg-success";
+        if (sentiment === "NEG") return "bg-danger";
+        return "bg-secondary";
+    }
+</script>
