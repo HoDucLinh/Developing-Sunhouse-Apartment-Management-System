@@ -120,7 +120,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 Calendar cal2 = Calendar.getInstance();
                 cal2.setTime(new Date());
                 cal2.add(Calendar.MONTH, 1); // cộng thêm 1 tháng
-                userUtility.setEndDate(cal.getTime());
+                userUtility.setEndDate(cal2.getTime());
                 userUtilityRepository.addUserUtility(userUtility);
 
                 detailResponses.add(new DetailInvoiceResponse(
@@ -131,7 +131,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 ));
             }
         }
-
 
         return new InvoiceResponse(
                 savedInvoice.getId(),

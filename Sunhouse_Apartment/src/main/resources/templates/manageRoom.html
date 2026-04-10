@@ -13,14 +13,17 @@
 
             <div class="row g-2 align-items-center mb-4">
 
-                <div class="col-auto">
+                <form method="get" th:action="@{/manage-room}">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Nhập mã căn hộ..." name="kw">
-                        <button class="btn btn-outline-primary">
+                        <input type="text" class="form-control"
+                               placeholder="Nhập mã căn hộ..."
+                               name="kw"
+                               th:value="${param.kw}">
+                        <button class="btn btn-outline-primary" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
-                </div>
+                </form>
 
                 <div class="col-auto">
                     <div class="input-group">

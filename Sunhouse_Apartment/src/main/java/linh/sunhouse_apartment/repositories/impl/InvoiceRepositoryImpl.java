@@ -61,7 +61,8 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
         CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Invoice> cq = cb.createQuery(Invoice.class);
         Root<Invoice> root = cq.from(Invoice.class);
-        cq.select(root)
+        root.fetch("detailInvoiceSet", JoinType.LEFT);
+        cq.select(root).distinct(true)
                 .where(
                         cb.and(
                                 cb.equal(root.get("userId").get("id"), userId),

@@ -21,7 +21,7 @@ public class SurveyServiceImpl implements SurveyService {
     @Override
     public void createSurvey(Survey survey, User currentUser) {
         if (survey != null) {
-            if (currentUser != null && currentUser.getRole() == User.Role.BOD) {
+            if (currentUser != null && (currentUser.getRole() == User.Role.BOD || currentUser.getRole() == User.Role.ADMIN)) {
                 survey.setCreatedAt(new Date());
                 survey.setAdminId(currentUser);
                 surveyRepository.save(survey);
