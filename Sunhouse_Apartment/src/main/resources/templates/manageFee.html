@@ -42,17 +42,18 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-success text-center">
                     <tr>
-                        <th><i class="bi bi-hash"></i> ID</th>
+<!--                        <th><i class="bi bi-hash"></i> ID</th>-->
                         <th><i class="bi bi-tag"></i> Tên phí</th>
                         <th><i class="bi bi-card-text"></i> Mô tả</th>
                         <th><i class="bi bi-list-ul"></i> Loại</th>
                         <th><i class="bi bi-currency-dollar"></i> Giá</th>
+                        <th><i class="bi bi-stopwatch"></i> Thời gian sử dụng</th>
                         <th><i class="bi bi-gear"></i> Hành động</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="f : ${fees}" class="text-center">
-                        <td th:text="${f.id}"></td>
+<!--                        <td th:text="${f.id}"></td>-->
                         <td th:text="${f.name}"></td>
                         <td th:text="${f.description}"></td>
                         <td th:text="${f.type}"></td>

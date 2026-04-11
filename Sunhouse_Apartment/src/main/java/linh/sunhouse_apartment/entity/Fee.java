@@ -53,6 +53,8 @@ public class Fee implements Serializable {
     @Size(max = 500)
     @Column(name = "image")
     private String image;
+    @Column(name = "usage_days")
+    private Integer usageDays;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;

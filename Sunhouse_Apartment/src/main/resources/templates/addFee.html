@@ -42,7 +42,13 @@
                             <label class="form-label fw-bold">
                                 <i class="bi bi-currency-exchange me-1"></i> Giá
                             </label>
-                            <input type="number" step="0.01" th:field="*{price}" class="form-control" placeholder="Nhập giá" required>
+                            <input type="number" th:field="*{price}" class="form-control" placeholder="Nhập giá" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-stopwatch me-1"></i> Thời gian sử dụng
+                            </label>
+                            <input type="number" th:field="*{usageDays}" class="form-control" placeholder="Nhập thời gian được phép sử dụng hệ thống" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">

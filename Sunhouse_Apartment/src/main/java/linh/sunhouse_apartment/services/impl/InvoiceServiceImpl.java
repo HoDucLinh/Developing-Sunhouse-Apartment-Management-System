@@ -68,7 +68,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                     && userUtility.getEndDate().after(new Date())
                     && "ACTIVE".equals(userUtility.getStatus().name())) {
                 throw new RuntimeException(
-                        "Utility already registered and still valid for feeId: " + userUtility.getFee().getId()
+                        "Tiện ích đang đươ sử dụng"
                 );
             }
         }
@@ -97,7 +97,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         //lấy danh sách detail invoice
         List<DetailInvoiceResponse> detailResponses = new ArrayList<>();
 
-        // Lưu chi tiết hóa đơn nếu có
+        // Lưu chi tiết hóa đơn
         if (invoiceRequest.getDetails() != null && !invoiceRequest.getDetails().isEmpty()) {
             for (DetailInvoiveRequest d : invoiceRequest.getDetails()) {
                 Fee fee = feeRepository.getFeeById(d.getFeeId());
@@ -119,7 +119,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 userUtility.setStartDate(new Date());
                 Calendar cal2 = Calendar.getInstance();
                 cal2.setTime(new Date());
-                cal2.add(Calendar.MONTH, 1); // cộng thêm 1 tháng
+                cal2.add(Calendar.DAY_OF_MONTH, fee.getUsageDays());
                 userUtility.setEndDate(cal2.getTime());
                 userUtilityRepository.addUserUtility(userUtility);
 
