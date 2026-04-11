@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Container, Row, Col, Card, Button, Spinner, Modal, Form } from 'react-bootstrap';
-import { FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { Container, Row, Col, Card, Button, Spinner, Modal, Form, Badge, Alert } from 'react-bootstrap';
+import { FiPlus, FiEdit, FiTrash2, FiClock } from 'react-icons/fi';
 import { useUser } from '../contexts/UserContext';
 import { authApis, endpoints } from '../configs/Apis';
 import moment from 'moment';
@@ -16,7 +16,6 @@ const ComplaintsPage = () => {
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [editedContent, setEditedContent] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
-
 
   const loadFeedbacks = async () => {
     if (!user) return;
@@ -54,7 +53,6 @@ const ComplaintsPage = () => {
           }
         }
       );
-      // Reload phản ánh sau khi tạo thành công
       setComplaints([...complaints, res.data]);
       setShowModal(false);
       setNewContent('');
@@ -74,7 +72,6 @@ const ComplaintsPage = () => {
         { content: editedContent }
       );
 
-      // Cập nhật lại danh sách
       setComplaints((prev) =>
         prev.map((c) =>
           c.id === editingComplaint.id ? res.data : c
@@ -90,19 +87,15 @@ const ComplaintsPage = () => {
 
   useEffect(() => {
     if (user) loadFeedbacks();
-  }, [user]);
+  }, [user, searchKeyword]); // Tự động load khi searchKeyword thay đổi
 
   const handleCreate = () => {
-    console.log("Tạo phản ánh mới");
     setShowModal(true);
   };
 
-  const handleEdit = (id) => {
-    const complaint = complaints.find((c) => c.id === id);
-    if (complaint) {
-      setEditingComplaint(complaint);
-      setEditedContent(complaint.content);
-    }
+  const handleEdit = (complaint) => {
+    setEditingComplaint(complaint);
+    setEditedContent(complaint.content);
   };
 
   const handleDelete = async (id) => {
@@ -116,142 +109,178 @@ const ComplaintsPage = () => {
     }
   };
 
-  return (
-    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#e5f1fb' }}>
-      <Sidebar />
-      <Container fluid className="py-4 px-5" style={{ marginLeft: '250px' }}>
-        {/* Header */}
-        <Row className="align-items-center justify-content-between mb-4">
-          <Col xs="auto">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Tìm kiếm khiếu nại..."
-              style={{ width: '250px' }}
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') loadFeedbacks();
-              }}
-            />
-          </Col>
-        </Row>
+  // Hàm hiển thị trạng thái đẹp hơn
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return <Badge bg="warning" pill>⏳ Chờ xử lý</Badge>;
+      case 'PROCESSING':
+        return <Badge bg="info" pill>🔄 Đang xử lý</Badge>;
+      case 'RESOLVED':
+        return <Badge bg="success" pill>✅ Đã xử lý</Badge>;
+      case 'REJECTED':
+        return <Badge bg="danger" pill>❌ Bị từ chối</Badge>;
+      default:
+        return <Badge bg="secondary" pill>{status}</Badge>;
+    }
+  };
 
-        {/* Complaints list */}
-        {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
-            <Spinner animation="border" />
+  return (
+    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+      <Sidebar />
+
+      <Container fluid className="px-5 py-4" style={{ marginLeft: '250px' }}>
+        
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-5">
+          <div>
+            <h1 className="display-6 fw-bold text-dark">Phản ánh & Khiếu nại</h1>
+            <p className="text-muted mb-0">Gửi và quản lý các phản ánh của cư dân</p>
           </div>
+          <Button variant="success" size="lg" onClick={handleCreate}>
+            <FiPlus className="me-2" /> Tạo phản ánh mới
+          </Button>
+        </div>
+
+        {/* Search */}
+        <div className="mb-4" style={{ maxWidth: '420px' }}>
+          <Form.Control
+            type="text"
+            placeholder="Tìm kiếm nội dung phản ánh..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') loadFeedbacks();
+            }}
+            size="lg"
+            className="shadow-sm"
+          />
+        </div>
+
+        {/* Loading & Content */}
+        {loading ? (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="success" size="lg" />
+            <p className="mt-3 text-muted">Đang tải danh sách phản ánh...</p>
+          </div>
+        ) : complaints.length === 0 ? (
+          <Alert variant="info" className="text-center py-5">
+            Bạn chưa có phản ánh nào. Hãy tạo phản ánh mới bằng nút bên trên.
+          </Alert>
         ) : (
           <Row className="g-4">
-            {complaints.length === 0 ? (
-              <p>Không có phản ánh nào.</p>
-            ) : (
-              complaints.map((complaint) => (
-                <Col key={complaint.id} xs={12} sm={6} md={4}>
-                  <Card className="border-0 shadow-sm rounded-4 p-3">
-                    <Card.Body>
-                      <Card.Title className="fs-6 fw-bold">Phản ánh #{complaint.id}</Card.Title>
-                      <Card.Text className="mb-1">{complaint.content}</Card.Text>
-                      <Card.Text className="mb-1 text-muted">
-                        Ngày gửi: {moment(complaint.createdAt).format('HH:mm DD/MM/YYYY')}
-                      </Card.Text>
-                      <Card.Text className="mb-2">
-                        Trạng thái: <strong>{complaint.status === 'PENDING' ? 'Chờ xử lý' : complaint.status}</strong>
-                      </Card.Text>
+            {complaints.map((complaint) => (
+              <Col key={complaint.id} xs={12} sm={6} md={6} lg={4}>
+                <Card className="h-100 shadow border-0 rounded-4 overflow-hidden hover-card">
+                  <Card.Body className="d-flex flex-column">
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <Card.Title className="fw-bold fs-5 mb-0">
+                        Phản ánh #{complaint.id}
+                      </Card.Title>
+                      {getStatusBadge(complaint.status)}
+                    </div>
+
+                    <Card.Text className="flex-grow-1 text-muted mb-4" style={{ fontSize: '1.02rem' }}>
+                      {complaint.content}
+                    </Card.Text>
+
+                    <div className="mt-auto">
+                      <div className="d-flex align-items-center text-muted small mb-3">
+                        <FiClock className="me-2" />
+                        {moment(complaint.createdAt).format('HH:mm DD/MM/YYYY')}
+                      </div>
 
                       <div className="d-flex gap-2">
-                        <Button variant="primary" size="sm">
-                          Xem chi tiết
+                        <Button 
+                          variant="outline-primary" 
+                          size="sm" 
+                          className="flex-grow-1"
+                          onClick={() => handleEdit(complaint)}
+                        >
+                          <FiEdit className="me-1" /> Sửa
                         </Button>
-                        <Button variant="warning" size="sm" onClick={() => handleEdit(complaint.id)}>
-                          <FiEdit /> Sửa
-                        </Button>
-                        <Button variant="danger" size="sm" onClick={() => handleDelete(complaint.id)}>
-                          <FiTrash2 /> Xóa
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          className="flex-grow-1"
+                          onClick={() => handleDelete(complaint.id)}
+                        >
+                          <FiTrash2 className="me-1" /> Xóa
                         </Button>
                       </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))
-            )}
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
           </Row>
         )}
 
-        {/* Floating + button */}
-        <Button
-          variant="primary"
-          className="rounded-circle position-fixed"
-          style={{
-            bottom: '30px',
-            right: '30px',
-            width: '60px',
-            height: '60px',
-            fontSize: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          }}
-          onClick={handleCreate}
-        >
-          <FiPlus />
-        </Button>
+        {/* Modal Tạo phản ánh mới */}
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Tạo phản ánh mới</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium">Nội dung phản ánh</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={5}
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  placeholder="Mô tả chi tiết vấn đề bạn muốn phản ánh..."
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Hủy
+            </Button>
+            <Button 
+              variant="success" 
+              onClick={handleSubmit} 
+              disabled={submitting || !newContent.trim()}
+            >
+              {submitting ? 'Đang gửi...' : 'Gửi phản ánh'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Modal Chỉnh sửa phản ánh */}
+        <Modal show={!!editingComplaint} onHide={() => setEditingComplaint(null)} centered size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Chỉnh sửa phản ánh #{editingComplaint?.id}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium">Nội dung phản ánh</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={5}
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setEditingComplaint(null)}>
+              Hủy
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleUpdate}
+              disabled={!editedContent.trim()}
+            >
+              Cập nhật
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Tạo phản ánh mới</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Nội dung phản ánh</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={newContent}
-                onChange={(e) => setNewContent(e.target.value)}
-                placeholder="Nhập nội dung..."
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Hủy
-          </Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={submitting}>
-            {submitting ? 'Đang gửi...' : 'Gửi phản ánh'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal show={!!editingComplaint} onHide={() => setEditingComplaint(null)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Chỉnh sửa phản ánh</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Nội dung phản ánh</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={editedContent}
-                onChange={(e) => setEditedContent(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setEditingComplaint(null)}>
-            Hủy
-          </Button>
-          <Button variant="primary" onClick={handleUpdate}>
-            Cập nhật
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };

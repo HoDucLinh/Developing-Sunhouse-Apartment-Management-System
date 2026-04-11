@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser, FiUsers, FiFileText } from "react-icons/fi";
+import { FiHome, FiTool, FiMessageSquare, FiLogOut, FiPackage, FiUser, FiUsers, FiFileText, FiMessageCircle } from "react-icons/fi";
 import { FaPoll } from "react-icons/fa";
 import "../styles/sidebar.css";
 import { useUser } from "../contexts/UserContext";
@@ -31,9 +31,9 @@ const Sidebar = () => {
       <NavLink to="/lockers" className="nav-link d-flex align-items-center gap-2">
         <FiPackage /> <span>Tủ đồ</span>
       </NavLink>
-      <NavLink to="/cards" className="nav-link d-flex align-items-center gap-2">
+      {/* <NavLink to="/cards" className="nav-link d-flex align-items-center gap-2">
         <FiPackage /> <span>Thẻ ra vào</span>
-      </NavLink>
+      </NavLink> */}
       <NavLink to="/complaints" className="nav-link d-flex align-items-center gap-2">
         <FiMessageSquare /> <span>Phản ánh</span>
       </NavLink>
@@ -47,7 +47,7 @@ const Sidebar = () => {
         <FiUsers /> <span>Người thân</span>
       </NavLink>
       <NavLink to="/chat" className="nav-link d-flex align-items-center gap-2">
-        <FiUsers /> <span>Chat Room</span>
+        <FiMessageCircle /> <span>Chat Room</span>
       </NavLink>
 
       <div className="mt-auto pt-3 border-top">

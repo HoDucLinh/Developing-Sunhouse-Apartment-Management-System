@@ -1,50 +1,134 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import '../styles/sidebar.css';
 import { useUser } from '../contexts/UserContext';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
-
   const { user } = useUser();
-  
+
   return (
-    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#EEEEEE' }}>
+    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
-      <Container fluid className="py-4 px-5" style={{ marginLeft: '220px'}}>
+
+      <Container fluid className="py-4 px-5" style={{ marginLeft: '220px' }}>
         {user && <Header user={user} />}
-        {/* Welcome Box */}
-        <Card className="mb-4 shadow-sm border-0 rounded-4">
-          <Card.Body className="d-flex justify-content-between align-items-center">
-            <div>
-              <Card className="mb-4 shadow-sm border-0 rounded-4" style={{backgroundColor:'#E8FFD7'}}>
-                <Card.Body className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h4><strong>Xin chào, {user?.fullName} 👋</strong></h4>
-                    {user?.room && (
-                      <p className="mb-0">
-                        Căn hộ: {user.room.roomNumber} – Tầng {user.room.floorId}<br />
-                        Diện tích: {user.room.area}m²<br />
-                        Số người tối đa: {user.room.maxPeople}<br />
-                        Số người còn lại: {user.room.availableSlots}
-                      </p>
-                    )}
-                  </div>
-                </Card.Body>
-              </Card>
+
+        {/* Welcome Section - Thiết kế hiện đại hơn */}
+        <Card className="mb-5 shadow border-0 rounded-4 overflow-hidden">
+          <Card.Body className="p-0">
+            <div 
+              className="welcome-banner d-flex justify-content-between align-items-center p-5"
+              style={{
+                background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+                color: 'white',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Background decoration */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '-50px',
+                  right: '-50px',
+                  width: '300px',
+                  height: '300px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  zIndex: 0
+                }}
+              />
+
+              <div className="d-flex align-items-center gap-4" style={{ zIndex: 1 }}>
+                <div>
+                  <h1 className="display-5 fw-bold mb-2">
+                    Xin chào, {user?.fullName} 👋
+                  </h1>
+                  <p className="fs-5 opacity-90 mb-0">
+                    Chào mừng bạn trở lại với Sunhouse Apartment
+                  </p>
+                </div>
+              </div>
+
+              {/* Avatar */}
+              <div className="text-end" style={{ zIndex: 1 }}>
+                <img
+                  src={user?.avatar || '/default-avatar.png'}
+                  alt="avatar"
+                  style={{ 
+                    height: '120px', 
+                    width: '120px',
+                    objectFit: 'cover',
+                    border: '4px solid rgba(255,255,255,0.9)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+                  }}
+                  className="rounded-circle"
+                />
+              </div>
             </div>
-            <img
-              src={user?.avatar}
-              alt="avatar"
-              style={{ height: '100px' }}
-              className="rounded-circle"
-            />
+
+            {/* Room Information Card */}
+            {user?.room && (
+              <div className="p-5 bg-white">
+                <h5 className="text-success fw-semibold mb-4">
+                  Thông tin căn hộ của bạn
+                </h5>
+                <Row>
+                  <Col md={3} className="mb-3">
+                    <div className="info-box">
+                      <small className="text-muted">Số căn hộ</small>
+                      <h4 className="fw-bold text-dark mb-0">
+                        {user.room.roomNumber}
+                      </h4>
+                    </div>
+                  </Col>
+                  <Col md={3} className="mb-3">
+                    <div className="info-box">
+                      <small className="text-muted">Tầng</small>
+                      <h4 className="fw-bold text-dark mb-0">
+                        {user.room.floorId}
+                      </h4>
+                    </div>
+                  </Col>
+                  <Col md={3} className="mb-3">
+                    <div className="info-box">
+                      <small className="text-muted">Diện tích</small>
+                      <h4 className="fw-bold text-dark mb-0">
+                        {user.room.area} m²
+                      </h4>
+                    </div>
+                  </Col>
+                  <Col md={3} className="mb-3">
+                    <div className="info-box">
+                      <small className="text-muted">Số người</small>
+                      <h4 className="fw-bold text-dark mb-0">
+                        {user.room.maxPeople - user.room.availableSlots}/{user.room.maxPeople}
+                      </h4>
+                      <small className="text-success">
+                        Còn {user.room.availableSlots} chỗ
+                      </small>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            )}
           </Card.Body>
         </Card>
-        <div className="welcome-text">
-          <h1>Chào mừng bạn đến với chung cư Sunhouse Apartment</h1>
+
+        {/* Main Welcome Text */}
+        <div className="text-center py-4">
+          <h2 className="display-6 fw-bold text-dark mb-3">
+            Chào mừng bạn đến với
+          </h2>
+          <h1 className="display-4 fw-bold text-success mb-4">
+            Sunhouse Apartment
+          </h1>
+          <p className="lead text-muted">
+            Nơi an cư lý tưởng – Cuộc sống tiện nghi và hiện đại
+          </p>
         </div>
       </Container>
     </div>

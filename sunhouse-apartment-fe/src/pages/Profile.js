@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Form, Button, Image, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Image, Modal, Card, Alert } from 'react-bootstrap';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useUser } from '../contexts/UserContext';
-import { FiUser, FiMail, FiPhone, FiHome, FiGrid, FiLock } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiHome, FiGrid, FiLock, FiCamera } from 'react-icons/fi';
 import { authApis, endpoints } from '../configs/Apis';
 
 const Profile = () => {
@@ -31,7 +31,8 @@ const Profile = () => {
       });
     }
   }, [user]);
-  //Dọn dẹp preview URL khi unmount 
+
+  // Dọn dẹp preview URL khi component unmount
   useEffect(() => {
     return () => {
       if (previewAvatar) {
@@ -43,26 +44,25 @@ const Profile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
-      ...prev, // giữ lại các giá trị cũ không bị ghi đè
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prev) => ({
-      ...prev,
-      file,
-    }));
-
     if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        file,
+      }));
       const previewUrl = URL.createObjectURL(file);
       setPreviewAvatar(previewUrl);
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // ngắn reload trang
+    e.preventDefault();
     try {
       const data = new FormData();
       data.append('fullName', formData.fullName);
@@ -74,11 +74,10 @@ const Profile = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // 🔁 Gọi lại API lấy thông tin mới
       const res = await authApis().get(endpoints.profile);
-      setUser(res.data); // Cập nhật context => toàn app phản ánh đúng
+      setUser(res.data);
 
-      alert('Cập nhật thành công!');
+      alert('Cập nhật thông tin thành công!');
     } catch (error) {
       console.error("Lỗi cập nhật:", error);
       alert('Có lỗi xảy ra khi cập nhật hồ sơ.');
@@ -95,142 +94,232 @@ const Profile = () => {
       });
       alert('Đổi mật khẩu thành công!');
       setShowPasswordModal(false);
+      setPasswordData({ oldPassword: '', newPassword: '' });
     } catch (err) {
-      alert('Đổi mật khẩu thất bại!');
+      alert('Đổi mật khẩu thất bại! Vui lòng kiểm tra lại mật khẩu cũ.');
     }
   };
 
   if (!user) return <p className="text-center mt-5">Đang tải thông tin người dùng...</p>;
 
   return (
-    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
+    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
-      <Container fluid className="py-4 px-5" style={{ marginLeft: '220px' }}>
+      <Container fluid className="px-5 py-4" style={{ marginLeft: '220px' }}>
         <Header user={user} />
 
-        <Row className="mb-4 text-center">
-          <Col>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <Image
-                src={previewAvatar || user.avatar}
-                roundedCircle
-                width={120}
-                height={120}
-                className="border border-3"
-              />
-              
-              {/* Icon camera góc phải dưới */}
-              <label
-                htmlFor="avatarUpload"
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  backgroundColor: '#007bff',
-                  borderRadius: '50%',
-                  padding: '6px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16" height="16" fill="white"
-                  className="bi bi-camera"
-                  viewBox="0 0 16 16"
+        <Card className="shadow border-0 rounded-4 mt-4">
+          <Card.Body className="p-5">
+            
+            {/* Avatar Section */}
+            <div className="text-center mb-5">
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <Image
+                  src={previewAvatar || user.avatar || '/default-avatar.png'}
+                  roundedCircle
+                  width={150}
+                  height={150}
+                  className="border border-4 border-white shadow-sm"
+                  style={{ objectFit: 'cover' }}
+                />
+                
+                {/* Nút chỉnh sửa avatar */}
+                <label
+                  htmlFor="avatarUpload"
+                  style={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    right: '8px',
+                    backgroundColor: '#0d6efd',
+                    borderRadius: '50%',
+                    padding: '10px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  className="hover-scale"
                 >
-                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                  <path d="M5.318 1a1 1 0 0 0-.894.553L3.382 3H2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1.382l-1.042-1.447A1 1 0 0 0 10.682 1H5.318zM2 4h1.618a1 1 0 0 0 .894-.553L5.382 2h5.236l.87 1.447a1 1 0 0 0 .894.553H14a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/>
-                </svg>
-              </label>
+                  <FiCamera size={20} color="white" />
+                </label>
 
-              {/* input file ẩn */}
-              <input
-                id="avatarUpload"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
+                <input
+                  id="avatarUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </div>
+              <h4 className="mt-3 fw-bold">{user.fullName}</h4>
+              <p className="text-muted">Cập nhật thông tin cá nhân của bạn</p>
             </div>
-          </Col>
-        </Row>
 
+            <Form onSubmit={handleSubmit}>
+              <Row className="g-4">
+                {/* Họ và tên */}
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="fw-medium">
+                      <FiUser className="me-2" /> Họ và tên
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      className="rounded-3"
+                      size="lg"
+                    />
+                  </Form.Group>
+                </Col>
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group as={Row} className="mb-3" controlId="fullName">
-            <Form.Label column sm={2}><FiUser className="me-2" />Họ và tên</Form.Label>
-            <Col sm={10}>
-              <Form.Control type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} />
-            </Col>
-          </Form.Group>
+                {/* Email */}
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="fw-medium">
+                      <FiMail className="me-2" /> Email
+                    </Form.Label>
+                    <Form.Control
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="rounded-3"
+                      size="lg"
+                    />
+                  </Form.Group>
+                </Col>
 
-          <Form.Group as={Row} className="mb-3" controlId="email">
-            <Form.Label column sm={2}><FiMail className="me-2" />Email</Form.Label>
-            <Col sm={10}>
-              <Form.Control type="email" name="email" value={formData.email} onChange={handleInputChange} />
-            </Col>
-          </Form.Group>
+                {/* Số điện thoại */}
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="fw-medium">
+                      <FiPhone className="me-2" /> Số điện thoại
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="rounded-3"
+                      size="lg"
+                    />
+                  </Form.Group>
+                </Col>
 
-          <Form.Group as={Row} className="mb-3" controlId="phone">
-            <Form.Label column sm={2}><FiPhone className="me-2" />Số điện thoại</Form.Label>
-            <Col sm={10}>
-              <Form.Control type="text" name="phone" value={formData.phone} onChange={handleInputChange} />
-            </Col>
-          </Form.Group>
+                {/* Thông tin căn hộ */}
+                <Col md={12}>
+                  <Card className="bg-light border-0">
+                    <Card.Body>
+                      <h6 className="fw-semibold mb-3 text-success">
+                        <FiHome className="me-2" /> Thông tin căn hộ
+                      </h6>
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Số căn hộ</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              value={user.room?.roomNumber || 'Chưa cập nhật'} 
+                              readOnly 
+                              className="bg-white"
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Tầng</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              value={user.room?.floorId || 'Chưa cập nhật'} 
+                              readOnly 
+                              className="bg-white"
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
 
-          <Form.Group as={Row} className="mb-3">
-            <Form.Label column sm={2}><FiHome className="me-2" />Căn hộ</Form.Label>
-            <Col sm={4}>
-              <Form.Control type="text" value={user.room?.roomNumber || 'Chưa cập nhật'} readOnly />
-            </Col>
-            <Form.Label column sm={2}><FiGrid className="me-2" />Tầng</Form.Label>
-            <Col sm={4}>
-              <Form.Control type="text" value={user.room?.floorId || 'Chưa cập nhật'} readOnly />
-            </Col>
-          </Form.Group>
+              {/* Buttons */}
+              <div className="d-flex justify-content-center gap-3 mt-5">
+                <Button 
+                  type="submit" 
+                  variant="success" 
+                  size="lg" 
+                  className="px-5 py-3 rounded-3 fw-medium"
+                >
+                  Lưu thay đổi
+                </Button>
+                
+                <Button 
+                  variant="outline-primary" 
+                  size="lg" 
+                  className="px-5 py-3 rounded-3 fw-medium"
+                  onClick={() => setShowPasswordModal(true)}
+                >
+                  <FiLock className="me-2" /> Đổi mật khẩu
+                </Button>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
 
-          <div className="text-center d-flex justify-content-center gap-3">
-            <Button type="submit" variant="primary">Lưu thông tin</Button>
-            <Button variant="warning" onClick={() => setShowPasswordModal(true)}>
-              <FiLock className="me-1" /> Đổi mật khẩu
-            </Button>
-          </div>
-        </Form>
-
-        {/* Modal đổi mật khẩu */}
-        <Modal show={showPasswordModal} onHide={() => setShowPasswordModal(false)}>
+        {/* Modal Đổi mật khẩu */}
+        <Modal 
+          show={showPasswordModal} 
+          onHide={() => setShowPasswordModal(false)} 
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Đổi mật khẩu</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Mật khẩu cũ</Form.Label>
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-medium">Mật khẩu cũ</Form.Label>
                 <Form.Control
                   type="password"
                   value={passwordData.oldPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                  onChange={(e) => setPasswordData({ 
+                    ...passwordData, 
+                    oldPassword: e.target.value 
+                  })}
+                  placeholder="Nhập mật khẩu hiện tại"
+                  className="rounded-3"
                 />
               </Form.Group>
+
               <Form.Group>
-                <Form.Label>Mật khẩu mới</Form.Label>
+                <Form.Label className="fw-medium">Mật khẩu mới</Form.Label>
                 <Form.Control
                   type="password"
                   value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  onChange={(e) => setPasswordData({ 
+                    ...passwordData, 
+                    newPassword: e.target.value 
+                  })}
+                  placeholder="Nhập mật khẩu mới"
+                  className="rounded-3"
                 />
               </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowPasswordModal(false)}>
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowPasswordModal(false)}
+            >
               Hủy
             </Button>
-            <Button variant="primary" onClick={handlePasswordChange}>
-              Lưu
+            <Button 
+              variant="primary" 
+              onClick={handlePasswordChange}
+              disabled={!passwordData.oldPassword || !passwordData.newPassword}
+            >
+              Xác nhận đổi mật khẩu
             </Button>
           </Modal.Footer>
         </Modal>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
+import { Container, Row, Col, Card, Button, Spinner, Modal, Form, Badge, Alert } from 'react-bootstrap';
 import { authApis, endpoints } from '../configs/Apis';
 import cookie from 'react-cookies';
 import { useUser } from "../contexts/UserContext";
-
-import { Modal, Button, Form } from 'react-bootstrap';
 
 const SurveysPage = () => {
   const { user } = useUser();
@@ -19,7 +18,6 @@ const SurveysPage = () => {
   const [errorQuestions, setErrorQuestions] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Lưu câu trả lời người dùng, dạng { questionId: answer }
   const [answers, setAnswers] = useState({});
 
   const loadSurveys = useCallback(async () => {
@@ -34,11 +32,11 @@ const SurveysPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [keyword, user.id]); // dependency chuẩn
+  }, [keyword, user.id]);
 
   useEffect(() => {
     loadSurveys();
-  }, [loadSurveys]); 
+  }, [loadSurveys]);
 
   const openSurveyModal = async (survey) => {
     setSelectedSurvey(survey);
@@ -82,17 +80,14 @@ const SurveysPage = () => {
       return;
     }
 
-    // Validate: mọi câu hỏi đều phải có câu trả lời (backend của bạn yêu cầu như vậy)
     for (let q of questions) {
       const val = answers[q.id];
       if (q.type === 'MULTIPLE_CHOICE') {
-        // với trắc nghiệm phải có optionId (số)
         if (val === undefined || val === null || val === '') {
           alert(`Bạn phải chọn đáp án cho câu: "${q.content}"`);
           return;
         }
       } else {
-        // tự luận -> phải có text (không phải chỉ whitespace)
         if (typeof val !== 'string' || val.trim() === '') {
           alert(`Bạn phải nhập câu trả lời cho câu: "${q.content}"`);
           return;
@@ -100,13 +95,9 @@ const SurveysPage = () => {
       }
     }
 
-    // Build answers array theo đúng DTO AnswerRequest:
-    // - MULTIPLE_CHOICE => { questionId, optionId }
-    // - SHORT_ANSWER => { questionId, answer }
     const answersPayload = questions.map((q) => {
       const val = answers[q.id];
       if (q.type === 'MULTIPLE_CHOICE') {
-        // đảm bảo gửi số
         return {
           questionId: q.id,
           optionId: Number(val),
@@ -126,14 +117,13 @@ const SurveysPage = () => {
 
     setSubmitting(true);
     try {
-      // Gọi API: POST /survey/submit?userId=<user.id>
       const token = cookie.load('token');
       const url = `${endpoints.submitSurvey}?userId=${user.id}`;
       const res = await authApis(token).post(url, payload);
 
       alert('Gửi khảo sát thành công!');
       closeSurveyModal();
-      await loadSurveys(); 
+      await loadSurveys();
     } catch (err) {
       console.error('Lỗi khi gửi khảo sát:', err);
       const serverMsg = err?.response?.data;
@@ -144,116 +134,171 @@ const SurveysPage = () => {
   };
 
   return (
-    <div className="d-flex flex-column" style={{ minHeight: '100vh', backgroundColor: '#c0dbed' }}>
+    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
-      <div className="content p-4" style={{ marginLeft: '250px', flex: 1 }}>
-        {/* Search */}
-        <div className="search-bar mb-4 d-flex align-items-center justify-content-between" style={{ gap: '10px' }}>
-          <input
+
+      <Container fluid className="px-5 py-4" style={{ marginLeft: '250px' }}>
+        
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-5">
+          <div>
+            <h1 className="display-6 fw-bold text-dark">Khảo sát cư dân</h1>
+            <p className="text-muted mb-0">Tham gia các cuộc khảo sát của ban quản lý chung cư</p>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="mb-5" style={{ maxWidth: '500px' }}>
+          <Form.Control
             type="text"
-            className="form-control rounded-pill"
-            placeholder="Tìm kiếm..."
-            style={{ width: '250px' }}
+            placeholder="Tìm kiếm khảo sát theo tiêu đề..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
+            size="lg"
+            className="shadow-sm rounded-pill"
           />
         </div>
 
         {/* Danh sách khảo sát */}
         {loading ? (
-          <p>Đang tải khảo sát...</p>
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="success" size="lg" />
+            <p className="mt-3 text-muted">Đang tải danh sách khảo sát...</p>
+          </div>
+        ) : surveys.length === 0 ? (
+          <Alert variant="info" className="text-center py-4">
+            Không tìm thấy khảo sát nào phù hợp.
+          </Alert>
         ) : (
-          <div className="card-container d-flex flex-wrap gap-3">
-            {surveys.length > 0 ? (
-              surveys.map((item) => (
-                <div
-                  key={item.id}
-                  className="card"
-                  style={{
-                    width: '300px',
-                    backgroundColor: '#fff',
-                    borderRadius: '10px',
-                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                    cursor: 'pointer'
-                  }}
+          <Row className="g-4">
+            {surveys.map((item) => (
+              <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
+                <Card 
+                  className="h-100 shadow border-0 rounded-4 overflow-hidden hover-card cursor-pointer"
                   onClick={() => openSurveyModal(item)}
                 >
-                  <div className="card-body text-center p-3">
-                    <h6 className="mb-2">{item.title}</h6>
-                    <p className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>
-                      {new Date(item.createdAt).toLocaleDateString('vi-VN')}
-                    </p>
-                    <button
-                      className="btn btn-primary w-100"
-                      style={{ padding: '5px', fontSize: '0.9rem' }}
-                      type="button"
-                      disabled
-                    >
-                      {item.type === 'MULTIPLE_CHOICE' ? 'Khảo sát trắc nghiệm' : 'Khảo sát tự luận'}
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>Không tìm thấy khảo sát nào.</p>
-            )}
-          </div>
+                  <Card.Body className="d-flex flex-column p-4">
+                    <div className="mb-3">
+                      <Badge bg="primary" pill className="mb-2">
+                        {item.type === 'MULTIPLE_CHOICE' ? 'Trắc nghiệm' : 'Tự luận'}
+                      </Badge>
+                    </div>
+
+                    <Card.Title className="fw-bold fs-5 mb-3">
+                      {item.title}
+                    </Card.Title>
+
+                    <Card.Text className="text-muted small mb-4">
+                      Ngày tạo: {new Date(item.createdAt).toLocaleDateString('vi-VN')}
+                    </Card.Text>
+
+                    <div className="mt-auto">
+                      <Button 
+                        variant="success" 
+                        className="w-100 rounded-3 py-2 fw-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSurveyModal(item);
+                        }}
+                      >
+                        Tham gia khảo sát
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         )}
 
-        {/* Modal hiện câu hỏi khảo sát */}
-        <Modal show={showModal} onHide={closeSurveyModal} size="lg" scrollable>
-          <Modal.Header closeButton>
-            <Modal.Title>{selectedSurvey ? selectedSurvey.title : "Khảo sát"}</Modal.Title>
+        {/* Modal Khảo sát */}
+        <Modal 
+          show={showModal} 
+          onHide={closeSurveyModal} 
+          size="lg" 
+          scrollable 
+          centered
+        >
+          <Modal.Header closeButton className="border-0 pb-2">
+            <Modal.Title className="fw-bold">
+              {selectedSurvey?.title}
+            </Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            {loadingQuestions && <p>Đang tải câu hỏi...</p>}
-            {errorQuestions && <p style={{ color: 'red' }}>{errorQuestions}</p>}
+
+          <Modal.Body className="pt-2">
+            {loadingQuestions && (
+              <div className="text-center py-4">
+                <Spinner animation="border" variant="success" />
+                <p className="mt-2">Đang tải câu hỏi...</p>
+              </div>
+            )}
+
+            {errorQuestions && <Alert variant="danger">{errorQuestions}</Alert>}
+
             {!loadingQuestions && !errorQuestions && questions.length === 0 && (
-              <p>Khảo sát chưa có câu hỏi.</p>
+              <Alert variant="info">Khảo sát này chưa có câu hỏi nào.</Alert>
             )}
 
             {!loadingQuestions && !errorQuestions && questions.length > 0 && (
               <Form>
-                {questions.map((q) => (
-                  <Form.Group key={q.id} className="mb-3">
-                    <Form.Label><b>{q.content}</b></Form.Label>
+                {questions.map((q, index) => (
+                  <div key={q.id} className="mb-5">
+                    <h6 className="fw-semibold mb-3">
+                      Câu {index + 1}: {q.content}
+                    </h6>
+
                     {q.type === 'MULTIPLE_CHOICE' ? (
-                      q.options.map((opt) => (
-                        <Form.Check
-                          type="radio"
-                          key={opt.id}
-                          label={opt.content}
-                          name={`question-${q.id}`}
-                          id={`question-${q.id}-option-${opt.id}`}
-                          value={opt.id}
-                          checked={answers[q.id] === String(opt.id) || answers[q.id] === opt.id}
-                          onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                        />
-                      ))
+                      <div className="ms-2">
+                        {q.options.map((opt) => (
+                          <Form.Check
+                            key={opt.id}
+                            type="radio"
+                            id={`q-${q.id}-opt-${opt.id}`}
+                            label={opt.content}
+                            name={`question-${q.id}`}
+                            value={opt.id}
+                            checked={answers[q.id] === String(opt.id) || answers[q.id] === opt.id}
+                            onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                            className="mb-2"
+                          />
+                        ))}
+                      </div>
                     ) : (
                       <Form.Control
                         as="textarea"
-                        rows={3}
+                        rows={4}
                         value={answers[q.id] || ""}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                        placeholder="Nhập câu trả lời..."
+                        placeholder="Nhập câu trả lời của bạn..."
+                        className="rounded-3"
                       />
                     )}
-                  </Form.Group>
+                  </div>
                 ))}
               </Form>
             )}
           </Modal.Body>
-          <Modal.Footer>
+
+          <Modal.Footer className="border-0 pt-2">
             <Button variant="secondary" onClick={closeSurveyModal}>
               Đóng
             </Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={loadingQuestions}>
-              Gửi câu trả lời
+            <Button 
+              variant="success" 
+              onClick={handleSubmit} 
+              disabled={submitting || loadingQuestions}
+              className="px-4"
+            >
+              {submitting ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Đang gửi...
+                </>
+              ) : "Gửi câu trả lời"}
             </Button>
           </Modal.Footer>
         </Modal>
-      </div>
+      </Container>
     </div>
   );
 };
