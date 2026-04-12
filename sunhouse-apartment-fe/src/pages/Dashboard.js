@@ -1,13 +1,59 @@
-import React from 'react';
+import {useEffect, useState} from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import '../styles/sidebar.css';
 import { useUser } from '../contexts/UserContext';
 import '../styles/dashboard.css';
+import { authApis, endpoints } from '../configs/Apis';
+import cookie from 'react-cookies';
 
 const Dashboard = () => {
   const { user } = useUser();
+  const [invoices, setInvoices] = useState([]);
+  const [packages, setPackages] = useState([]);
+  
+
+  const loadInvoices = async () => {
+          if (!user) return;
+          try {
+              let token = cookie.load("token");
+              let res = await authApis(token).get(endpoints.getInvoices(user.id));
+              setInvoices(res.data);
+          } catch (ex) {
+              console.error("Lỗi load invoices:", ex);
+          }
+      };
+
+  useEffect(() => {
+      loadInvoices();
+  }, [user]);
+
+  const unpaidCount = invoices.filter(inv => 
+        inv.status?.trim() === 'Chưa thanh toán' || 
+        inv.status?.trim() === 'UNPAID').length;
+
+  useEffect(() => {
+    const loadPackages = async () => {
+      if (!user?.id) return;
+
+      try {
+        const res = await authApis().get(endpoints.getPackages(user.id));
+        if (res.data.success) {
+          setPackages(res.data.data);
+        } else {
+          console.error('Lỗi từ server:', res.data.error);
+        }
+      } catch (err) {
+        console.error('Lỗi khi gọi API packages:', err);
+      }
+    };
+
+    loadPackages();
+  }, [user]);
+
+  const ungetCount = packages.filter(inv => 
+        inv.status?.trim() === 'PENDING').length;
 
   return (
     <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
@@ -111,6 +157,27 @@ const Dashboard = () => {
                         Còn {user.room.availableSlots} chỗ
                       </small>
                     </div>
+                  </Col>
+                </Row>
+                <h5 className="text-success fw-semibold mb-4">
+                  Thông tin khác
+                </h5>
+                <Row>
+                  <Col md={6} className="mb-3">
+                    {unpaidCount > 0 && (
+                      <div className="info-box">
+                          <small className="text-muted">Hóa đơn chưa thanh toán</small>
+                          <h3 className="mb-0 fw-bold">{unpaidCount}</h3>
+                      </div>
+                    )}
+                  </Col>
+                  <Col md={6} className="mb-3">
+                    {ungetCount > 0 && (
+                      <div className="info-box">
+                          <small className="text-muted">Đơn hàng chưa nhận</small>
+                          <h3 className="mb-0 fw-bold">{ungetCount}</h3>
+                      </div>
+                    )}
                   </Col>
                 </Row>
               </div>
