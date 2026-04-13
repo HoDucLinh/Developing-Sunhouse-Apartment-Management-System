@@ -37,7 +37,7 @@ public class RelativeServiceImpl implements RelativeService {
         User user = userRepo.getUserById(relativeRequest.getUserId());
         if(user != null) {
             Relative relative = new Relative();
-            relative.setCreatedAt(new Date());
+            relative.setCreatedAt(relativeRequest.getCreatedAt());
             try {
                 relative.setRelationship(Relative.EnumRelationship.valueOf(relativeRequest.getRelationship().toUpperCase()));
             } catch (IllegalArgumentException e) {
@@ -45,10 +45,7 @@ public class RelativeServiceImpl implements RelativeService {
             }
             relative.setFullName(relativeRequest.getFullName());
             relative.setUserId(user);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(relative.getCreatedAt());
-            calendar.add(Calendar.MONTH,1);
-            relative.setExpiredAt(calendar.getTime());
+            relative.setExpiredAt(relativeRequest.getExpiredAt());
             relative.setIsActive(true);
             relative.setPhone(relativeRequest.getPhone());
             return relativeRepo.addRelative(relative);

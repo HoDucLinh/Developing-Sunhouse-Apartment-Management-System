@@ -34,8 +34,9 @@ import java.util.Set;
 public class Relative implements Serializable {
 
     public enum EnumRelationship{
-        OWNER,
-        PARENT
+        PARENT,
+        FREIND,
+        OTHER
     }
 
     private static final long serialVersionUID = 1L;
