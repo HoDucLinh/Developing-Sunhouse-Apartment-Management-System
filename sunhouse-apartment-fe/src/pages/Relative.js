@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Button, Card, Alert, Badge } from "react-bootstrap";
-import { FiUserPlus, FiPhone, FiUsers, FiUser, FiSave, FiUserCheck } from "react-icons/fi";
+import { FiUserPlus, FiPhone, FiUsers, FiUser, FiSave, FiCalendar } from "react-icons/fi";
 import { authApis, endpoints } from "../configs/Apis";
 import { useUser } from "../contexts/UserContext";
 import Sidebar from "../components/Sidebar";
@@ -13,6 +13,8 @@ const Relative = () => {
     fullName: "",
     phone: "",
     relationship: "PARENT",
+    createdAt: new Date().toISOString().slice(0, 10), // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
+    expiredAt: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().slice(0, 10) // Mặc định hết hạn sau 1 tháng
   });
   const [message, setMessage] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -54,17 +56,14 @@ const Relative = () => {
     if (user?.id) loadRelatives();
   }, [user]);
 
-  // Hàm hiển thị mối quan hệ đẹp hơn
   const getRelationshipLabel = (relationship) => {
     switch (relationship) {
-      case "OWNER":
-        return { label: "Chủ hộ", color: "success" };
       case "PARENT":
-        return { label: "Cha/Mẹ", color: "primary" };
-      case "SPOUSE":
-        return { label: "Vợ/Chồng", color: "info" };
-      case "CHILD":
-        return { label: "Con cái", color: "warning" };
+        return { label: "Người thân", color: "primary" };
+      case "FREIND":
+        return { label: "Bạn bè", color: "info" };
+      case "OTHER":
+        return { label: "Khác", color: "warning" };
       default:
         return { label: relationship, color: "secondary" };
     }
@@ -117,6 +116,9 @@ const Relative = () => {
                             <div className="ms-4 flex-grow-1">
                               <div className="fw-bold fs-5 mb-1">{r.fullName}</div>
                               <div className="text-muted mb-2">{r.phone}</div>
+                              <div className="text-muted small">
+                                {new Date(r.createdAt).toLocaleDateString("vi-VN")} - {new Date(r.expiredAt).toLocaleDateString("vi-VN")}
+                              </div>
                             </div>
 
                             <div>
@@ -178,6 +180,7 @@ const Relative = () => {
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder="Nhập số điện thoại"
+                      required
                       size="lg"
                       className="rounded-3"
                     />
@@ -190,24 +193,50 @@ const Relative = () => {
                     <Form.Select
                       value={form.relationship}
                       onChange={(e) => setForm({ ...form, relationship: e.target.value })}
+                      required
                       size="lg"
                       className="rounded-3"
                     >
-                      <option value="OWNER">Chủ hộ</option>
-                      <option value="PARENT">Cha/Mẹ</option>
-                      <option value="SPOUSE">Vợ/Chồng</option>
-                      <option value="CHILD">Con cái</option>
+                      <option value="FREIND">Bạn bè</option>
+                      <option value="PARENT">Người thân</option>
                       <option value="OTHER">Khác</option>
                     </Form.Select>
                   </Form.Group>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="fw-medium">
+                      <FiCalendar className="me-2" /> Thời gian lưu trú
+                    </Form.Label>
+                    <div className="mb-2">
+                      <small className="text-muted">Từ ngày</small>
+                      <Form.Control
+                        type="date"
+                        value={form.createdAt}
+                        onChange={(e) => setForm({ ...form, createdAt: e.target.value })}
+                        required
+                        size="lg"
+                        className="rounded-3"
+                      />
+                    </div>
 
+                    <div>
+                      <small className="text-muted">Đến ngày</small>
+                      <Form.Control
+                        type="date"
+                        value={form.expiredAt}
+                        onChange={(e) => setForm({ ...form, expiredAt: e.target.value })}
+                        required
+                        size="lg"
+                        className="rounded-3"
+                      />
+                    </div>
+                  </Form.Group>
                   <Button 
                     variant="success" 
                     type="submit" 
-                    size="lg" 
+                    size="lg"
                     className="w-100 py-3 rounded-3 fw-medium"
                   >
-                    <FiSave className="me-2" /> Thêm người thân
+                    <FiSave className="me-2" /> Thêm
                   </Button>
                 </Form>
               </Card.Body>

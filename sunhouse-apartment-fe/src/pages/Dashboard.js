@@ -166,7 +166,7 @@ const Dashboard = () => {
                   <Col md={6} className="mb-3">
                     {unpaidCount > 0 && (
                       <div className="info-box">
-                          <small className="text-muted">Hóa đơn chưa thanh toán</small>
+                          <small className="fw-bold">Hóa đơn chưa thanh toán</small>
                           <h3 className="mb-0 fw-bold">{unpaidCount}</h3>
                       </div>
                     )}
@@ -174,7 +174,7 @@ const Dashboard = () => {
                   <Col md={6} className="mb-3">
                     {ungetCount > 0 && (
                       <div className="info-box">
-                          <small className="text-muted">Đơn hàng chưa nhận</small>
+                          <small className="fw-bold">Đơn hàng chưa nhận</small>
                           <h3 className="mb-0 fw-bold">{ungetCount}</h3>
                       </div>
                     )}
