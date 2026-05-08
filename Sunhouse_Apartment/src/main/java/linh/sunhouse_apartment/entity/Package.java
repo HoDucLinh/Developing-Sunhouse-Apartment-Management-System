@@ -68,5 +68,10 @@ public class Package implements Serializable {
     @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User receiverId;
-
+    @JoinColumn(name = "updated_by", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private User updatedBy;
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 }

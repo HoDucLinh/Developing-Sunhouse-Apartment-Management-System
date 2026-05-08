@@ -54,6 +54,8 @@ public class LockerRepositoryImpl implements LockerRepository {
 
         List<Predicate> predicates = new ArrayList<>();
 
+        predicates.add(cb.equal(userJoin.get("isActive"), true));
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             String pattern = "%" + keyword.trim().toLowerCase() + "%";
             predicates.add(cb.like(cb.lower(userJoin.get("fullName")), pattern));

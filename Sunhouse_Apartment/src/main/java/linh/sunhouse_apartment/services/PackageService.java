@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PackageService {
     Package addPackage(PackageRequest packageRequest, User sender);
-    int changeStatusPackage(int packageID, Package.Status newStatus, User user);
+    int changeStatusPackage(Integer packageID, Package.Status newStatus, User user, Integer receiver_id);
     int deletePackage(int packageID);
     List<Package> getPackages(int lockerId, String kw);
 }

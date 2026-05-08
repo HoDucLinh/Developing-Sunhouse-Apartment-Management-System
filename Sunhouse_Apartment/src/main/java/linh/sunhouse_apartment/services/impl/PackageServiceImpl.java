@@ -7,6 +7,7 @@ import linh.sunhouse_apartment.entity.Package;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.LockerRepository;
 import linh.sunhouse_apartment.repositories.PackageRepository;
+import linh.sunhouse_apartment.repositories.UserRepository;
 import linh.sunhouse_apartment.services.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class PackageServiceImpl implements PackageService {
 
     @Autowired
     private LockerRepository lockerRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public Package addPackage(PackageRequest packageRequest, User sender) {
@@ -56,14 +60,19 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public int changeStatusPackage(int packageID, Package.Status newStatus, User user) {
+    public int changeStatusPackage(Integer packageID, Package.Status newStatus, User user, Integer receiver_id) {
         Package pk = packageRepository.findPackageById(packageID);
+        User receiver = userRepository.getUserById(receiver_id);
         if (pk == null) {
             throw new RuntimeException("Package not found");
         }
+        if(receiver == null)
+            throw new RuntimeException("Receiver not found");
         pk.setStatus(newStatus);
-        pk.setReceiverId(user);
+        pk.setUpdatedBy(user);
         pk.setReceivedAt(new Date());
+        pk.setReceiverId(receiver);
+        pk.setUpdatedAt(new Date());
         packageRepository.update(pk);
         return 1;
     }

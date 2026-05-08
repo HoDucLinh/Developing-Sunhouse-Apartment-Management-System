@@ -44,8 +44,10 @@
                         <th>Hình ảnh</th>
                         <th>Người gửi</th>
                         <th>Người nhận</th>
+                        <th>Người cập nhật</th>
                         <th>Thời gian tạo</th>
                         <th>Thời gian nhận</th>
+                        <th>Thời gian cập nhật</th>
                         <th>Hành động</th>
                     </tr>
                     </thead>
@@ -61,12 +63,23 @@
                                 <select name="newStatus"
                                         class="form-select form-select-sm w-auto mx-auto fw-bold text-center border-0"
                                         th:classappend="${package.status.name() == 'PENDING'} ? 'bg-warning text-dark' :
-                        (${package.status.name() == 'APPROVED'} ? 'bg-success text-white' : 'bg-danger text-white')"
-                                        onchange="this.form.submit()">
+                        (${package.status.name() == 'APPROVED'} ? 'bg-success text-white' : 'bg-danger text-white')">
                                     <option th:selected="${package.status.name() == 'PENDING'}" value="PENDING">PENDING</option>
                                     <option th:selected="${package.status.name() == 'APPROVED'}" value="APPROVED">APPROVED</option>
                                     <option th:selected="${package.status.name() == 'REJECTED'}" value="REJECTED">REJECTED</option>
                                 </select>
+                                <select name="receiverId" class="form-select form-select-sm">
+                                    <option value="">-- Chọn cư dân nhận --</option>
+
+                                    <option th:each="u : ${users.users}"
+                                            th:value="${u.id}"
+                                            th:text="${u.fullName}"
+                                            th:selected="${package.receiverId != null and package.receiverId.id == u.id}">
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="bi bi-save"></i> Lưu
+                                </button>
                             </form>
                         </td>
                         <td>
@@ -76,8 +89,10 @@
                         </td>
                         <td th:text="${package.getSenderId() != null ? package.getSenderId().getFullName() : '-' }"></td>
                         <td th:text="${package.getReceiverId() != null ? package.getReceiverId().getFullName() : '-' }"></td>
+                        <td th:text="${package.getUpdatedBy() != null ? package.getUpdatedBy().getFullName() : '-' }"></td>
                         <td th:text="${package.getCreatedAt()}"></td>
                         <td th:text="${package.getReceivedAt() != null ? package.getReceivedAt() : '-'}"></td>
+                        <td th:text="${package.getUpdatedAt() != null ? package.getUpdatedAt() : '-'}"></td>
                         <td>
                             <a class="btn btn-sm btn-outline-danger"
                                th:href="@{'/delete-package/' + ${package.id} + '?lockerId=' + ${lockerId}}"

@@ -189,6 +189,9 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Override
     public UserDetails loadUserByUsernameForClient(String username) {
         User user = userRepository.getUserByUserName(username);
+        if(user.getIsActive() == false){
+            throw new UsernameNotFoundException("Access denied");
+        }
         return new CustomUserDetail(user);
     }
 
