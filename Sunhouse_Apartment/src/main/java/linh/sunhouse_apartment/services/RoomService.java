@@ -5,6 +5,7 @@ import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
 import linh.sunhouse_apartment.entity.Fee;
 import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.entity.User;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface RoomService {
     Room updateRoom (Integer roomId, RoomRequest dto);
     Room addRoom (RoomRequest dto);
     List<UnpaidRoomResponse> getUnpaidRooms(Integer feeId);
+    List<User> getAllRoomHead();
 }

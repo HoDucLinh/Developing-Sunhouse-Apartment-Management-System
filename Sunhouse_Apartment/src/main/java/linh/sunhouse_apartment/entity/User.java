@@ -115,8 +115,6 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     @JsonIgnore
     private Set<Relative> relativeSet;
-    @OneToOne(mappedBy = "userId")
-    private RoomHead roomHead;
     @JsonIgnore
     @Transient
     private MultipartFile file;

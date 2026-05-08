@@ -104,6 +104,7 @@
                         <table class="table table-bordered table-hover">
                             <thead>
                             <tr>
+                                <th>ID hóa đơn</th>
                                 <th>Họ và tên</th>
                                 <th>Mã căn hộ</th>
                                 <th>Tầng</th>
@@ -147,6 +148,7 @@
                             data.forEach(r => {
                                 tbody.innerHTML += `
                       <tr>
+                        <td>${r.invoice_id}</td>
                         <td>${r.fullName}</td>
                         <td>${r.roomNumber}</td>
                         <td>${r.floorNumber}</td>

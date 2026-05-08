@@ -11,6 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UnpaidRoomResponse {
+    private Integer invoice_id;
     private String fullName;
     private String email;
     private Integer roomId;

@@ -13,6 +13,5 @@ public interface UserRepository {
     List<User> getAllUsers(Map<String, String> params);
     User update(User user);
     int blockUser(int id);
-    List<User> getAllRoomHead();
     List<Object[]> getResidentStatistics(int year, String period);
 }

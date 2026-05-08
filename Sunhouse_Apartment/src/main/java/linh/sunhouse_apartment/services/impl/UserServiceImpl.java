@@ -247,10 +247,6 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         return userRepository.getUserByUserName(username);
     }
 
-    @Override
-    public List<User> getAllRoomHead() {
-        return userRepository.getAllRoomHead();
-    }
 
     @Override
     public Map<Integer, Long> getResidentStatistics(int year, String period) {

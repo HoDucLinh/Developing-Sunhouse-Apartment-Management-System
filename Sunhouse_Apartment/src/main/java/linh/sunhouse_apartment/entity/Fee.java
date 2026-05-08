@@ -49,7 +49,7 @@ public class Fee implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "price")
-    private double price;
+    private Double price;
     @Size(max = 500)
     @Column(name = "image")
     private String image;

@@ -155,6 +155,7 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
                 root.join("detailInvoiceSet", JoinType.INNER);
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("status"), Invoice.Status.UNPAID));
+        predicates.add(cb.equal(root.get("isActive"), true));
         predicates.add(cb.equal(detailJoin.get("feeId"), fee));
         cq.select(root)
                 .where(predicates.toArray(new Predicate[0]))

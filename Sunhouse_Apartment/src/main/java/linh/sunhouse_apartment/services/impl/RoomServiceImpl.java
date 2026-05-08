@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import linh.sunhouse_apartment.dtos.request.RoomRequest;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UnpaidRoomResponse;
-import linh.sunhouse_apartment.entity.Fee;
-import linh.sunhouse_apartment.entity.Floor;
-import linh.sunhouse_apartment.entity.Invoice;
-import linh.sunhouse_apartment.entity.Room;
+import linh.sunhouse_apartment.entity.*;
 import linh.sunhouse_apartment.repositories.FeeRepository;
 import linh.sunhouse_apartment.repositories.FloorRepository;
 import linh.sunhouse_apartment.repositories.InvoiceRepository;
@@ -112,7 +109,22 @@ public class RoomServiceImpl implements RoomService {
         List<Invoice> invoices = invoiceRepository.findAllInvoiceUnpaid(fee);
         List<UnpaidRoomResponse> rooms = new ArrayList<>();
         for(Invoice i : invoices){
-            rooms.add(new UnpaidRoomResponse(i.getUserId().getFullName(),i.getUserId().getEmail(),i.getUserId().getRoomId().getId(),i.getUserId().getRoomId().getRoomNumber(),i.getUserId().getRoomId().getFloor().getFloorNumber(), i.getUserId().getRoomId().getRentPrice(), i.getDueDate(), fee.getName()));
+            Room room = i.getUserId().getRoomId();
+
+            User head = room.getHeadUser();
+            if (head != null && head.getIsActive() == true) {
+                rooms.add(new UnpaidRoomResponse(
+                        i.getId(),
+                        head.getFullName(),
+                        head.getEmail(),
+                        room.getId(),
+                        room.getRoomNumber(),
+                        room.getFloor().getFloorNumber(),
+                        room.getRentPrice(),
+                        i.getDueDate(),
+                        fee.getName()
+                ));
+            }
         }
         return rooms;
     }
@@ -133,5 +145,9 @@ public class RoomServiceImpl implements RoomService {
                 rs.add(room);
         }
         return rs;
+    }
+    @Override
+    public List<User> getAllRoomHead() {
+        return roomRepository.getAllRoomHead();
     }
 }

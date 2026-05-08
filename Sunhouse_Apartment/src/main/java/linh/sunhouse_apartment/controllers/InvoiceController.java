@@ -57,7 +57,7 @@ public class InvoiceController {
     public String createInvoiceApartment(@RequestParam Integer feeId, RedirectAttributes redirectAttributes) {
         Integer count = invoiceService.createInvoicesForAllRoomHeads(feeId);
         if(count == 0){
-            redirectAttributes.addFlashAttribute("warningMessage", "Tất cả các phòng đã có hóa đơn với loại phí này!");
+            redirectAttributes.addFlashAttribute("warningMessage", "Tất cả các phòng đã có hóa đơn với loại phí này trong tháng này!");
         }
         else {
             redirectAttributes.addFlashAttribute("successMessage", "Đã tạo thành công " + count + " hóa đơn !");

@@ -44,4 +44,8 @@ public class Room {
     @Column(name = "rent_price", precision = 12, scale = 2)
     private BigDecimal rentPrice;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "head_user_id")
+    private User headUser;
+
 }

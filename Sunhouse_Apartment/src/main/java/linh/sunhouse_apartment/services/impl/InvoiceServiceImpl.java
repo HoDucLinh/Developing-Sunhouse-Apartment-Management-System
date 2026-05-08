@@ -30,6 +30,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     private UserRepository userRepository;
 
     @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
     private FeeRepository feeRepository;
 
     @Autowired
@@ -254,7 +257,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Integer createInvoicesForAllRoomHeads(Integer feeId) {
         Integer counter = 0;
         // Lấy danh sách trưởng phòng
-        List<User> roomHeads = userRepository.getAllRoomHead();
+        List<User> roomHeads = roomRepository.getAllRoomHead();
 
         // Lấy thông tin phí
         Fee fee = feeRepository.getFeeById(feeId);

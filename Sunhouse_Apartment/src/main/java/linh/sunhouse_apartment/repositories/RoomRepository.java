@@ -16,4 +16,5 @@ public interface RoomRepository {
     Room update (Room room);
     Room addRoom(Room room);
     Room findRoomWithRoomNumber(String roomNumber);
+    List<User> getAllRoomHead();
 }

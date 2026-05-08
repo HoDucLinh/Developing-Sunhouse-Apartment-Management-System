@@ -41,7 +41,7 @@
                         <td th:text="${user.email}"></td>
                         <td th:text="${user.phone}"></td>
                         <td>
-                                <span th:if="${user.id == room.roomHeadId}" class="badge bg-primary">
+                                <span th:if="${user.id == room.getRoomHeadId()}" class="badge bg-primary">
                                     <i class="bi bi-star-fill"></i> Trưởng phòng
                                 </span>
                             <span th:if="${user.id != room.roomHeadId}" class="badge bg-secondary">

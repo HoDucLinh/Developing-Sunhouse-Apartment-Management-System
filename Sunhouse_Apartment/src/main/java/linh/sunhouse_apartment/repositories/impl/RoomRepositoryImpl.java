@@ -1,14 +1,10 @@
 package linh.sunhouse_apartment.repositories.impl;
 
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.dtos.response.RoomResponse;
 import linh.sunhouse_apartment.dtos.response.UserResponse;
 import linh.sunhouse_apartment.entity.Room;
-import linh.sunhouse_apartment.entity.RoomHead;
 import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.RoomRepository;
 import org.hibernate.Session;
@@ -66,20 +62,17 @@ public class RoomRepositoryImpl implements RoomRepository {
     @Override
     public void updateRoomHead(Integer roomId, Integer newHeadId) {
         Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaUpdate<Room> update = cb.createCriteriaUpdate(Room.class);
+        Root<Room> root = update.from(Room.class);
 
-        session.createQuery("DELETE FROM RoomHead WHERE room.id = :roomId")
-                .setParameter("roomId", roomId)
-                .executeUpdate();
+        User newHead = session.get(User.class, newHeadId);
 
-        Room room = session.get(Room.class, roomId);
-        User user = session.get(User.class, newHeadId);
+        update.set(root.get("headUser"), newHead);
+        update.where(cb.equal(root.get("id"), roomId));
 
-        RoomHead newHead = new RoomHead();
-        newHead.setRoomId(room.getId());
-        newHead.setRoom(room);
-        newHead.setUserId(user);
+        session.createMutationQuery(update).executeUpdate();
 
-        session.persist(newHead);
     }
 
     @Override
@@ -134,7 +127,11 @@ public class RoomRepositoryImpl implements RoomRepository {
 
         CriteriaQuery<User> userQuery = cb.createQuery(User.class);
         Root<User> userRoot = userQuery.from(User.class);
-        userQuery.select(userRoot).where(cb.equal(userRoot.get("roomId"), room));
+        userQuery.select(userRoot).where(
+                cb.and(cb.equal(userRoot.get("roomId"), room),
+                                        cb.equal(userRoot.get("isActive"),true)
+                )
+        );
         List<User> users = session.createQuery(userQuery).getResultList();
 
         List<UserResponse> userDTOs = users.stream().map(user -> {
@@ -150,13 +147,8 @@ public class RoomRepositoryImpl implements RoomRepository {
         int available = room.getMaxPeople() - (users != null ? users.size() : 0);
         dto.setAvailableSlots(available);
 
-        CriteriaQuery<RoomHead> headQuery = cb.createQuery(RoomHead.class);
-        Root<RoomHead> headRoot = headQuery.from(RoomHead.class);
-        headQuery.select(headRoot).where(cb.equal(headRoot.get("room"), room));
-        List<RoomHead> headResult = session.createQuery(headQuery).getResultList();
-
-        if (!headResult.isEmpty() && headResult.get(0).getUserId() != null) {
-            dto.setRoomHeadId(headResult.get(0).getUserId().getId());
+        if (room.getHeadUser() != null) {
+            dto.setRoomHeadId(room.getHeadUser().getId());
         }
 
         return dto;
@@ -173,6 +165,27 @@ public class RoomRepositoryImpl implements RoomRepository {
                 .createQuery("SELECT r FROM Room r WHERE r.floor.id = :floorId", Room.class)
                 .setParameter("floorId", floorId)
                 .getResultList();
+    }
+
+    @Override
+    public List<User> getAllRoomHead() {
+        Session session = sessionFactory.getCurrentSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+
+        Root<Room> roomRoot = cq.from(Room.class);
+        Join<Room, User> headJoin = roomRoot.join("headUser");
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.isNotNull(roomRoot.get("headUser")));
+        predicates.add(cb.equal(headJoin.get("isActive"), true));
+
+        cq.select(headJoin).distinct(true)
+                .where(predicates.toArray(new Predicate[0]))
+                .orderBy(cb.asc(headJoin.get("fullName")));
+
+        return session.createQuery(cq).getResultList();
     }
 
 }
