@@ -86,9 +86,11 @@ public class FeeController {
 
     // Xóa phí
     @GetMapping("/delete-fee")
-    public String deleteFee(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
+    public String deleteFee(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            feeService.deleteFee(id);
+            String name = authentication.getName();
+            User currentUser = userService.getUserByUsername(name);
+            feeService.deleteFee(id, currentUser);
             redirectAttributes.addFlashAttribute("success", "Xóa phí thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Không thể xóa: " + e.getMessage());

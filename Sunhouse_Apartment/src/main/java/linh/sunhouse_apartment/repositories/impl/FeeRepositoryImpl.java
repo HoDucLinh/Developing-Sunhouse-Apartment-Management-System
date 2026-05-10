@@ -36,10 +36,12 @@ public class FeeRepositoryImpl implements FeeRepository {
         Root<Fee> root = cq.from(Fee.class);
         root.fetch("createdBy", JoinType.LEFT);
         root.fetch("updatedBy", JoinType.LEFT);
+        root.fetch("deletedBy", JoinType.LEFT);
         cq.select(root).distinct(true);
+        Predicate predicates = cb.equal(root.get("isActive"), true);
+
         // Xử lý điều kiện tìm kiếm
         if (params != null && !params.isEmpty()) {
-            var predicates = cb.conjunction(); // mặc định true
 
             // Tìm theo tên
             String kw = params.get("kw");
@@ -56,10 +58,8 @@ public class FeeRepositoryImpl implements FeeRepository {
                     // Nếu type không hợp lệ thì bỏ qua
                 }
             }
-
-            cq.where(predicates);
         }
-
+        cq.where(predicates);
         return session.createQuery(cq).getResultList();
     }
     @Override
@@ -86,11 +86,10 @@ public class FeeRepositoryImpl implements FeeRepository {
         }
     }
     @Override
-    public int deleteFee(int id) {
+    public Integer deleteFee(Fee f) {
         Session session = sessionFactory.getCurrentSession();
-        Fee f = session.get(Fee.class, id);
         if (f != null) {
-            session.remove(f);
+            session.merge(f);
             return 1;
         }
         return 0;
@@ -105,9 +104,15 @@ public class FeeRepositoryImpl implements FeeRepository {
 
         root.fetch("createdBy", JoinType.LEFT);
         root.fetch("updatedBy", JoinType.LEFT);
+        root.fetch("deletedBy", JoinType.LEFT);
 
         cq.select(root)
-                .where(cb.equal(root.get("id"), id))
+                .where(
+                        cb.and(
+                                cb.equal(root.get("id"), id),
+                                cb.equal(root.get("isActive"), true)
+                        )
+                )
                 .distinct(true);
         return session.createQuery(cq).uniqueResult();
     }
@@ -121,9 +126,10 @@ public class FeeRepositoryImpl implements FeeRepository {
         Root<Fee> root = cq.from(Fee.class);
         root.fetch("createdBy", JoinType.LEFT);
         root.fetch("updatedBy", JoinType.LEFT);
+        root.fetch("deletedBy", JoinType.LEFT);
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("type"), Fee.FeeType.UTILITY));
-
+        predicates.add(cb.equal(root.get("isActive"), true));
         if(params != null && !params.isEmpty()) {
             String kw = params.get("kw");
             if(kw != null && !kw.trim().isEmpty()) {
@@ -145,8 +151,10 @@ public class FeeRepositoryImpl implements FeeRepository {
         Root<Fee> root = cq.from(Fee.class);
         root.fetch("createdBy", JoinType.LEFT);
         root.fetch("updatedBy", JoinType.LEFT);
+        root.fetch("deletedBy", JoinType.LEFT);
         cq.select(root)
-                .where(cb.equal(root.get("type"), Fee.FeeType.FEE))
+                .where(cb.and(cb.equal(root.get("type"), Fee.FeeType.FEE),
+                                cb.equal(root.get("isActive"),true)))
                 .distinct(true);
 
         return session.createQuery(cq).getResultList();

@@ -10,7 +10,7 @@ public interface FeeRepository {
     void addFee(Fee fee);
     List<Fee> getFees(Map<String, String> params);
     void updateFee(Fee fee, User user);
-    int deleteFee(int id);
+    Integer deleteFee(Fee f);
     Fee getFeeById(int id);
     List<Fee> getUtilities(Map<String,String> params);
     List<Fee> getFeeOfFee();

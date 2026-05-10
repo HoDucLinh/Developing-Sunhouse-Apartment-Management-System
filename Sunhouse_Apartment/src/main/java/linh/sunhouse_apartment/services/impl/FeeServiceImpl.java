@@ -61,8 +61,14 @@ public class FeeServiceImpl implements FeeService {
     }
 
     @Override
-    public int deleteFee(int id) {
-        return feeRepository.deleteFee(id);
+    public Integer deleteFee(Integer id, User user) {
+        Fee f = feeRepository.getFeeById(id);
+        if (f != null) {
+            f.setIsActive(false);
+            f.setDeletedBy(user);
+            f.setDeletedAt(new Date());
+        }
+        return feeRepository.deleteFee(f);
     }
 
     @Override

@@ -68,6 +68,14 @@ public class Fee implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+    @Column(name = "is_active")
+    private Boolean isActive;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "deleted_at")
+    private Date deletedAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;
