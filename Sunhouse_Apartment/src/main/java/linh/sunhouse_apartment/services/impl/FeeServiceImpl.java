@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class FeeServiceImpl implements FeeService {
     private UserUtilityRepository userUtilityRepository;
 
     @Override
-    public void addFee(Fee fee, MultipartFile file) {
+    public void addFee(Fee fee, MultipartFile file, User user) {
         if (fee == null) {
             throw new IllegalArgumentException("Fee object must not be null");
         }
@@ -44,6 +45,8 @@ public class FeeServiceImpl implements FeeService {
                 throw new RuntimeException("Upload image failed", e);
             }
         }
+        fee.setCreatedBy(user);
+        fee.setCreatedAt(new Date());
         feeRepository.addFee(fee);
     }
 
@@ -52,9 +55,9 @@ public class FeeServiceImpl implements FeeService {
         return feeRepository.getFees(params);
     }
     @Override
-    public void updateFee(Fee fee) {
+    public void updateFee(Fee fee, User user) {
         if (fee == null) throw new IllegalArgumentException("Fee object must not be null");
-        feeRepository.updateFee(fee);
+        feeRepository.updateFee(fee, user);
     }
 
     @Override

@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -55,6 +56,18 @@ public class Fee implements Serializable {
     private String image;
     @Column(name = "usage_days")
     private Integer usageDays;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
+    private Date updatedAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feeId", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetailInvoice> detailInvoiceSet;

@@ -52,6 +52,17 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">
+                                <i class="bi bi-person-fill me-1"></i> Người tạo
+                            </label>
+                            <input type="text"
+                                   th:value="${#authentication.name}"
+                                   class="form-control"
+                                   readonly>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
                                 <i class="bi bi-image me-1"></i> Ảnh
                             </label>
                             <input type="file" name="imageFile" class="form-control" accept="image/*">

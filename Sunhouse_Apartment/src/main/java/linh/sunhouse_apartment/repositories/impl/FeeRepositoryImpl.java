@@ -1,10 +1,8 @@
 package linh.sunhouse_apartment.repositories.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import linh.sunhouse_apartment.entity.Fee;
+import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.repositories.FeeRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,9 @@ public class FeeRepositoryImpl implements FeeRepository {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
         Root<Fee> root = cq.from(Fee.class);
-        cq.select(root);
+        root.fetch("createdBy", JoinType.LEFT);
+        root.fetch("updatedBy", JoinType.LEFT);
+        cq.select(root).distinct(true);
         // Xử lý điều kiện tìm kiếm
         if (params != null && !params.isEmpty()) {
             var predicates = cb.conjunction(); // mặc định true
@@ -62,12 +63,11 @@ public class FeeRepositoryImpl implements FeeRepository {
         return session.createQuery(cq).getResultList();
     }
     @Override
-    public void updateFee(Fee fee) {
+    public void updateFee(Fee fee, User user) {
         Session session = sessionFactory.getCurrentSession();
         Fee existingFee = session.get(Fee.class, fee.getId());
 
         if (existingFee != null) {
-            // Chỉ cập nhật nếu giá trị mới khác giá trị cũ
             if (fee.getName() != null && !fee.getName().equals(existingFee.getName())) {
                 existingFee.setName(fee.getName());
             }
@@ -80,7 +80,8 @@ public class FeeRepositoryImpl implements FeeRepository {
             if (fee.getPrice() != existingFee.getPrice()) {
                 existingFee.setPrice(fee.getPrice());
             }
-
+            existingFee.setUpdatedBy(user);
+            existingFee.setUpdatedAt(new Date());
             session.merge(existingFee);
         }
     }
@@ -98,7 +99,17 @@ public class FeeRepositoryImpl implements FeeRepository {
     @Override
     public Fee getFeeById(int id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(Fee.class, id);
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
+        Root<Fee> root = cq.from(Fee.class);
+
+        root.fetch("createdBy", JoinType.LEFT);
+        root.fetch("updatedBy", JoinType.LEFT);
+
+        cq.select(root)
+                .where(cb.equal(root.get("id"), id))
+                .distinct(true);
+        return session.createQuery(cq).uniqueResult();
     }
 
     //lấy những phí dịch vụ
@@ -108,6 +119,8 @@ public class FeeRepositoryImpl implements FeeRepository {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
         Root<Fee> root = cq.from(Fee.class);
+        root.fetch("createdBy", JoinType.LEFT);
+        root.fetch("updatedBy", JoinType.LEFT);
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("type"), Fee.FeeType.UTILITY));
 
@@ -130,9 +143,11 @@ public class FeeRepositoryImpl implements FeeRepository {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Fee> cq = cb.createQuery(Fee.class);
         Root<Fee> root = cq.from(Fee.class);
-
+        root.fetch("createdBy", JoinType.LEFT);
+        root.fetch("updatedBy", JoinType.LEFT);
         cq.select(root)
-                .where(cb.equal(root.get("type"), Fee.FeeType.FEE));
+                .where(cb.equal(root.get("type"), Fee.FeeType.FEE))
+                .distinct(true);
 
         return session.createQuery(cq).getResultList();
     }

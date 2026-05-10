@@ -1,8 +1,11 @@
 package linh.sunhouse_apartment.controllers;
 
 import linh.sunhouse_apartment.entity.Fee;
+import linh.sunhouse_apartment.entity.User;
 import linh.sunhouse_apartment.services.FeeService;
+import linh.sunhouse_apartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,8 @@ public class FeeController {
     @Autowired
     private FeeService feeService;
 
+    @Autowired
+    private UserService userService;
     // Hiển thị danh sách Fee
     @GetMapping("/manage-fee")
     public String listFees(Model model,
@@ -32,9 +37,12 @@ public class FeeController {
     @PostMapping("/add-fee")
     public String addFee(@ModelAttribute("fee") Fee fee,
                          @RequestParam(value = "imageFile", required = false) MultipartFile file,
+                         Authentication authentication,
                          RedirectAttributes redirectAttributes) {
         try {
-            feeService.addFee(fee, file);
+            String name = authentication.getName();
+            User currentUser = userService.getUserByUsername(name);
+            feeService.addFee(fee, file, currentUser);
             redirectAttributes.addFlashAttribute("success", "Thêm phí thành công!");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -63,9 +71,12 @@ public class FeeController {
     // Xử lý cập nhật
     @PostMapping("/edit-fee")
     public String updateFee(@ModelAttribute("fee") Fee fee,
+                            Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         try {
-            feeService.updateFee(fee);
+            String name = authentication.getName();
+            User currentUser = userService.getUserByUsername(name);
+            feeService.updateFee(fee, currentUser);
             redirectAttributes.addFlashAttribute("success", "Cập nhật phí thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
