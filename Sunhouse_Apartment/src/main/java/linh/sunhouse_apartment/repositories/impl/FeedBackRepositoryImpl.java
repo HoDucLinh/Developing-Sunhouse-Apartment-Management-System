@@ -44,7 +44,7 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
         Root root = q.from(Feedback.class);
         q.select(root);
         List<Predicate> predicates = new ArrayList<>();
-
+        predicates.add(b.equal(root.get("userId").get("isActive"), true ));
         if (params != null) {
 
             String kw = params.get("kw");
@@ -90,6 +90,7 @@ public class FeedBackRepositoryImpl implements FeedBackRepository {
         List<Predicate> predicates = new ArrayList<>();
 
         predicates.add(cb.equal(root.get("userId").get("id"), userId));
+        predicates.add(cb.equal(root.get("userId").get("isActive"), true ));
         if (params != null) {
 
             String kw = params.get("kw");
